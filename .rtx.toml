@@ -1,0 +1,8 @@
+[env]
+RUSTC_WRAPPER = "sccache"
+# RUST_WITHOUT = "rust-docs"
+ASDF_RUST_PROFILE = "minimal"
+
+[tools]
+rust = '1.75'
+just = '1'
