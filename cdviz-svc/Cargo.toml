@@ -1,0 +1,19 @@
+[package]
+name = "cvdiz-svc"
+description = "The service to collect cdevents"
+readme = "README.md"
+keywords = ["cd"]
+categories = []
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+
+[dev-dependencies]
+rstest = { workspace = true }
