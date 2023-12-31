@@ -20,6 +20,8 @@ deploy:
   helm:
     releases:
       - name: cdviz
+        namespace: cdviz
+        createNamespace: true
         chartPath: charts/cdviz-collector
         valuesFiles:
           - charts/cdviz-collector/values.yaml
