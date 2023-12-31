@@ -1,3 +1,6 @@
+default:
+    just --list
+
 _install_cargo-binstall:
     cargo install cargo-binstall
 
@@ -62,4 +65,4 @@ release *arguments: _install_cargo-release _install_git-cliff
     git add CHANGELOG.md && git commit -m "📝 update CHANGELOG" && git push
 
 run_svc:
-    cd cdviz-svc; cargo run
+    cd cdviz-collector; cargo run

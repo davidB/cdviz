@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-  "cdviz-svc",
+  "cdviz-collector",
   # "examples/*",
 ]
 
@@ -17,11 +17,11 @@ publish = false
 [workspace.dependencies]
 rstest = "0.18"
 
-[profile.dev.package.insta]
-opt-level = 3
+# [profile.dev.package.insta]
+# opt-level = 3
 
-[profile.dev.package.similar]
-opt-level = 3
+# [profile.dev.package.similar]
+# opt-level = 3
 
 [workspace.metadata.release]
 pre-release-commit-message = "🚀 (cargo-release) version {{version}}"
