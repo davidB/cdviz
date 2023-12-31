@@ -1,0 +1,31 @@
+apiVersion: skaffold/v4beta8
+kind: Config
+metadata:
+  name: cdviz
+build:
+  artifacts:
+    - image: ghcr.io/davidb/cdviz-collector
+      docker:
+        dockerfile: Dockerfile
+        target: cdviz-collector
+        cacheFrom:
+          # Local Docker builder replaces cache references to the artifact image with
+          # the tagged image reference, useful for caching from the previous build.
+          - ghcr.io/davidb/cdviz-collector
+  local:
+    useDockerCLI: false
+    useBuildkit: true
+
+deploy:
+  helm:
+    releases:
+      - name: cdviz
+        chartPath: charts/cdviz-collector
+        valuesFiles:
+          - charts/cdviz-collector/values.yaml
+        version: 0.1.0
+        setValueTemplates:
+          image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
+          image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
+        setValues:
+          image.pullPolicy: "IfNotPresent"

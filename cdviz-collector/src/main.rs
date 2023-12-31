@@ -15,7 +15,7 @@ async fn main() -> Result<(), BoxError> {
 
     let app = app();
     // run it
-    let addr = &"0.0.0.0:3000".parse::<SocketAddr>()?;
+    let addr = &"0.0.0.0:8080".parse::<SocketAddr>()?;
     tracing::warn!("listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app.into_make_service())

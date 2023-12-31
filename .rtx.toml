@@ -5,7 +5,18 @@ RUST_WITHOUT = "rust-docs"
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 # OTEL_EXPORTER_OTLP_TRACES_PROTOCOL = "grpc"
 OTEL_TRACES_SAMPLER = "always_on"
+CLUSTER_NAME = "kind-local"
 
 [tools]
+# docker = '*'  # (or podman + some config) should be available for some of thoses tools
+# dive = '*'    # to explore content of image container
+helm = '3.12'
+# helmfile = '0.155'
+kubectl = '1.27'
+ctlptl = '0.8'
+kind = '0.20'
+java = '*'       # required by skaffold
+skaffold = '2'
+
 rust = '1.75'
 just = '1'

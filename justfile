@@ -66,3 +66,17 @@ release *arguments: _install_cargo-release _install_git-cliff
 
 run_svc:
     cd cdviz-collector; cargo run
+
+k8s_create:
+    # sudo systemctl start docker
+    # k3d cluster create "$CLUSTER_NAME" --agents 2
+    # kind create cluster --name "$CLUSTER_NAME"
+    ctlptl create registry ctlptl-registry --port=5005
+    ctlptl create cluster kind --name "$CLUSTER_NAME" --registry=ctlptl-registry
+    kubectl cluster-info --context "$CLUSTER_NAME"
+
+k8s_delete:
+    # k3d cluster delete "$CLUSTER_NAME"
+    # kind delete cluster --name "$CLUSTER_NAME"
+    ctlptl delete cluster kind
+    ctlptl delete registry ctlptl-registry
