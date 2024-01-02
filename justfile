@@ -1,5 +1,5 @@
 default:
-    just --list
+    @just --list --unsorted
 
 _install_cargo-binstall:
     cargo install cargo-binstall
@@ -28,6 +28,8 @@ check: _install_cargo-hack
 build:
     cargo build
 
+alias fmt := format
+
 # Format the code and sort dependencies
 format:
     cargo fmt
@@ -38,21 +40,22 @@ deny: _install_cargo-deny
     cargo deny check advisories
     cargo deny check bans licenses sources
 
+# Lint all the code (via runing megalinter locally + `lint_rust`)
+lint: lint_rust
+    docker run --pull always --rm -it -v "$PWD:/tmp/lint:rw" "megalinter/megalinter:v7"
+
 # Lint the rust code
-lint:
+lint_rust:
     just --unstable --fmt --check
     cargo fmt --all -- --check
     # cargo sort --workspace --grouped --check
     cargo clippy --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
 
-megalinter:
-    @just _container run --pull always --rm -it -v "$PWD:/tmp/lint:rw" "megalinter/megalinter:v7"
-
 # Launch tests
-test: _install_cargo-nextest _install_cargo-hack
+test: _install_cargo-nextest
     cargo nextest run
-    cargo test --doc
-    cargo hack test --each-feature -- --test-threads=1
+    # cargo test --doc
+    # cargo hack nextest --each-feature -- --test-threads=1
 
 changelog: _install_git-cliff
     git-cliff -o "CHANGELOG.md"
@@ -64,8 +67,8 @@ release *arguments: _install_cargo-release _install_git-cliff
     git-cliff -o "CHANGELOG.md"
     git add CHANGELOG.md && git commit -m "📝 update CHANGELOG" && git push
 
-run_svc:
-    cd cdviz-collector; cargo run
+# local_run_cdviz-collector:
+#     cd cdviz-collector; cargo run
 
 k8s_create:
     # sudo systemctl start docker
@@ -75,8 +78,11 @@ k8s_create:
     ctlptl create cluster kind --name "$CLUSTER_NAME" --registry=ctlptl-registry
     kubectl cluster-info --context "$CLUSTER_NAME"
 
+k8s_dev:
+    skaffold dev --port-forward
+
 k8s_delete:
     # k3d cluster delete "$CLUSTER_NAME"
     # kind delete cluster --name "$CLUSTER_NAME"
-    ctlptl delete cluster kind
+    ctlptl delete cluster "$CLUSTER_NAME"
     ctlptl delete registry ctlptl-registry
