@@ -1,3 +1,7 @@
+pg_offline_pwd := "mysecretpassword"
+pg_offline_user := "me"
+pg_offline_url := "postgres://" + pg_offline_user + ":" + pg_offline_pwd + "@127.0.0.1:5432/" + pg_offline_user
+
 default:
     @just --list --unsorted
 
@@ -21,6 +25,11 @@ _install_cargo-deny: _install_cargo-binstall
 
 _install_git-cliff: _install_cargo-binstall
     cargo binstall git-cliff -y
+
+_install_sqlx-cli:
+    # use Rustls rather than OpenSSL (be sure to add the features for the databases you intend to use!)
+    # no binstall available
+    cargo install sqlx-cli --no-default-features --features rustls,postgres
 
 check: _install_cargo-hack
     cargo hack check --each-feature --no-dev-deps
@@ -86,3 +95,15 @@ k8s_delete:
     # kind delete cluster --name "$CLUSTER_NAME"
     ctlptl delete cluster "$CLUSTER_NAME"
     ctlptl delete registry ctlptl-registry
+
+sqlx_create_migration name: _install_sqlx-cli
+    sqlx migrate add -r {{ name }}
+
+sqlx_prepare_offline: _install_sqlx-cli
+    docker rm -f postgres || true
+    docker run --name postgres -e POSTGRES_PASSWORD={{ pg_offline_pwd }} -e POSTGRES_USER={{ pg_offline_user }} -p 5432:5432 -d postgres:16.1 && sleep 3
+    sqlx database create --database-url {{ pg_offline_url }}
+    sqlx migrate run --database-url {{ pg_offline_url }}
+    cargo sqlx prepare --workspace --database-url {{ pg_offline_url }}
+    sqlx database drop -y --database-url {{ pg_offline_url }}
+    docker rm -f postgres
