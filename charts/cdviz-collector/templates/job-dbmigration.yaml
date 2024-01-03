@@ -1,0 +1,46 @@
+{{- if .Values.dbMigration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: '{{ include "my.fullname" . }}-dbmigration-{{ now | date "20060102150405" }}'
+  labels:
+    {{- include "my.labels" . | nindent 4 }}
+  {{- with .Values.dbMigration.annotations }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  template:
+    metadata:
+      name: '{{ include "my.fullname" . }}-dbmigration-{{ now | date "20060102150405" }}'
+      labels:
+        {{- include "my.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: dbmigration
+        image: {{ .Values.dbMigration.image.repository }}:{{ .Values.dbMigration.image.tag }}
+        # args for sqlx
+        args:
+          - migrate
+          - run
+          - --database-url
+          - "$(DATABASE_URL)"
+          - --source
+          - "/migrations"
+        # # args for https://atlasgo.io/declarative/apply
+        # args:
+        #   - migrate # or schema
+        #   - apply
+        #   - -u
+        #   - "$(DATABASE_URL)"
+        #   - --dir
+        #   - file:///migrations/
+        env:
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secrets.name }}
+                key: DATABASE_URL
+      restartPolicy: Never
+  backoffLimit: 2
+{{- end }}

@@ -239,5 +239,4 @@ tags
 # ignore report from MegaLinter
 report/
 megalinter-reports/
-
-tempo-data
+Chart.lock

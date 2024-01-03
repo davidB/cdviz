@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/davidb/cdviz-collectory
+  repository: ghcr.io/davidb/cdviz-collector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -84,3 +84,48 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+dbMigration:
+  enabled: true
+  image:
+    repository: ghcr.io/davidb/cdviz-dbmigration
+    pullPolicy: IfNotPresent
+    tag: ""
+  annotations: {}
+    # "helm.sh/hook": post-install,post-upgrade
+    # "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+
+# Secrets is also used to store configuration
+# For production, you should create a secrets (encrypted or from an external source)
+secrets:
+  enabled: true
+  name: cdviz # name of the secret (also used by cdviz-collector, dbMigration, postgresql)
+  values:
+    DATABASE_URL: null # if null then it's computed from other POSTGRES_* values
+    DATABASE_POOL_CONNECTIONS_MIN: "1"
+    DATABASE_POOL_CONNECTIONS_MAX: "10"
+    POSTGRES_USER: cdviz
+    POSTGRES_PASSWORD: postgres-password
+    POSTGRES_HOST: cdviz-postgresql # can be the name of the postgresql service in cluster
+    POSTGRES_PORT_NUMBER: "5432"
+    POSTGRES_DB: cdviz
+
+# A cdviz require a postgresql database to store its data.
+# The following sections is used to configure a database as part of the chart,
+# it's mainly to be used in the development, or demo environment (purpose).
+# For production, you should use:
+# - an external database (managed by your cloud provider).
+# - a k8s operated database like (non exhaustive list):
+#   - [Postgres Operator (from Zalando)](https://postgres-operator.readthedocs.io/en/latest/)
+#   - [KubeBlocks for PostgreSQL | KubeBlocks](https://kubeblocks.io/docs/release-0.7/user_docs/kubeblocks-for-postgresql)
+#   - [Crunchy PostgreSQL For Kubernetes | Crunchy Data](https://www.crunchydata.com/products/crunchy-postgresql-for-kubernetes)
+#   - [Kubegres](https://github.com/reactive-tech/kubegres)
+postgresql:
+  enabled: false
+  auth:
+    database: cdviz
+    existingSecret: "cdviz"
+    username: cdviz
+    secretKeys:
+      adminPasswordKey: POSTGRES_PASSWORD
+      userPasswordKey: POSTGRES_PASSWORD

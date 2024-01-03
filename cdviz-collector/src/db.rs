@@ -25,7 +25,7 @@ pub(crate) async fn build_pool(settings: &DbSettings) -> Result<PgPool> {
         "Using the database"
     );
 
-    let pool = pool_options.connect(&settings.url).await?;
+    let pool = pool_options.connect_lazy(&settings.url)?;
 
     Ok(pool)
 }

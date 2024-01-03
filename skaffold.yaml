@@ -12,6 +12,14 @@ build:
           # Local Docker builder replaces cache references to the artifact image with
           # the tagged image reference, useful for caching from the previous build.
           - ghcr.io/davidb/cdviz-collector
+    - image: ghcr.io/davidb/cdviz-dbmigration
+      docker:
+        dockerfile: Dockerfile
+        target: cdviz-dbmigration
+        cacheFrom:
+          # Local Docker builder replaces cache references to the artifact image with
+          # the tagged image reference, useful for caching from the previous build.
+          - ghcr.io/davidb/cdviz-dbmigration
   local:
     useDockerCLI: false
     useBuildkit: true
@@ -29,5 +37,9 @@ deploy:
         setValueTemplates:
           image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
           image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
+          dbMigration.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_dbmigration}}"
+          dbMigration.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_dbmigration}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_dbmigration}}"
         setValues:
           image.pullPolicy: "IfNotPresent"
+          dbMigration.image.pullPolicy: "IfNotPresent"
+          postgresql.enabled: true
