@@ -1,0 +1,40 @@
+name: release
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  # id-token: write
+
+jobs:
+  push-store-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0" # to be able to use `git describe` and retrieve tags
+
+      - name: "Login to GitHub Container Registry"
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      # - name: "Build Inventory Image"
+      #   run: |
+      #     docker build . --tag ghcr.io/<your-GitHub-username>/store:latest
+      #     docker push ghcr.io/${{ github.repository }}/store:latest
+
+      - name: Run Skaffold pipeline as action
+        uses: hiberbee/github-action-skaffold@1.19.0
+        with:
+          skaffold-version: "2.9.0"
+          command: build
+          # repository: ghcr.io/${{ github.repository }}

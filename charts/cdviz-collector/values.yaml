@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/davidb/cdviz-collector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest" # TODO Change this to a version number on release
 
 imagePullSecrets: []
 nameOverride: ""
@@ -90,7 +90,7 @@ dbMigration:
   image:
     repository: ghcr.io/davidb/cdviz-dbmigration
     pullPolicy: IfNotPresent
-    tag: ""
+      tag: "latest" # TODO Change this to a version number on release
   annotations:
     {}
     # "helm.sh/hook": post-install,post-upgrade

@@ -17,6 +17,7 @@ HEALTHCHECK NONE
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
 FROM cgr.dev/chainguard/glibc-dynamic as cdviz-collector
+LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
 ARG PROFILE=release
 USER nonroot
 COPY --from=build /work/target/${PROFILE}/cdviz-collector /usr/local/bin/cdviz-collector
@@ -39,6 +40,7 @@ HEALTHCHECK NONE
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
 FROM cgr.dev/chainguard/glibc-dynamic AS cdviz-dbmigration
+LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
 USER nonroot
 COPY --from=build-sqlx /home/nonroot/.cargo/bin/sqlx /usr/local/bin/sqlx
 COPY migrations /migrations
