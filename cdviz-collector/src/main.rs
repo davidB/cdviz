@@ -142,8 +142,8 @@ mod tests {
             .start_with_options(
                 image,
                 RunOption::builder()
-                    .with_remove(false)
-                    .with_name("test_cdviz")
+                    .with_remove(true)
+                    //.with_name("test_cdviz") // use random name for parallel test
                     .build(),
             )
             .await
