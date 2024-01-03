@@ -1,0 +1,13 @@
+# tool: [httpYac](https://httpyac.github.io/)
+
+@base_url=http://localhost:8080
+@cdevents_spec_examples=../cdevents-spec/examples
+
+###
+GET {{base_url}}/readyz
+
+###
+POST {{base_url}}/cdevents
+Content-Type: application/json
+
+< {{cdevents_spec_examples}}/service_deployed.json
