@@ -1,21 +1,53 @@
 # Configuration file for MegaLinter
 # See all available variables at https://megalinter.github.io/configuration/ and in linters documentation
 
-APPLY_FIXES: all # all, none, or list of linter keys
+APPLY_FIXES: none # all, none, or list of linter keys
 # ENABLE: # If you use ENABLE variable, all other languages/formats/tooling-formats will be disabled by default
 # ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
 DISABLE:
   - COPYPASTE # Comment to enable checks of excessive copy-pastes
   - SPELL # Comment to enable checks of spelling mistakes
 DISABLE_LINTERS:
-  - MARKDOWN_MARKDOWN_LINK_CHECK
   - DOCKERFILE_DOCKERFILELINT
-  - RUST_CLIPPY
-  - REPOSITORY_DEVSKIM
+  - MARKDOWN_MARKDOWN_LINK_CHECK
+  - REPOSITORY_CHECKOV # unstable randomly failed (false negative) on generated k8s manifest
+  - REPOSITORY_DEVSKIM # issue with "git config --global --add safe.directory ..."
+  - REPOSITORY_GIT_DIFF
+  - REPOSITORY_GRYPE
   - REPOSITORY_KICS
+  - REPOSITORY_SYFT
+  - REPOSITORY_TRUFFLEHOG # too long to search for secret
+  - RUST_CLIPPY # run via an other way, and current version doesn't support `--deny ... --allow ...`
+  - SQL_TSQLLINT # "You must install or update .NET to run this application."
 SHOW_ELAPSED_TIME: true
 FILEIO_REPORTER: false
 # DISABLE_ERRORS: true # Uncomment if you want MegaLinter to detect errors but not block CI to pass
-FILTER_REGEX_EXCLUDE: "(\\.lock)|(\\.ndjson)|(\\.pdf)|(\\.csv)|(\\.zip)|(\\.tar)|(\\.ipynb)|(license.*)|(LICENSE.*)"
+FILTER_REGEX_EXCLUDE: "(megalinter-reports)|(cdevents-spec.*)|(.gitmodules)|(.sqlx)|(\\.lock)|(\\.ndjson)|(\\.pdf)|(\\.csv)|(\\.zip)|(\\.tar)|(\\.ipynb)|(license.*)|(LICENSE.*)"
 SPELL_FILTER_REGEX_INCLUDE: '\\.md$'
-RUST_CLIPPY_ARGUMENTS: --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
+PRINT_ALPACA: false
+REPOSITORY_SECRETLINT_ARGUMENTS:
+  - --secretlintignore
+  - .gitignore
+REPOSITORY_TRIVY_ARGUMENTS:
+  # - --scanners
+  # - misconfig,vuln,secret
+  - --skip-files
+  - "skaffold.yaml"
+  # - "charts/**/*.tgz"
+  - --skip-dirs
+  - "charts/**/charts"
+RUST_CLIPPY_ARGUMENTS:
+  - --workspace
+  - --all-features
+  - --all-targets
+  # - --deny warnings
+  # - --allow deprecated
+  # - --allow unknown-lints
+YAML_FILTER_REGEX_EXCLUDE: (.*/templates)
+
+## Wait a fix for <https://github.com/oxsecurity/megalinter/issues/1993>
+# REPOSITORY_DEVSKIM_ARGUMENTS:
+#   - --ignore-globs
+#   - sqlx-data.json
+
+REPOSITORY_TRIVY_DISABLE_ERRORS: true # Too many false positive

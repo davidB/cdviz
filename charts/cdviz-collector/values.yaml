@@ -91,7 +91,8 @@ dbMigration:
     repository: ghcr.io/davidb/cdviz-dbmigration
     pullPolicy: IfNotPresent
     tag: ""
-  annotations: {}
+  annotations:
+    {}
     # "helm.sh/hook": post-install,post-upgrade
     # "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 

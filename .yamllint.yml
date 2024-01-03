@@ -6,7 +6,11 @@
 # # yamllint disable-line                 #
 ###########################################
 extends: default
+
+ignore: charts/**/templates/*.yaml
+
 rules:
+  truthy: disable
   document-start: disable
   new-lines:
     level: warning

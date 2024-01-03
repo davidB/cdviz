@@ -49,9 +49,8 @@ deny: _install_cargo-deny
     cargo deny check advisories
     cargo deny check bans licenses sources
 
-# Lint all the code (via runing megalinter locally + `lint_rust`)
-lint: lint_rust
-    docker run --pull always --rm -it -v "$PWD:/tmp/lint:rw" "megalinter/megalinter:v7"
+# Lint all the code (megalinter + lint_rust)
+lint: lint_rust megalinter
 
 # Lint the rust code
 lint_rust:
@@ -59,6 +58,11 @@ lint_rust:
     cargo fmt --all -- --check
     # cargo sort --workspace --grouped --check
     cargo clippy --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
+
+# Lint with megalinter (locally via docker)
+megalinter:
+    # rm -rf megalinter-reports
+    docker run --rm --name megalinter -it --env "DEFAULT_WORKSPACE=/tmp/lint" -v "${DOCKER_HOST:-/var/run/docker.sock}:/var/run/docker.sock:rw" -v "$PWD:/tmp/lint:rw" "oxsecurity/megalinter:v7"
 
 # Launch tests
 test: _install_cargo-nextest
