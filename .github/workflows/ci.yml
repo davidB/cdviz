@@ -32,5 +32,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
       - run: just check
-      - run: just lint_rust #megalinter is running via other workflow
+      - run: just lint_rust # megalinter is running via an other workflow
       - run: just test
