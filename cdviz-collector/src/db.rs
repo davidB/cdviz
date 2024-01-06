@@ -61,7 +61,7 @@ pub(crate) async fn store_event(pg_pool: &PgPool, event: Event) -> Result<()> {
 
     sqlx::query!(
         r#"
-        INSERT INTO events (timestamp, raw)
+        INSERT INTO cdevents_lake (timestamp, payload)
         VALUES ($1, $2)
         "#,
         event.timestamp,
