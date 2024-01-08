@@ -11,6 +11,8 @@ The following directories and their subdirectories are licensed under Apache-2.0
 ```txt
 examples
 data
+charts
+cdviz-dashboard
 ```
 
 The following directories and their subdirectories are licensed under their original upstream licenses:
