@@ -33,7 +33,7 @@ jobs:
       #     docker push ghcr.io/${{ github.repository }}/store:latest
 
       - name: Run Skaffold pipeline as action
-        uses: hiberbee/github-action-skaffold@1.19.0
+        uses: hiberbee/github-action-skaffold@1.27.0
         with:
           skaffold-version: "2.9.0"
           command: build
