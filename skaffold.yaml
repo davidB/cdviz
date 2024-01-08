@@ -30,16 +30,16 @@ deploy:
       - name: cdviz
         namespace: cdviz
         createNamespace: true
-        chartPath: charts/cdviz-collector
+        chartPath: charts/cdviz
         valuesFiles:
-          - charts/cdviz-collector/values.yaml
+          - charts/cdviz/values.yaml
         version: 0.1.0
         setValueTemplates:
-          image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
-          image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
-          dbMigration.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_dbmigration}}"
-          dbMigration.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_dbmigration}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_dbmigration}}"
+          cdviz-collector.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
+          cdviz-collector.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
+          cdviz-collector.dbMigration.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_dbmigration}}"
+          cdviz-collector.dbMigration.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_dbmigration}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_dbmigration}}"
         setValues:
-          image.pullPolicy: "IfNotPresent"
-          dbMigration.image.pullPolicy: "IfNotPresent"
           postgresql.enabled: true
+          grafana.enabled: true
+          grafanaAssets.enabled: true
