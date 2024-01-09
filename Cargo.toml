@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   "cdviz-collector",
+  "cdviz-watcher",
   # "examples/*",
 ]
 
@@ -16,6 +17,18 @@ publish = false
 
 [workspace.dependencies]
 rstest = "0.18"
+clap = { version = "4", features = ["derive", "env"] }
+init-tracing-opentelemetry = { version = "0.16", features = [
+  "otlp",
+  "tracing_subscriber_ext",
+] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+time = "0.3"
+thiserror = "1"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+tracing-opentelemetry-instrumentation-sdk = { version = "0.16" }
 
 # [profile.dev.package.insta]
 # opt-level = 3

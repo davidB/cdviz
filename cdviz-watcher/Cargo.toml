@@ -1,0 +1,31 @@
+[package]
+name = "cdviz-watcher"
+description = "Watch resources and push cdevents"
+keywords = ["cd"]
+categories = []
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+clap = { workspace = true }
+enum_dispatch = "0.3"
+init-tracing-opentelemetry = { workspace = true }
+futures = "0.3"
+notify = "6"
+reqwest = "0.11"
+reqwest-middleware = "0.2"
+reqwest-tracing = "0.4"
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+# [dev-dependencies]
+# rstest = { workspace = true }
+# tracing-subscriber = "0.3"
