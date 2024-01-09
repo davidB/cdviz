@@ -37,7 +37,7 @@ postgresql:
       userPasswordKey: POSTGRES_PASSWORD
 
 # cdviz provides optional dashboards, datasources,... for grafana as configmaps loadable by sidecars.
-grafanaAssets:
+cdviz-grafana:
   enabled: true
 
 # The following sections is used to configure a grafana instance as part of the chart,
@@ -57,4 +57,3 @@ grafana:
   env:
     GF_AUTH_ANONYMOUS_ENABLED: "true"
     GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
-

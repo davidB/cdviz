@@ -2,8 +2,8 @@ apiVersion: v2
 name: cdviz
 description: A Helm chart for Kubernetes
 type: application
-version: 0.2.0 # TODO Change this to a version number on release
-appVersion: "0.1.0" # TODO Change this to a version number on release
+version: 0.1.0 # TODO Change this to a version number on release
+appVersion: 0.1.0 # TODO Change this to a version number on release
 
 dependencies:
   - name: postgresql
@@ -16,5 +16,9 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: cdviz-collector
-    version: 0.2.0
+    version: 0.1.0
     repository: file://../cdviz-collector
+  - name: cdviz-grafana
+    version: 0.1.0
+    repository: file://../cdviz-grafana
+    condition: cdviz-grafana.enabled

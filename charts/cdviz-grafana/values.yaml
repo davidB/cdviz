@@ -1,0 +1,26 @@
+datasources:
+  enabled: true
+  annotations:
+    grafana_datasource: "1"
+  definitions:
+    cdviz:
+      # same syntax than on grafana datasources provisionner
+      type: postgres
+      url: '$POSTGRES_HOST'
+      user: '$POSTGRES_USER_CDVIZ_READER' # from env var (injected via secrets)
+      secureJsonData:
+        password: '$POSTGRES_PASSWORD_CDVIZ_READER'
+      jsonData:
+        database: '$POSTGRES_DB'
+        sslmode: 'disable' # disable/require/verify-ca/verify-full
+        maxOpenConns: 10 # Grafana v5.4+
+        maxIdleConns: 10 # Grafana v5.4+
+        maxIdleConnsAuto: true # Grafana v9.5.1+
+        connMaxLifetime: 14400 # Grafana v5.4+
+        postgresVersion: 1000
+        timescaledb: false
+
+dashboards:
+  enabled: true
+  annotations:
+    grafana_dashboard: "1"

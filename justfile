@@ -94,6 +94,10 @@ k8s_create:
 k8s_dev:
     skaffold dev --port-forward
 
+k8s_delete_cdviz:
+    helm delete cdviz -n cdviz --cascade foreground || true
+    kubectl delete namespace cdviz
+
 k8s_delete:
     # k3d cluster delete "$CLUSTER_NAME"
     # kind delete cluster --name "$CLUSTER_NAME"

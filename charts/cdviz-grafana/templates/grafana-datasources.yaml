@@ -1,0 +1,17 @@
+{{- if (and .Values.datasources.enabled .Values.datasources.definitions) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "my.fullname" $ }}-datasources"
+  labels:
+    {{- toYaml .Values.datasources.annotations | nindent 4}}
+    {{- include "my.labels" . | nindent 4 }}
+data:
+  {{ include "my.fullname" $ }}-datasources.yaml: |-
+    apiVersion: 1
+    datasources:
+    {{- range $name, $def := .Values.datasources.definitions }}
+      - name: {{ $name }}
+        {{-  tpl (toYaml $def ) $ | nindent 8 }}
+    {{- end }}
+{{- end -}}

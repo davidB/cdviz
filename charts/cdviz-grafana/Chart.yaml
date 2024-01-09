@@ -1,6 +1,6 @@
 apiVersion: v2
-name: cdviz-collector
-description: A Helm chart for Kubernetes
+name: cdviz-grafana
+description: cdviz's grafana resources (dashboards, datasources, ...)
 type: application
 version: 0.1.0 # TODO Change this to a version number on release
 appVersion: 0.1.0 # TODO Change this to a version number on release
