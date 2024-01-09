@@ -100,4 +100,3 @@ dbMigration:
 # see Chart of cdviz for more details (list of keys,...) or templates/deployment.yaml
 secrets:
   name: cdviz # name of the secret (also used by cdviz-collector, dbMigration, postgresql, grafana,...)
-
