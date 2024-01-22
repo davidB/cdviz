@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jdx/rtx-action@v1
       - name: Cache cargo registry
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         continue-on-error: false
         with:
           path: |
