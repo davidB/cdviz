@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
+  "cdevents-sdk-rust",
   "cdviz-collector",
-  "cdviz-watcher",
+  "cdviz-sensors",
   # "examples/*",
 ]
 
