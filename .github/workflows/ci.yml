@@ -20,7 +20,9 @@ jobs:
       RUST_BACKTRACE: full
     steps:
       - uses: actions/checkout@v4
-      - uses: jdx/rtx-action@v1
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
       - name: Cache cargo registry
         uses: actions/cache@v4
         continue-on-error: false
