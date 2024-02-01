@@ -18,6 +18,7 @@ HEALTHCHECK NONE
 # trivy:ignore:AVD-DS-0001
 FROM cgr.dev/chainguard/glibc-dynamic as cdviz-collector
 LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
 ARG PROFILE=release
 USER nonroot
 COPY --from=build /work/target/${PROFILE}/cdviz-collector /usr/local/bin/cdviz-collector
@@ -41,6 +42,7 @@ HEALTHCHECK NONE
 # trivy:ignore:AVD-DS-0001
 FROM cgr.dev/chainguard/glibc-dynamic AS cdviz-dbmigration
 LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
+LABEL org.opencontainers.image.licenses="MIT OR Apache-2.0"
 USER nonroot
 COPY --from=build-sqlx /home/nonroot/.cargo/bin/sqlx /usr/local/bin/sqlx
 COPY migrations /migrations

@@ -19,9 +19,10 @@ secrets:
 # cdviz requires a postgresql database to store its data.
 # The following sections is used to configure a database as part of the chart,
 # it's mainly to be used in the development, or demo environment (purpose).
-# For production, you should use:
-# - an external database (managed by your cloud provider).
+# For production, you should prefer:
+# - an external database (e.g. managed by your cloud provider).
 # - a k8s operated database like (non exhaustive list):
+#   - [CloudNativePG - PostgreSQL Operator for Kubernetes](https://cloudnative-pg.io/)
 #   - [Postgres Operator (from Zalando)](https://postgres-operator.readthedocs.io/en/latest/)
 #   - [KubeBlocks for PostgreSQL | KubeBlocks](https://kubeblocks.io/docs/release-0.7/user_docs/kubeblocks-for-postgresql)
 #   - [Crunchy PostgreSQL For Kubernetes | Crunchy Data](https://www.crunchydata.com/products/crunchy-postgresql-for-kubernetes)

@@ -7,8 +7,9 @@ categories = []
 edition.workspace = true
 version.workspace = true
 authors.workspace = true
-repository.workspace = true
 license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
 publish.workspace = true
 
 [dependencies]
