@@ -1,20 +1,15 @@
 mod errors;
 mod http_sink;
 mod settings;
-mod watch_directory;
+mod sources;
 
+use cdevents_sdk::CDEvent;
 use clap::Parser;
 use enum_dispatch::enum_dispatch;
 use errors::Result;
 use http_sink::HttpSink;
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use sources::opendal_list;
 use tokio::sync::mpsc;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-struct CDEvent {
-    json: Value,
-}
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -27,9 +22,11 @@ async fn main() -> Result<()> {
 
     let mut watchers_count = 0;
     let _watch_directory_guard = if let Some(directory) = settings.watch_directory {
-        let w = watch_directory::watch(tx, directory).await?;
+        // let w = watch_directory::watch(tx, directory).await?;
+        let w = opendal_list::Source::from_local_path(directory)?;
+        let h = w.start(tx.clone()).await;
         watchers_count += 1;
-        Some(w)
+        Some(h)
     } else {
         None
     };
