@@ -20,3 +20,8 @@ ctlptl = '0.8'   # to setup / manage local k8s (kind) cluster
 kind = '0.20'    # to have a local k8s cluster (on top of docker)
 java = '*'       # required by skaffold
 skaffold = '2'   # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
+
+'cargo:cargo-binstall' = 'latest'
+
+[settings]
+experimental = true

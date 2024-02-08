@@ -5,25 +5,24 @@ pg_offline_url := "postgres://" + pg_offline_user + ":" + pg_offline_pwd + "@127
 default:
     @just --list --unsorted
 
-_install_cargo-binstall:
-    cargo install cargo-binstall
 
-_install_cargo-nextest: _install_cargo-binstall
+# cargo-binstall is pre-installed by mise (or manually)
+_install_cargo-nextest:
     cargo binstall cargo-nextest -y
 
-_install_cargo-insta: _install_cargo-binstall
+_install_cargo-insta:
     cargo binstall cargo-insta -y
 
-_install_cargo-release: _install_cargo-binstall
+_install_cargo-release:
     cargo binstall cargo-release -y
 
-_install_cargo-hack: _install_cargo-binstall
+_install_cargo-hack:
     cargo binstall cargo-hack -y
 
-_install_cargo-deny: _install_cargo-binstall
+_install_cargo-deny:
     cargo binstall cargo-deny -y
 
-_install_git-cliff: _install_cargo-binstall
+_install_git-cliff:
     cargo binstall git-cliff -y
 
 _install_sqlx-cli:
