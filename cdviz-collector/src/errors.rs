@@ -14,6 +14,7 @@ pub(crate) enum Error {
     NoSink,
     // #[error(transparent)]
     // WatchDirectory(#[from] notify::Error),
+    #[cfg(feature = "sink_db")]
     #[error(transparent)]
     Db(#[from] sqlx::Error),
     #[error(transparent)]
@@ -22,6 +23,7 @@ pub(crate) enum Error {
     Http(#[from] reqwest_middleware::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+    #[cfg(feature = "source_opendal")]
     #[error(transparent)]
     Opendal(#[from] opendal::Error),
     #[error(transparent)]

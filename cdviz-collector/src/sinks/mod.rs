@@ -9,6 +9,7 @@ use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
 
+#[cfg(feature = "sink_db")]
 use db::DbSink;
 use debug::DebugSink;
 use http::HttpSink;
@@ -16,6 +17,7 @@ use http::HttpSink;
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub(crate) enum Config {
+    #[cfg(feature = "sink_db")]
     #[serde(alias = "postgresql")]
     Db(db::Config),
     #[serde(alias = "debug")]
@@ -29,6 +31,7 @@ impl TryFrom<Config> for SinkEnum {
 
     fn try_from(value: Config) -> Result<Self> {
         let out = match value {
+            #[cfg(feature = "sink_db")]
             Config::Db(config) => DbSink::try_from(config)?.into(),
             Config::Debug(config) => DebugSink::try_from(config)?.into(),
             Config::Http(config) => HttpSink::try_from(config)?.into(),
@@ -40,6 +43,7 @@ impl TryFrom<Config> for SinkEnum {
 #[enum_dispatch]
 #[allow(clippy::enum_variant_names)]
 enum SinkEnum {
+    #[cfg(feature = "sink_db")]
     DbSink,
     DebugSink,
     HttpSink,

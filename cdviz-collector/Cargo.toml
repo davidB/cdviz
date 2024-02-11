@@ -29,7 +29,7 @@ opendal = { version = "0.45", default-features = false, features = [
   "rustls",
   "services-fs",
   "services-s3",
-] }
+], optional = true }
 reqwest = "0.11"
 reqwest-middleware = "0.2"
 reqwest-tracing = "0.4"
@@ -58,6 +58,7 @@ rustainers = "0.11"
 tracing-subscriber = "0.3"
 
 [features]
-default = ["source_http", "sink_db"]
+default = ["source_http", "source_opendal", "sink_db"]
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
+source_opendal = ["dep:opendal"]

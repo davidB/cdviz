@@ -97,11 +97,13 @@ async fn cdevents_collect(
 }
 
 impl IntoResponse for Error {
+    //TODO report the trace_id into the message to help to debug
     fn into_response(self) -> axum::response::Response {
-        let (status, error_message) = match self {
-            Error::Db(e) => (http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-            _ => (http::StatusCode::INTERNAL_SERVER_ERROR, "".to_string()),
-        };
+        // let (status, error_message) = match self {
+        //     Error::Db(e) => (http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+        //     _ => (http::StatusCode::INTERNAL_SERVER_ERROR, "".to_string()),
+        // };
+        let (status, error_message) = (http::StatusCode::INTERNAL_SERVER_ERROR, "".to_string());
         tracing::warn!(?error_message);
         let body = Json(json!({
             "error": error_message,
