@@ -1,9 +1,25 @@
 use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use serde::{Deserialize, Serialize};
 //use reqwest_retry::{RetryTransientMiddleware, policies::ExponentialBackoff};
 use crate::errors::Result;
-use crate::{CDEvent, Sink};
+use crate::Message;
 use reqwest_tracing::TracingMiddleware;
+
+use super::Sink;
+
+#[derive(Debug, Deserialize, Serialize)]
+pub(crate) struct Config {
+    destination: Url,
+}
+
+impl TryFrom<Config> for HttpSink {
+    type Error = crate::errors::Error;
+
+    fn try_from(value: Config) -> Result<Self> {
+        Ok(HttpSink::new(value.destination))
+    }
+}
 
 #[derive(Debug)]
 pub(crate) struct HttpSink {
@@ -26,8 +42,9 @@ impl HttpSink {
 }
 
 impl Sink for HttpSink {
-    async fn send(&self, cdevent: &CDEvent) -> Result<()> {
-        let json = serde_json::to_value(cdevent)?;
+    //TODO use cloudevents
+    async fn send(&self, msg: &Message) -> Result<()> {
+        let json = serde_json::to_value(&msg.cdevent)?;
         let resp = self
             .client
             .post(self.dest.clone())
@@ -36,7 +53,7 @@ impl Sink for HttpSink {
             .await?;
         if !resp.status().is_success() {
             tracing::warn!(
-                ?cdevent,
+                cdevent = ?msg.cdevent,
                 http_status = ?resp.status(),
                 "failed to send event"
             )

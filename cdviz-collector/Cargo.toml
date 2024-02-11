@@ -13,12 +13,29 @@ rust-version.workspace = true
 publish.workspace = true
 
 [dependencies]
-axum = "0.7"
-axum-tracing-opentelemetry = { version = "0.16" }
+axum = { version = "0.7", optional = true }
+axum-tracing-opentelemetry = { version = "0.16", optional = true }
+cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 clap = { workspace = true }
-init-tracing-opentelemetry = { workspace = true }
+clap-verbosity-flag = "2.1.2"
 # cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
+chrono = "0.4"
+enum_dispatch = "0.3"
+figment = { version = "0.10", features = ["toml", "env"] }
+futures = "0.3"
+humantime-serde = "1.1.1"
+init-tracing-opentelemetry = { workspace = true }
+opendal = { version = "0.45", default-features = false, features = [
+  "rustls",
+  "services-fs",
+  "services-s3",
+] }
+reqwest = "0.11"
+reqwest-middleware = "0.2"
+reqwest-tracing = "0.4"
+serde = { workspace = true }
 serde_json = { workspace = true }
+serde_with = "3.6"
 sqlx = { version = "0.7", features = [
   "postgres",
   "runtime-tokio",
@@ -27,7 +44,7 @@ sqlx = { version = "0.7", features = [
   "time",
   "json",
   "migrate",       # for test but simpler to declare once
-], default-features = false }
+], default-features = false, optional = true }
 time = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
@@ -39,3 +56,8 @@ axum-test = "14"
 rstest = { workspace = true }
 rustainers = "0.11"
 tracing-subscriber = "0.3"
+
+[features]
+default = ["source_http", "sink_db"]
+sink_db = ["dep:sqlx"]
+source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
