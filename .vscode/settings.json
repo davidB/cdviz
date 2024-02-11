@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["cdevents", "cdviz", "sdlc"]
+  "cSpell.words": [
+    "cdevents",
+    "cdviz",
+    "sdlc"
+  ],
+  "rust-analyzer.linkedProjects": [
+    "./cdviz-collector/Cargo.toml"
+  ]
 }
