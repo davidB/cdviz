@@ -5,7 +5,6 @@ pg_offline_url := "postgres://" + pg_offline_user + ":" + pg_offline_pwd + "@127
 default:
     @just --list --unsorted
 
-
 # cargo-binstall is pre-installed by mise (or manually)
 _install_cargo-nextest:
     cargo binstall cargo-nextest -y
