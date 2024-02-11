@@ -31,6 +31,7 @@ impl TryFrom<Config> for SourceEnum {
 }
 
 #[enum_dispatch]
+#[allow(clippy::enum_variant_names)]
 enum SourceEnum {
     HttpSource,
     OpendalSource,

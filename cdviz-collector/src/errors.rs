@@ -25,13 +25,13 @@ pub(crate) enum Error {
     #[error(transparent)]
     Opendal(#[from] opendal::Error),
     #[error(transparent)]
-    BusSendError(#[from] tokio::sync::broadcast::error::SendError<Message>),
+    BusSend(#[from] tokio::sync::broadcast::error::SendError<Message>),
     #[error(transparent)]
-    BusRecvError(#[from] tokio::sync::broadcast::error::RecvError),
+    BusRecv(#[from] tokio::sync::broadcast::error::RecvError),
     #[error(transparent)]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
     #[error(transparent)]
-    ConfigReaderError(#[from] figment::Error),
+    ConfigReader(#[from] figment::Error),
     // #[error(transparent)]
     // ConfigTomlError(#[from] toml::de::Error),
     #[error("{txt}")]

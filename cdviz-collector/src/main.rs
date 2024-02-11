@@ -56,6 +56,12 @@ impl From<CDEvent> for Message {
 //TODO add garcefull shutdown
 //TODO use logfmt
 //TODO use verbosity to configure tracing & log, but allow override and finer control with RUST_LOG & CDVIZ_COLLECTOR_LOG (higher priority)
+//TODO add a `enabled: bool` field as part of the config of each sources & sinks
+//TODO provide default config, and default values for some config fields
+//TODO document the architecture and the configuration
+//TODO add transformers ( eg file/event info, into cdevents) for sources
+//TODO integrations with cloudevents (sources & sink)
+//TODO integrations with kafka / redpanda, nats,
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -77,7 +83,7 @@ async fn main() -> Result<()> {
         .map(|(name, config)| sinks::start(name, config, tx.subscribe()))
         .collect::<Vec<_>>();
 
-    if sinks.len() < 1 {
+    if sinks.is_empty() {
         tracing::error!("no sink configured or started");
         return Err(errors::Error::NoSink);
     }
@@ -88,7 +94,7 @@ async fn main() -> Result<()> {
         .map(|(name, config)| sources::start(name, config, tx.clone()))
         .collect::<Vec<_>>();
 
-    if sources.len() < 1 {
+    if sources.is_empty() {
         tracing::error!("no source configured or started");
         return Err(errors::Error::NoSource);
     }

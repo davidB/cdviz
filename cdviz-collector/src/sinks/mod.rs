@@ -5,12 +5,12 @@ pub(crate) mod http;
 
 use crate::errors::Result;
 use crate::{Message, Receiver};
-use debug::DebugSink;
 use enum_dispatch::enum_dispatch;
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
 
 use db::DbSink;
+use debug::DebugSink;
 use http::HttpSink;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -38,6 +38,7 @@ impl TryFrom<Config> for SinkEnum {
 }
 
 #[enum_dispatch]
+#[allow(clippy::enum_variant_names)]
 enum SinkEnum {
     DbSink,
     DebugSink,
