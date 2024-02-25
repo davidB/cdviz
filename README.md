@@ -12,6 +12,58 @@ A set of components to provide a view of which version of services are deployed 
 
 ![cdviz architecture](doc/images/Drawing%202023-12-27%2016.04.47-cdviz-architecture.excalidraw.svg)
 
+### cdviz-collector
+
+Goals:
+
+- to create cdevents by polling some sources (folder on fs, S3, AWS ECR, ...)
+- to receive cdevents from http, kafka, nats
+- to send (broadcast) cdevents to various destination database, http, kafka, nats
+- to expose some metrics (TBD)
+
+cdviz-collector is configured via a config file + override by environment variable.
+
+```mermaid
+flowchart LR
+  classDef future stroke-dasharray: 5 5
+
+  q>in memory queue of cdevents]
+
+  subgraph sources
+    src_http(HTTP)
+    src_fs_content(FS folder with cdevents)
+    src_fs_activity(FS folder activity):::future
+    src_s3_content(S3 with cdevents)
+    src_s3_activity(S3 activity):::future
+    src_kafka(Kafka):::future
+    src_nats(NATS):::future
+    src_ecr(AWS ECR):::future
+    src_misc(...):::future
+  end
+  src_http --> q
+  src_fs_content --> q
+  src_fs_activity --> q
+  src_s3_content --> q
+  src_s3_activity --> q
+  src_kafka --> q
+  src_nats --> q
+  src_ecr --> q
+  src_misc --> q
+
+  subgraph sinks
+    sink_stdout(stdout)
+    sink_db(DB)
+    sink_http(HTTP)
+    sink_kafka(Kafka):::future
+    sink_nats(NATS):::future
+  end
+  q --> sink_stdout
+  q --> sink_http
+  q --> sink_db
+  q --> sink_kafka
+  q --> sink_nats
+```
+
 ### Q&A
 
 <details>
@@ -30,6 +82,13 @@ A set of components to provide a view of which version of services are deployed 
 - service can provide helper endpoints for some complex queries or additional "views"
 
 </details>
+
+### Related projects
+
+Maybe with some overlap:
+
+- [sassoftware/event-provenance-registry: The Event Provenance Registry (EPR) is a service that manages and stores events and tracks event-receivers and event-receiver-groups.](https://github.com/sassoftware/event-provenance-registry)
+- [RFC : CDEvents-translator design review by rjalander · Pull Request #42 · cdevents/community](https://github.com/cdevents/community/pull/42)
 
 ### Roadmap
 
