@@ -5,29 +5,39 @@ pg_offline_url := "postgres://" + pg_offline_user + ":" + pg_offline_pwd + "@127
 default:
     @just --list --unsorted
 
-# cargo-binstall is pre-installed by mise (or manually)
+_install_cargo-binstall:
+    @# cargo install --locked cargo-binstall
+    @(cargo-binstall -V > /dev/null) || (curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash)
+
+_binstall ARG: _install_cargo-binstall
+    @(cargo binstall -y {{ARG}} || cargo install --locked {{ARG}})
+
 _install_cargo-nextest:
-    cargo binstall cargo-nextest -y
+    @just _binstall cargo-nextest
 
 _install_cargo-insta:
-    cargo binstall cargo-insta -y
+    @just _binstall cargo-insta
 
 _install_cargo-release:
-    cargo binstall cargo-release -y
-
-_install_cargo-hack:
-    cargo binstall cargo-hack -y
+    @just _binstall cargo-release
 
 _install_cargo-deny:
-    cargo binstall cargo-deny -y
+    @just _binstall cargo-deny
 
 _install_git-cliff:
-    cargo binstall git-cliff -y
+    @just _binstall git-cliff
+
+_install_cargo-hack:
+    @just _binstall cargo-hack
+
+_install_rustfmt_clippy:
+    rustup component add rustfmt
+    rustup component add clippy
 
 _install_sqlx-cli:
     # use Rustls rather than OpenSSL (be sure to add the features for the databases you intend to use!)
     # no binstall available
-    cargo install sqlx-cli --no-default-features --features rustls,postgres
+    cargo install sqlx-cli --no-default-features --features rustls,postgres --locked
 
 check: _install_cargo-hack
     cargo hack check --each-feature --no-dev-deps
