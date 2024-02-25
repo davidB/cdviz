@@ -113,3 +113,6 @@ sqlx_prepare_offline: _install_sqlx-cli
     cargo sqlx prepare --workspace --database-url {{ pg_offline_url }}
     sqlx database drop -y --database-url {{ pg_offline_url }}
     docker rm -f postgres
+
+run_collector:
+    cd cdviz-collector; cargo run -- --config ./cdviz-collector.toml

@@ -6,6 +6,7 @@ use std::{collections::HashMap, path::PathBuf};
 
 use cdevents_sdk::CDEvent;
 use clap::Parser;
+use clap_verbosity_flag::Verbosity;
 use errors::{Error, Result};
 use figment::{
     providers::{Env, Format, Toml},
@@ -53,6 +54,19 @@ impl From<CDEvent> for Message {
     }
 }
 
+fn init_log(verbose: Verbosity) -> Result<()> {
+    std::env::set_var(
+        "RUST_LOG",
+        std::env::var("RUST_LOG")
+            .ok()
+            .or_else(|| verbose.log_level().map(|l| l.to_string()))
+            .unwrap_or_else(|| "off".to_string()),
+    );
+    // very opinionated init of tracing, look as is source to make your own
+    init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers()?;
+    Ok(())
+}
+
 //TODO add garcefull shutdown
 //TODO use logfmt
 //TODO use verbosity to configure tracing & log, but allow override and finer control with RUST_LOG & CDVIZ_COLLECTOR_LOG (higher priority)
@@ -65,10 +79,7 @@ impl From<CDEvent> for Message {
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
-
-    // very opinionated init of tracing, look as is source to make your own
-    //TODO use logfmt format (with traceid,...) see [tracing-logfmt-otel](https://github.com/elkowar/tracing-logfmt-otel)
-    init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers()?;
+    init_log(cli.verbose)?;
 
     let config: Config = Figment::new()
         .merge(Toml::file(cli.config.as_path()))
