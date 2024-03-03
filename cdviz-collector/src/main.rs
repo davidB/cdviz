@@ -1,6 +1,7 @@
 mod errors;
 mod sinks;
 mod sources;
+mod middleware;
 
 use std::{collections::HashMap, path::PathBuf};
 
@@ -16,6 +17,7 @@ use futures::future::TryJoinAll;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use tokio::sync::broadcast;
+use cloudevents::Event;
 
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
@@ -41,7 +43,8 @@ type Receiver<T> = tokio::sync::broadcast::Receiver<T>;
 #[derive(Clone, Debug)]
 struct Message {
     received_at: OffsetDateTime,
-    cdevent: CDEvent,
+    cd_event: Option<CDEvent>,
+    cloud_event: Option<Event>,
     //raw: serde_json::Value,
 }
 
@@ -49,7 +52,18 @@ impl From<CDEvent> for Message {
     fn from(value: CDEvent) -> Self {
         Self {
             received_at: OffsetDateTime::now_utc(),
-            cdevent: value,
+            cd_event: Some(value),
+            cloud_event: None,
+        }
+    }
+}
+
+impl From<Event> for Message {
+    fn from(value: Event) -> Self {
+        Self {
+            received_at: OffsetDateTime::now_utc(),
+            cd_event: None,
+            cloud_event: Some(value),
         }
     }
 }

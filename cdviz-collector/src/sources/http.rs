@@ -1,21 +1,13 @@
-use super::Source;
-use crate::{
-    errors::{self, Error},
-    Message, Sender,
-};
-use axum::{
-    extract::State,
-    http,
-    response::IntoResponse,
-    routing::{get, post},
-    Json, Router,
-};
+use crate::{errors::{self, Error}, Message, Sender};
+use axum::{extract::State, http, response::IntoResponse, routing::{get, post}, Json, Router, middleware, Extension};
 use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer};
-use cdevents_sdk::CDEvent;
 use errors::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::net::{IpAddr, SocketAddr};
+use cdevents_sdk::CDEvent;
+use crate::middleware::event_filter::{event_filter, EventType};
+use crate::sources::Source;
 
 /// The http server config
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -46,13 +38,15 @@ pub(crate) struct HttpSource {
 #[derive(Clone)]
 struct AppState {
     tx: Sender<Message>,
+    event_type: Extension<EventType>,
 }
 
 impl Source for HttpSource {
     async fn run(&self, tx: Sender<Message>) -> Result<()> {
-        let app_state = AppState { tx };
+        // set default types
+        let app_state = AppState { tx, event_type: Extension(EventType::CdEvent)};
 
-        let app = app().with_state(app_state);
+        let app = app(app_state);
         // run it
         let addr = &SocketAddr::new(self.config.host, self.config.port);
         tracing::warn!("listening on {}", addr);
@@ -66,16 +60,20 @@ impl Source for HttpSource {
     }
 }
 
-fn app() -> Router<AppState> {
+fn app(app_state: AppState) -> Router {
     // build our application with a route
     Router::new()
-        .route("/cdevents", post(cdevents_collect))
+        .route("/cdevents", post(events_collector))
         // include trace context as header into the response
         .layer(OtelInResponseLayer)
+        .route_layer(middleware::from_fn(
+            event_filter,
+        ))
         //start OpenTelemetry trace on incoming request
         .layer(OtelAxumLayer::default())
         .route("/healthz", get(health)) // request processed without span / trace
-        .route("/readyz", get(health)) // request processed without span / trace
+        .route("/readyz", get(health))
+        .with_state(app_state) // request processed without span / trace
 }
 
 async fn health() -> impl IntoResponse {
@@ -87,13 +85,21 @@ async fn health() -> impl IntoResponse {
 //TODO try [deser](https://crates.io/crates/deserr) to return good error
 //TODO use cloudevents
 #[tracing::instrument(skip(app_state, payload))]
-async fn cdevents_collect(
+async fn events_collector(
+    Extension(is_event): Extension<EventType>,
     State(app_state): State<AppState>,
     Json(payload): Json<CDEvent>,
 ) -> Result<http::StatusCode> {
-    tracing::trace!("received cloudevent {:?}", &payload);
-    app_state.tx.send(Message::from(payload))?;
-    Ok(http::StatusCode::CREATED)
+    if is_event.eq(&EventType::CloudEvent) {
+        // TODO use cloud event
+        println!("received CloudEvent {:?}", &payload);
+        Ok(http::StatusCode::CREATED)
+    } else {
+        println!("received CdEvent {:?}", &payload);
+        let message = Message::from(payload);
+        app_state.tx.send(message)?;
+        Ok(http::StatusCode::CREATED)
+    }
 }
 
 impl IntoResponse for Error {

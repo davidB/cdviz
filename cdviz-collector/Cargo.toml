@@ -50,6 +50,7 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-opentelemetry-instrumentation-sdk = { workspace = true }
+cloudevents-sdk = "0.7.0"
 
 [dev-dependencies]
 axum-test = "14"

@@ -20,7 +20,7 @@ pub(crate) struct DebugSink {}
 
 impl Sink for DebugSink {
     async fn send(&self, msg: &Message) -> Result<()> {
-        tracing::info!(cdevent=?msg.cdevent, "mock sending");
+        tracing::info!(cdevent=?msg.cd_event, "mock sending");
         Ok(())
     }
 }

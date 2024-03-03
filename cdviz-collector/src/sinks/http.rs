@@ -1,3 +1,4 @@
+use cloudevents::{EventBuilder};
 use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use serde::{Deserialize, Serialize};
@@ -44,19 +45,53 @@ impl HttpSink {
 impl Sink for HttpSink {
     //TODO use cloudevents
     async fn send(&self, msg: &Message) -> Result<()> {
-        let json = serde_json::to_value(&msg.cdevent)?;
-        let resp = self
-            .client
-            .post(self.dest.clone())
-            .json(&json)
-            .send()
-            .await?;
-        if !resp.status().is_success() {
-            tracing::warn!(
-                cdevent = ?msg.cdevent,
+        if msg.cd_event.is_some() {
+            // convert  CdEvent to cloudevents
+            let value = cloudevents::EventBuilderV10::new()
+                .id(msg.cd_event.clone().unwrap().id())
+                .ty(msg.cd_event.clone().unwrap().ty())
+                .source(msg.cd_event.clone().unwrap().source().as_str())
+                .subject(msg.cd_event.clone().unwrap().subject().id())
+//                .time(msg.CdEvent.clone().unwrap().timestamp())
+                .data("application/json", serde_json::to_value(msg.cd_event.clone().unwrap())?)
+                .build();
+
+            match value {
+                Ok(value) => {
+                    let json = serde_json::to_value(&value)?;
+                    let resp = self
+                        .client
+                        .post(self.dest.clone())
+                        .json(&json)
+                        .send()
+                        .await?;
+                    if !resp.status().is_success() {
+                        tracing::warn!(
+                    cdevent = ?serde_json::to_value(&value)?,
+                    http_status = ?resp.status(),
+                    "failed to send event")
+                    }
+                }
+                Err(err) => {
+                    tracing::warn!(error = ?err, "Failed to convert to cloudevents");
+                }
+            };
+
+        } else {
+            let json = serde_json::to_value(&msg.cloud_event.clone().unwrap())?;
+            println!("json value 2: {:?}", json);
+            let resp = self
+                .client
+                .post(self.dest.clone())
+                .json(&json)
+                .send()
+                .await?;
+            if !resp.status().is_success() {
+                tracing::warn!(
+                cloud_event = ?serde_json::to_value(&msg.cloud_event)?,
                 http_status = ?resp.status(),
-                "failed to send event"
-            )
+                "failed to send event")
+            }
         }
         Ok(())
     }
