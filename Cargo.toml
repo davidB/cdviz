@@ -28,7 +28,7 @@ time = "0.3"
 thiserror = "1"
 tokio = { version = "1.36", features = ["full"] }
 tracing = "0.1"
-tracing-opentelemetry-instrumentation-sdk = { version = "0.17" }
+tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
 
 # [profile.dev.package.insta]
 # opt-level = 3
