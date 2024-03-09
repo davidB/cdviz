@@ -14,7 +14,7 @@ publish.workspace = true
 
 [dependencies]
 axum = { version = "0.7", optional = true }
-axum-tracing-opentelemetry = { version = "0.17", optional = true }
+axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 clap = { workspace = true }
 clap-verbosity-flag = "2.1.2"
