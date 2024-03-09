@@ -17,7 +17,7 @@ publish = false
 [workspace.dependencies]
 rstest = "0.18"
 clap = { version = "4", features = ["derive", "env"] }
-init-tracing-opentelemetry = { version = "0.17", features = [
+init-tracing-opentelemetry = { version = "0.18", features = [
   "otlp",
   "tracing_subscriber_ext",
   "logfmt",
