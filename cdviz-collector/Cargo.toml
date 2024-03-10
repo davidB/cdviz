@@ -18,7 +18,7 @@ axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 clap = { workspace = true }
 clap-verbosity-flag = "2.2.0"
-# cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
+cloudevents-sdk = "0.7.0"
 chrono = "0.4"
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
@@ -50,7 +50,6 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-opentelemetry-instrumentation-sdk = { workspace = true }
-cloudevents-sdk = "0.7.0"
 
 [dev-dependencies]
 axum-test = "14"

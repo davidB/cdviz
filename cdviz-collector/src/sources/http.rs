@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::net::{IpAddr, SocketAddr};
 use cdevents_sdk::CDEvent;
-use crate::middleware::event_filter::{event_filter, EventType};
 use crate::sources::Source;
 
 /// The http server config
@@ -37,14 +36,13 @@ pub(crate) struct HttpSource {
 
 #[derive(Clone)]
 struct AppState {
-    tx: Sender<Message>,
-    event_type: Extension<EventType>,
+    tx: Sender<Message>
 }
 
 impl Source for HttpSource {
     async fn run(&self, tx: Sender<Message>) -> Result<()> {
         // set default types
-        let app_state = AppState { tx, event_type: Extension(EventType::CdEvent)};
+        let app_state = AppState { tx };
 
         let app = app(app_state);
         // run it
@@ -66,9 +64,6 @@ fn app(app_state: AppState) -> Router {
         .route("/cdevents", post(events_collector))
         // include trace context as header into the response
         .layer(OtelInResponseLayer)
-        .route_layer(middleware::from_fn(
-            event_filter,
-        ))
         //start OpenTelemetry trace on incoming request
         .layer(OtelAxumLayer::default())
         .route("/healthz", get(health)) // request processed without span / trace
@@ -86,20 +81,12 @@ async fn health() -> impl IntoResponse {
 //TODO use cloudevents
 #[tracing::instrument(skip(app_state, payload))]
 async fn events_collector(
-    Extension(is_event): Extension<EventType>,
     State(app_state): State<AppState>,
     Json(payload): Json<CDEvent>,
 ) -> Result<http::StatusCode> {
-    if is_event.eq(&EventType::CloudEvent) {
-        // TODO use cloud event
-        println!("received CloudEvent {:?}", &payload);
-        Ok(http::StatusCode::CREATED)
-    } else {
-        println!("received CdEvent {:?}", &payload);
         let message = Message::from(payload);
         app_state.tx.send(message)?;
         Ok(http::StatusCode::CREATED)
-    }
 }
 
 impl IntoResponse for Error {
