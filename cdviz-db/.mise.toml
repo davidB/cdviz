@@ -1,0 +1,9 @@
+[env]
+PG_LOCAL_PWD = "postgres-password"
+PG_LOCAL_USER = "cdviz"
+PG_LOCAL_URL = "postgres://{{env.PG_LOCAL_USER}}:{{env.PG_LOCAL_PWD}}@127.0.0.1:5432/{{env.PG_LOCAL_USER}}?search_path=public&sslmode=disable"
+
+[tools]
+# docker = '*'
+atlas = '0.19'
+task = '*'
