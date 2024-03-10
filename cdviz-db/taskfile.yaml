@@ -1,0 +1,30 @@
+version: '3'
+
+tasks:
+  atlas-*:
+    internal: true
+    #silent: true
+    cmds:
+      # # using docker to call atlas failed with dev-url "docker://..."
+      # #  `Error: exec: "docker": executable file not found in $PATH`
+      # docker run --rm --net=host \
+      #   -v /var/run/docker.sock:/var/run/docker.sock \
+      #   -v {{.USER_WORKING_DIR}}/migrations:/migrations \
+      #   -v {{.USER_WORKING_DIR}}/src:/src \
+      #   arigaio/atlas \
+      - atlas {{.MATCH | join " "}}
+
+  plan:
+    cmds:
+      # - task: atlas-migrate diff --dir "file://migrations" --dev-url "docker://postgres/16/dev?search_path=public" --to "file://src/schema.sql" 
+      - task: atlas-migrate diff --env local
+      - task: atlas migrate lint --env local -w
+
+  apply-schema:
+    cmd: atlas schema apply --env local
+
+  start-db-local:
+    cmd: docker run --name postgres -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
+
+  stop-db-local:
+    cmd: docker rm -f postgres
