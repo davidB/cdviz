@@ -1,11 +1,13 @@
 -- Add up migration script here
-CREATE TABLE IF NOT EXISTS cdevents_lake (
-  timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-  payload JSONB NOT NULL
+CREATE TABLE IF NOT EXISTS `cdevents_lake` (
+  `id` BIGINT GENERATED ALWAYS AS IDENTITY,
+  `created_at` TIMESTAMPZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `timestamp` TIMESTAMPZ NOT NULL,
+  `payload` JSONB NOT NULL,
+  `subject` VARCHAR(100) NOT NULL,
+  `predicate` VARCHAR(100) NOT NULL,
 );
 
--- TODO switch to brin index when more data (see [Avoiding the Pitfalls of BRIN Indexes in Postgres](https://www.crunchydata.com/blog/avoiding-the-pitfalls-of-brin-indexes-in-postgres))
-CREATE INDEX IF NOT EXISTS cdevents_lake_timestamp_idx ON cdevents_lake (timestamp);
 
 -- create a view based on fields in the json payload
 -- source: [Postgresql json column to view - Database Administrators Stack Exchange](https://dba.stackexchange.com/questions/151838/postgresql-json-column-to-view?newreg=ed0a9389843a45699bfb02559dd32038)
