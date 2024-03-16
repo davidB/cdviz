@@ -1,5 +1,5 @@
 use crate::{errors::{self, Error}, Message, Sender};
-use axum::{extract::State, http, response::IntoResponse, routing::{get, post}, Json, Router, middleware, Extension};
+use axum::{extract::State, http, response::IntoResponse, routing::{get, post}, Json, Router};
 use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer};
 use errors::Result;
 use serde::{Deserialize, Serialize};

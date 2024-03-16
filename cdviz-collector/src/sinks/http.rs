@@ -2,11 +2,12 @@ use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use serde::{Deserialize, Serialize};
 //use reqwest_retry::{RetryTransientMiddleware, policies::ExponentialBackoff};
-use crate::errors::Result;
-use crate::Message;
+use crate::errors::{Error, Result};
+use crate::{errors, Message};
 use reqwest_tracing::TracingMiddleware;
 use super::Sink;
-use cloudevents::event::{EventBuilderV10, EventBuilder};
+use cloudevents::event::{EventBuilder};
+use time::format_description::well_known::Rfc3339;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
@@ -46,21 +47,20 @@ impl Sink for HttpSink {
     async fn send(&self, msg: &Message) -> Result<()> {
             // convert  CdEvent to cloudevents
             let value = cloudevents::EventBuilderV10::new()
-                        .id(msg.cd_event.id())
-                        .ty(msg.cd_event.ty())
-                        .source(msg.cd_event.source().as_str())
-                        .subject(msg.cd_event.subject().id())
-                        .data("application/json", serde_json::to_value(msg.cd_event.clone())?)
+                        .id(msg.cdevent.clone().id())
+                        .ty(msg.cdevent.clone().ty())
+                        .source(msg.cdevent.clone().source().as_str())
+                        .subject(msg.cdevent.clone().subject().id())
+                        .data("application/json", serde_json::to_value(msg.cdevent.clone())?)
                         .build();
 
             match value {
                 Ok(value) => {
-                    let json = serde_json::to_value(&value)?;
-                    dbg!("transformed cloudevent: {:?}", json.clone());
+                    dbg!("transformed cloudevent: {:?}", value.clone());
                     let resp = self
                         .client
                         .post(self.dest.clone())
-                        .json(&json)
+                        .json(&value)
                         .send()
                         .await?;
                     if !resp.status().is_success() {

@@ -68,7 +68,7 @@ impl Sink for DbSink {
             // TODO build Event from raw json
             Event {
                 timestamp: message.received_at,
-                raw: serde_json::to_value(&message.cd_event)?,
+                raw: serde_json::to_value(&message.cdevent)?,
             },
         )
         .await?;
