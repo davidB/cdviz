@@ -1,20 +1,9 @@
 // [Project Configuration | Atlas | Manage your database schema as code](https://atlasgo.io/atlas-schema/projects)
-variable "local_user" {
-  type = string
-  default = getenv("PG_LOCAL_USER")
-}
-
-variable "local_pwd" {
-  type = string
-  default = getenv("PG_LOCAL_PWD")
-}
-
 variable "local_url" {
   type = string
   default = getenv("PG_LOCAL_URL")
 }
 
-// Define an environment named "local"
 env "local" {
   // Declare where the schema definition resides.
   // Also supported: ["file://multi.hcl", "file://schema.hcl"].
@@ -29,5 +18,5 @@ env "local" {
 
   // Define the URL of the Dev Database for this environment
   // See: https://atlasgo.io/concepts/dev-database
-  dev = "docker://postgres/15/dev?search_path=public"
+  dev = "docker://postgres/16/dev?search_path=public"
 }
