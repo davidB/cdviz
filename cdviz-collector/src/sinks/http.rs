@@ -1,3 +1,4 @@
+use cdevents_sdk::cloudevents::BuilderExt;
 use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use serde::{Deserialize, Serialize};
@@ -7,7 +8,7 @@ use crate::{errors, Message};
 use reqwest_tracing::TracingMiddleware;
 use super::Sink;
 use cloudevents::event::{EventBuilder};
-use time::format_description::well_known::Rfc3339;
+use cloudevents::EventBuilderV10;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
@@ -45,34 +46,28 @@ impl HttpSink {
 impl Sink for HttpSink {
     //TODO use cloudevents
     async fn send(&self, msg: &Message) -> Result<()> {
-            // convert  CdEvent to cloudevents
-            let value = cloudevents::EventBuilderV10::new()
-                        .id(msg.cdevent.clone().id())
-                        .ty(msg.cdevent.clone().ty())
-                        .source(msg.cdevent.clone().source().as_str())
-                        .subject(msg.cdevent.clone().subject().id())
-                        .data("application/json", serde_json::to_value(msg.cdevent.clone())?)
-                        .build();
+        let cd_event = msg.cdevent.clone();
+        // convert  CdEvent to cloudevents
+        let event_result = EventBuilderV10::new().with_cdevent(cd_event).unwrap().build();
 
-            match value {
-                Ok(value) => {
-                    dbg!("transformed cloudevent: {:?}", value.clone());
-                    let resp = self
-                        .client
-                        .post(self.dest.clone())
-                        .json(&value)
-                        .send()
-                        .await?;
-                    if !resp.status().is_success() {
-                        tracing::warn!(
+        match event_result {
+            Ok(value) => {
+                let resp = self
+                    .client
+                    .post(self.dest.clone())
+                    .json(&value)
+                    .send()
+                    .await?;
+                if !resp.status().is_success() {
+                    tracing::warn!(
                     cdevent = ?serde_json::to_value(&value)?,
                     http_status = ?resp.status(),
                     "failed to send event")
-                    }
                 }
-                Err(err) => {
-                    tracing::warn!(error = ?err, "Failed to convert to cloudevents");
-                }
+            }
+            Err(err) => {
+                tracing::warn!(error = ?err, "Failed to convert to cloudevents");
+            }
         };
         Ok(())
     }
