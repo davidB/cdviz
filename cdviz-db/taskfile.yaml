@@ -33,3 +33,10 @@ tasks:
     cmds:
       - task: db-local:start
       - task: db-local:stop
+
+  ci:
+    desc: set of tasks run by CI
+    cmds:
+      # - task: check
+      # - task: lint
+      - task: test
