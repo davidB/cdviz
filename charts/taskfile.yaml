@@ -9,7 +9,7 @@ tasks:
       - helm lint cdviz-grafana
       - helm lint cdviz
 
-  k8s_create:
+  k8s:create:
     cmds:
     # sudo systemctl start docker
     # k3d cluster create "$CLUSTER_NAME" --agents 2
@@ -18,16 +18,16 @@ tasks:
     - ctlptl create cluster kind --name "$CLUSTER_NAME" --registry=ctlptl-registry
     - kubectl cluster-info --context "$CLUSTER_NAME"
 
-  k8s_dev:
+  k8s:dev:
     cmds:
       - skaffold dev --port-forward
 
-  k8s_delete_cdviz:
+  k8s:delete-cdviz:
     cmds:
       - helm delete cdviz -n cdviz --cascade foreground || true
       - kubectl delete namespace cdviz
 
-  k8s_delete:
+  k8s:delete:
     cmds:
       # k3d cluster delete "$CLUSTER_NAME"
       # kind delete cluster --name "$CLUSTER_NAME"

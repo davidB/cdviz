@@ -14,22 +14,22 @@ tasks:
     # cmd: atlas schema apply --env local
     cmd: atlas migrate apply --env local
 
-  start-db-local-empty:
+  db-local:start-empty:
     desc: "start a container for the local db (empty: no data, no schema)"
     cmd: docker run --name cdviz-db -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
 
-  start-db-local:
+  db-local:start:
     desc: "start a container for the local db with the migrations applied"
     cmds:
       - docker run --name cdviz-db -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
       - sleep 6
       - task: apply
 
-  stop-db-local:
+  db-local:stop:
     desc: "stop the container of the local db"
     cmd: docker rm -f cdviz-db
 
   test:
     cmds:
-      - task: start-db-local
-      - task: stop-db-local
+      - task: db-local:start
+      - task: db-local:stop
