@@ -65,7 +65,7 @@ impl Sink for DbSink {
             &self.pool,
             // TODO build Event from raw json
             Event {
-                timestamp: message.cdevent.timestamp().clone(),
+                timestamp: *message.cdevent.timestamp(),
                 payload: serde_json::to_value(&message.cdevent)?,
                 subject: message.cdevent.subject().content().subject().to_lowercase(),
                 predicate: message.cdevent.subject().content().predicate().to_string(),
