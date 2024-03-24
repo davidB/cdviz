@@ -134,9 +134,7 @@ mod tests {
 
         fn arbitrary_with(_args: Self::Parameters) -> Self::Strategy {
             use proptest::prelude::*;
-            (any::<CDEvent>())
-                .prop_map(|cdevent| Message::from(cdevent))
-                .boxed()
+            (any::<CDEvent>()).prop_map(Message::from).boxed()
         }
     }
 }
