@@ -1,4 +1,4 @@
-# hadolint global ignore=DL3006
+# hadolint global ignore=DL3006,DL3007
 
 #---------------------------------------------------------------------------------------------------
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
