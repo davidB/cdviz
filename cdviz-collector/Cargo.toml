@@ -15,10 +15,10 @@ publish = false
 axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
-clap = { version = "4", features = ["derive", "env"] }
-clap-verbosity-flag = "2.1.2"
 # cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
 chrono = "0.4"
+clap = { version = "4", features = ["derive", "env"] }
+clap-verbosity-flag = "2.1.2"
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
@@ -33,7 +33,7 @@ opendal = { version = "0.45", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
-reqwest = "0.12"
+reqwest = "0.11"
 reqwest-middleware = "0.2"
 reqwest-tracing = "0.4"
 serde = { version = "1.0", features = ["derive"] }
@@ -48,8 +48,8 @@ sqlx = { version = "0.7", features = [
   "json",
   "migrate",       # for test but simpler to declare once
 ], default-features = false, optional = true }
-time = "0.3"
 thiserror = "1"
+time = "0.3"
 tokio = { version = "1.0", features = ["full"] }
 tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
@@ -65,12 +65,6 @@ default = ["source_http", "source_opendal", "sink_db"]
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = ["dep:opendal"]
-
-# [profile.dev.package.insta]
-# opt-level = 3
-
-# [profile.dev.package.similar]
-# opt-level = 3
 
 [package.metadata.release]
 pre-release-commit-message = "🚀 (cargo-release) version {{version}}"
