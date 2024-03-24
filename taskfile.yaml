@@ -1,0 +1,12 @@
+version: '3'
+
+includes:
+  cdviz-db:
+    taskfile:  ./cdviz-db/taskfile.yaml
+    dir: ./cdviz-db
+  cdviz-collector:
+    taskfile:  ./cdviz-collector/taskfile.yaml
+    dir: ./cdviz-collector
+  charts:
+    taskfile:  ./charts/taskfile.yaml
+    dir: ./charts

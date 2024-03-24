@@ -105,3 +105,10 @@ tasks:
   run:
     cmds:
       - cargo run -- --config ./cdviz-collector.toml
+
+  ci:
+    desc: set of tasks run by CI
+    cmds:
+      - task: check
+      - task: lint
+      - task: test

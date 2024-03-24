@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
 
-  test:
+  lint:
     cmds:
       - helm lint cdviz-collector
       - helm lint cdviz-db
@@ -33,3 +33,8 @@ tasks:
       # kind delete cluster --name "$CLUSTER_NAME"
       - ctlptl delete cluster "$CLUSTER_NAME"
       - ctlptl delete registry ctlptl-registry
+
+  ci:
+    desc: set of tasks run by CI
+    cmds: []
+      # - task: lint

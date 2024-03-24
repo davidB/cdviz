@@ -9,12 +9,15 @@ permissions:
   contents: read
 
 jobs:
-  tests:
-    runs-on: ${{ matrix.os }}
+  ci:
+    runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        folder:
+          - cdviz-collector
+          - cdviz-db
+          - chart
     env:
       CARGO_TERM_COLOR: always
       RUST_BACKTRACE: full
@@ -23,16 +26,7 @@ jobs:
       - uses: jdx/mise-action@v2
         with:
           experimental: true
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-      - run: just check
-      - run: just lint_rust # megalinter is running via an other workflow
-      - run: just test
+      - run: mise install
+        working-directory: ${{ matrix.folder }}
+      - run: task ci
+        working-directory: ${{ matrix.folder }}
