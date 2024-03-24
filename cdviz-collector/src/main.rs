@@ -1,21 +1,22 @@
-mod errors;
-mod sinks;
-mod sources;
-
 use std::{collections::HashMap, path::PathBuf};
 
 use cdevents_sdk::CDEvent;
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
-use errors::{Error, Result};
 use figment::{
-    providers::{Env, Format, Toml},
     Figment,
+    providers::{Env, Format, Toml},
 };
 use futures::future::TryJoinAll;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use tokio::sync::broadcast;
+
+use errors::{Error, Result};
+
+mod errors;
+mod sinks;
+mod sources;
 
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {

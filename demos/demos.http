@@ -8,6 +8,10 @@ GET {{base_url}}/readyz
 
 ###
 POST {{base_url}}/cdevents
+headers:
+#  ce-spec-version: 1.0
+#  ce-id: 1234
+#  ce-source: /mycontext
 Content-Type: application/json
 
-< {{cdevents_spec_examples}}/service_deployed.json
+< service_deployed.json
