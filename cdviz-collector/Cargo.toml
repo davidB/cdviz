@@ -1,41 +1,44 @@
 [package]
 name = "cdviz-collector"
 description = "The service to collect cdevents"
-readme = "README.md"
 keywords = ["cd"]
 categories = []
-edition.workspace = true
-version.workspace = true
-authors.workspace = true
-license.workspace = true
-repository.workspace = true
-rust-version.workspace = true
-publish.workspace = true
+edition = "2021"
+version = "0.1.0"
+authors = ["David Bernard"]
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/davidB/cdviz"
+rust-version = "1.77"
+publish = false
 
 [dependencies]
 axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
-clap = { workspace = true }
-clap-verbosity-flag = "2.2.0"
+clap = { version = "4", features = ["derive", "env"] }
+clap-verbosity-flag = "2.1.2"
 # cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
 chrono = "0.4"
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
 humantime-serde = "1.1.1"
-init-tracing-opentelemetry = { workspace = true }
+init-tracing-opentelemetry = { version = "0.18", features = [
+  "otlp",
+  "tracing_subscriber_ext",
+  "logfmt",
+] }
 opendal = { version = "0.45", default-features = false, features = [
   "rustls",
   "services-fs",
   "services-s3",
 ], optional = true }
-reqwest = "0.11"
+reqwest = "0.12"
 reqwest-middleware = "0.2"
 reqwest-tracing = "0.4"
-serde = { workspace = true }
-serde_json = { workspace = true }
-serde_with = "3.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "3.6"
 sqlx = { version = "0.7", features = [
   "postgres",
   "runtime-tokio",
@@ -45,15 +48,15 @@ sqlx = { version = "0.7", features = [
   "json",
   "migrate",       # for test but simpler to declare once
 ], default-features = false, optional = true }
-time = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true }
-tracing = { workspace = true }
-tracing-opentelemetry-instrumentation-sdk = { workspace = true }
+time = "0.3"
+thiserror = "1"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
 
 [dev-dependencies]
 axum-test = "14"
-rstest = { workspace = true }
+rstest = "0.18"
 rustainers = "0.11"
 tracing-subscriber = "0.3"
 
@@ -62,3 +65,15 @@ default = ["source_http", "source_opendal", "sink_db"]
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = ["dep:opendal"]
+
+# [profile.dev.package.insta]
+# opt-level = 3
+
+# [profile.dev.package.similar]
+# opt-level = 3
+
+[package.metadata.release]
+pre-release-commit-message = "🚀 (cargo-release) version {{version}}"
+tag-prefix = ""
+tag-name = "{{prefix}}{{version}}"
+tag-message = "🔖 {{version}}"
