@@ -4,7 +4,4 @@
     "cdviz",
     "sdlc"
   ],
-  "rust-analyzer.linkedProjects": [
-    "./cdviz-collector/Cargo.toml"
-  ]
 }
