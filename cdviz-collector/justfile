@@ -67,20 +67,12 @@ lint_rust:
     # cargo sort --workspace --grouped --check
     cargo clippy --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
 
-# Lint with megalinter (locally via docker)
-megalinter:
-    # rm -rf megalinter-reports
-    docker run --rm --name megalinter -it --env "DEFAULT_WORKSPACE=/tmp/lint" -v "${DOCKER_HOST:-/var/run/docker.sock}:/var/run/docker.sock:rw" -v "$PWD:/tmp/lint:rw" "oxsecurity/megalinter:v7"
-
 # Launch tests
 test: _install_cargo-nextest
     cargo nextest run
     # cargo test --doc
     # cargo hack nextest --each-feature -- --test-threads=1
 
-changelog: _install_git-cliff
-    git-cliff -o "CHANGELOG.md"
-    git add CHANGELOG.md && git commit -m "📝 update CHANGELOG"
 
 release *arguments: _install_cargo-release _install_git-cliff
     cargo release --workspace --execute {{ arguments }}
@@ -90,27 +82,6 @@ release *arguments: _install_cargo-release _install_git-cliff
 
 # local_run_cdviz-collector:
 #     cd cdviz-collector; cargo run
-
-k8s_create:
-    # sudo systemctl start docker
-    # k3d cluster create "$CLUSTER_NAME" --agents 2
-    # kind create cluster --name "$CLUSTER_NAME"
-    ctlptl create registry ctlptl-registry --port=5005
-    ctlptl create cluster kind --name "$CLUSTER_NAME" --registry=ctlptl-registry
-    kubectl cluster-info --context "$CLUSTER_NAME"
-
-k8s_dev:
-    skaffold dev --port-forward
-
-k8s_delete_cdviz:
-    helm delete cdviz -n cdviz --cascade foreground || true
-    kubectl delete namespace cdviz
-
-k8s_delete:
-    # k3d cluster delete "$CLUSTER_NAME"
-    # kind delete cluster --name "$CLUSTER_NAME"
-    ctlptl delete cluster "$CLUSTER_NAME"
-    ctlptl delete registry ctlptl-registry
 
 sqlx_create_migration name: _install_sqlx-cli
     sqlx migrate add -r {{ name }}
@@ -124,5 +95,5 @@ sqlx_prepare_offline: _install_sqlx-cli
     sqlx database drop -y --database-url {{ pg_offline_url }}
     docker rm -f postgres
 
-run_collector:
-    cd cdviz-collector; cargo run -- --config ./cdviz-collector.toml
+run:
+    cargo run -- --config ./cdviz-collector.toml
