@@ -24,8 +24,12 @@ tasks:
       - docker run --name cdviz-db -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
       - sleep 6
       - task: apply
-    
 
   stop-db-local:
     desc: "stop the container of the local db"
     cmd: docker rm -f cdviz-db
+
+  test:
+    cmds:
+      - task: start-db-local
+      - task: stop-db-local

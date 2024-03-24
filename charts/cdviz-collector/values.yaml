@@ -85,15 +85,16 @@ tolerations: []
 
 affinity: {}
 
-dbMigration:
-  enabled: true
-  image:
-    repository: ghcr.io/davidb/cdviz-dbmigration
-    pullPolicy: IfNotPresent
-    tag: "latest" # TODO Change this to a version number on release
-  annotations: {}
-    # "helm.sh/hook": post-install,post-upgrade
-    # "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+env:
+  HTTP_HOST:
+    value: "0.0.0.0"
+  HTTP_PORT:
+    value: "{{ .Values.service.port }}"
+  DATABASE_URL:
+    valueFrom:
+      secretKeyRef:
+        name: "{{ .Values.secrets.name }}"
+        key: DATABASE_URL
 
 # Secrets is also used to store configuration
 # For production, you should create a secrets (encrypted or from an external source)

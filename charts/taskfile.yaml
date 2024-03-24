@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+
+  test:
+    cmds:
+      - helm lint cdviz-collector
+      - helm lint cdviz-db
+      - helm lint cdviz-grafana
+      - helm lint cdviz

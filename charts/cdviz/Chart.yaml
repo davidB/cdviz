@@ -17,7 +17,12 @@ dependencies:
     condition: grafana.enabled
   - name: cdviz-collector
     version: 0.1.0
+    repository: file://../cdviz-db
+    condition: cdviz-db.enabled
+  - name: cdviz-collector
+    version: 0.1.0
     repository: file://../cdviz-collector
+    condition: cdviz-collector.enabled
   - name: cdviz-grafana
     version: 0.1.0
     repository: file://../cdviz-grafana

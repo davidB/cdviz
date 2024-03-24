@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cdviz-db
+description: chart to manage cdviz-db (schema, data, functions,...)
+type: application
+version: 0.1.0 # TODO Change this to a version number on release
+appVersion: 0.1.0 # TODO Change this to a version number on release
