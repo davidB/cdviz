@@ -1,8 +1,19 @@
 [sinks.debug]
 type = "debug"
 
+[sinks.cdviz_db]
+type = "postgresql"
+url = "postgresql://postgres:passwd@localhost:5432/cdviz"
+pool_connections_min = 1
+pool_connections_max = 10
+
 [sources.cdevents_examples]
-parameters = { root = "../cdevents-spec/examples" }
 type = "opendal"
 kind = "fs"
 polling_interval = "10s"
+parameters = { root = "../cdevents-spec/examples" }
+
+[sources.cdevents_webhook]
+type = "http"
+host = "0.0.0.0"
+port = 8080

@@ -14,7 +14,7 @@ use figment::{
 };
 use futures::future::TryJoinAll;
 use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
+// use time::OffsetDateTime;
 use tokio::sync::broadcast;
 
 #[derive(Debug, Clone, clap::Parser)]
@@ -40,7 +40,7 @@ type Receiver<T> = tokio::sync::broadcast::Receiver<T>;
 
 #[derive(Clone, Debug)]
 struct Message {
-    received_at: OffsetDateTime,
+    // received_at: OffsetDateTime,
     cdevent: CDEvent,
     //raw: serde_json::Value,
 }
@@ -48,7 +48,7 @@ struct Message {
 impl From<CDEvent> for Message {
     fn from(value: CDEvent) -> Self {
         Self {
-            received_at: OffsetDateTime::now_utc(),
+            // received_at: OffsetDateTime::now_utc(),
             cdevent: value,
         }
     }
@@ -122,4 +122,21 @@ async fn main() -> Result<()> {
     //tokio::try_join!(handlers).await?;
     //futures::try_join!(handlers);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    impl proptest::arbitrary::Arbitrary for Message {
+        type Parameters = ();
+        type Strategy = proptest::strategy::BoxedStrategy<Self>;
+
+        fn arbitrary_with(_args: Self::Parameters) -> Self::Strategy {
+            use proptest::prelude::*;
+            (any::<CDEvent>())
+                .prop_map(|cdevent| Message::from(cdevent))
+                .boxed()
+        }
+    }
 }
