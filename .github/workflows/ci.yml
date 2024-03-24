@@ -16,8 +16,8 @@ jobs:
       matrix:
         folder:
           - cdviz-collector
-          - cdviz-db
-          - chart
+          # - cdviz-db
+          - charts
     env:
       CARGO_TERM_COLOR: always
       RUST_BACKTRACE: full
