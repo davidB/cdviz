@@ -46,7 +46,6 @@ sqlx = { version = "0.7", features = [
   "macros",
   "time",
   "json",
-  "migrate",       # for test but simpler to declare once
 ], default-features = false, optional = true }
 thiserror = "1"
 time = "0.3"
@@ -55,7 +54,11 @@ tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
 
 [dev-dependencies]
-axum-test = "14"
+# axum-test = "14"
+cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust", features = [
+  "testkit",
+] }
+proptest = "1"
 rstest = "0.18"
 rustainers = "0.11"
 tracing-subscriber = "0.3"
