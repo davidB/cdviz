@@ -3,18 +3,26 @@
 # For production, you should create a secrets (encrypted or from an external source)
 secrets:
   enabled: true
-  name: cdviz # name of the secret (also used by cdviz-collector, dbMigration, postgresql)
+  name: cdviz # name of the secret (also used by cdviz-collector, cdviz-db, postgresql)
   values:
-    DATABASE_URL: null # if null then it's computed from other POSTGRES_* values
-    DATABASE_POOL_CONNECTIONS_MIN: "1"
-    DATABASE_POOL_CONNECTIONS_MAX: "10"
-    POSTGRES_USER: cdviz
-    POSTGRES_PASSWORD: postgres-password
     POSTGRES_HOST: cdviz-postgresql # can be the name of the postgresql service in cluster
     POSTGRES_PORT_NUMBER: "5432"
     POSTGRES_DB: cdviz
-    POSTGRES_USER_CDVIZ_READER: cdviz
-    POSTGRES_PASSWORD_CDVIZ_READER: postgres-password
+    # SU (super-user/owner) used by cdviz-db to manage the db
+    CDVIZ_SU_POSTGRES_USER: cdviz
+    CDVIZ_SU_POSTGRES_PASSWORD: postgres-password
+    # RW (read-write) used by cdviz-collector to read, to inject data into the db
+    CDVIZ_RW_POSTGRES_USER: cdviz-rw
+    CDVIZ_RW_POSTGRES_PASSWORD: postgres-password
+    # RO (read-only) used by cdviz-grafana to query data from the db
+    CDVIZ_RO_POSTGRES_USER: cdviz-ro
+    CDVIZ_RO_POSTGRES_PASSWORD: postgres-password
+
+cdviz-collector:
+  enabled: true
+
+cdviz-db:
+  enabled: true
 
 # cdviz requires a postgresql database to store its data.
 # The following sections is used to configure a database as part of the chart,
@@ -31,7 +39,7 @@ postgresql:
   enabled: false
   auth:
     database: cdviz
-    existingSecret: "cdviz"
+    existingSecret: "cdviz-su"
     username: cdviz
     secretKeys:
       adminPasswordKey: POSTGRES_PASSWORD
@@ -53,7 +61,7 @@ grafana:
       enabled: true
     datasources:
       enabled: true
-  envFromSecret: "cdviz"
+  envFromSecret: "cdviz-ro"
   # [Override configuration with environment variables](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)
   env:
     GF_AUTH_ANONYMOUS_ENABLED: "true"

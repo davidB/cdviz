@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: '{{ include "my.fullname" . }}-{{ now | date "20060102150405" }}'
+  labels:
+    {{- include "my.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      name: '{{ include "my.fullname" . }}-{{ now | date "20060102150405" }}'
+      labels:
+        {{- include "my.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: dbmigration
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        # args for https://atlasgo.io/declarative/apply
+        args:
+          - migrate # or schema
+          - apply
+          - -u
+          - "$(DATABASE_URL)"
+          - --dir
+          - file:///migrations/
+        env:
+        {{- range $key, $value := .Values.env }}
+          - name: {{ $key }}
+            {{- tpl (toYaml $value) $ | nindent 12 }}
+        {{- end}}
+      restartPolicy: Never
+  backoffLimit: 2

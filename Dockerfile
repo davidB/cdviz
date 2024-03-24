@@ -32,19 +32,8 @@ CMD ["cdviz-collector"]
 #---------------------------------------------------------------------------------------------------
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
-FROM cgr.dev/chainguard/rust as build-sqlx
-USER nonroot
-RUN cargo install sqlx-cli --no-default-features --features rustls,postgres
-HEALTHCHECK NONE
-
-#---------------------------------------------------------------------------------------------------
-# checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
-# trivy:ignore:AVD-DS-0001
-FROM cgr.dev/chainguard/glibc-dynamic AS cdviz-dbmigration
+FROM arigaio/atlas:latest AS cdviz-db
 LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
 LABEL org.opencontainers.image.licenses="MIT OR Apache-2.0"
-USER nonroot
-COPY --from=build-sqlx /home/nonroot/.cargo/bin/sqlx /usr/local/bin/sqlx
-COPY migrations /migrations
+COPY cdviz-db/migrations /migrations
 HEALTHCHECK NONE
-ENTRYPOINT ["/usr/local/bin/sqlx"]
