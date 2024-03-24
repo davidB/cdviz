@@ -1,17 +1,8 @@
 [env]
-# RUSTC_WRAPPER = "sccache"
-RUST_WITHOUT = "rust-docs"
-# ASDF_RUST_PROFILE = "minimal"
-OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
-# OTEL_EXPORTER_OTLP_TRACES_PROTOCOL = "grpc"
-OTEL_TRACES_SAMPLER = "always_on"
 CLUSTER_NAME = "kind-local"
 
 [tools]
-rust = '1.76'             # the rust tool stack (with cargo, fmt, clippy) to build source
-just = '1'                # to have a set of simple commands for repetive task (and CI)
-cargo-binstall = 'latest'
-
+task = '*' # to have a set of simple commands for repetive task (and CI)
 # local kubernetes (k8s)
 # docker = '*'     # to build, to run containers, should be available for some of thoses tools
 # dive = '*'       # to explore content of image container
@@ -21,6 +12,3 @@ ctlptl = '0.8'   # to setup / manage local k8s (kind) cluster
 kind = '0.20'    # to have a local k8s cluster (on top of docker)
 java = '*'       # required by skaffold
 skaffold = '2'   # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
-
-[plugins]
-cargo-binstall = "https://github.com/davidB/asdf-cargo-binstall"

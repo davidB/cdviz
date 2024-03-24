@@ -28,12 +28,3 @@ ENV \
   OTEL_TRACES_SAMPLER="always_off"
 HEALTHCHECK NONE
 CMD ["cdviz-collector"]
-
-#---------------------------------------------------------------------------------------------------
-# checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
-# trivy:ignore:AVD-DS-0001
-FROM arigaio/atlas:latest AS cdviz-db
-LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
-LABEL org.opencontainers.image.licenses="MIT OR Apache-2.0"
-COPY cdviz-db/migrations /migrations
-HEALTHCHECK NONE

@@ -6,20 +6,20 @@ build:
   artifacts:
     - image: ghcr.io/davidb/cdviz-collector
       docker:
-        dockerfile: Dockerfile
+        dockerfile: ../cdviz-collector/Dockerfile
         target: cdviz-collector
         cacheFrom:
           # Local Docker builder replaces cache references to the artifact image with
           # the tagged image reference, useful for caching from the previous build.
           - ghcr.io/davidb/cdviz-collector
-    - image: ghcr.io/davidb/cdviz-dbmigration
+    - image: ghcr.io/davidb/cdviz-db
       docker:
-        dockerfile: Dockerfile
-        target: cdviz-dbmigration
+        dockerfile: ../cdviz-db/Dockerfile
+        target: cdviz-db
         cacheFrom:
           # Local Docker builder replaces cache references to the artifact image with
           # the tagged image reference, useful for caching from the previous build.
-          - ghcr.io/davidb/cdviz-dbmigration
+          - ghcr.io/davidb/cdviz-db
   local:
     useDockerCLI: false
     useBuildkit: true
@@ -30,16 +30,19 @@ deploy:
       - name: cdviz
         namespace: cdviz
         createNamespace: true
-        chartPath: charts/cdviz
+        chartPath: ../charts/cdviz
         valuesFiles:
-          - charts/cdviz/values.yaml
+          - ../charts/cdviz/values.yaml
         version: 0.1.0
         setValueTemplates:
           cdviz-collector.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
           cdviz-collector.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
-          cdviz-collector.dbMigration.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_dbmigration}}"
-          cdviz-collector.dbMigration.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_dbmigration}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_dbmigration}}"
+          cdviz-db.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_db}}"
+          cdviz-db.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_db}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_db}}"
         setValues:
+          cdviz-db.enabled: true
+          cdviz-collector.enabled: true
+          cdviz-grafana.enabled: true
           postgresql.enabled: true
           grafana.enabled: true
           grafanaAssets.enabled: true
