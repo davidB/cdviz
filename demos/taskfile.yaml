@@ -1,0 +1,30 @@
+version: '3'
+
+tasks:
+
+  clean:
+    cmds:
+      - task: stack:compose:clean
+
+
+  stack:compose:up:
+    dir: stack-compose
+    cmds:
+      # - mkdir -p tmp/grafana/data || true
+      # - mkdir -p tmp/postgres/data || true
+      - docker compose -f docker-compose.yaml up
+
+  stack:compose:clean:
+    dir: stack-compose
+    cmds:
+      - docker compose -f docker-compose.yaml stop
+      - docker compose -f docker-compose.yaml rm
+      - sudo rm -rf tmp
+
+  stack:grafana:view:
+    cmds:
+      - open http://127.0.0.1:3000
+
+  stack:db-admin:view:
+    cmds:
+      - open http://127.0.0.1:5499

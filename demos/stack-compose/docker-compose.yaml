@@ -1,0 +1,84 @@
+version: "3.9"
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    restart: always
+    # platform: linux/amd64
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: cdviz
+      POSTGRES_PASSWORD: postgres-password
+      POSTGRES_DB: cdviz
+    healthcheck:
+      test: pg_isready -U cdviz -d cdviz
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # network_mode: host
+    ports:
+      - "5432:5432"
+    # user: "${UID}:${GID}"
+    volumes:
+      # In this example, we share the folder `db-data` in our root repository, with the default PostgreSQL data path
+      # It means that every time the repository is modifying the data inside
+      # of `/var/lib/postgresql/data/`, automatically the change will appear in `db-data`
+      # You don't need to create the `db-data` folder. Docker Compose will do it for you
+      - ./tmp/postgres/data:/var/lib/postgresql/data
+      # # In this example, we share an init.sql script with the container
+      # # The init script will be executed when the database is first run
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  cdviz-db-migrate:
+    image: docker.io/arigaio/atlas:latest
+    command: >
+      migrate apply
+      --url postgres://cdviz:postgres-password@postgres:5432/cdviz?sslmode=disable
+    # network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../cdviz-db/migrations:/migrations:ro
+  adminer:
+    image: docker.io/library/adminer
+    restart: always
+    environment:
+      - ADMINER_DESIGN=pepa-linha-dark
+      - ADMINER_DEFAULT_SERVER=postgres
+      - ADMINER_DEFAULT_DB_DRIVER=pgsql
+      - ADMINER_DEFAULT_DB_NAME=cdviz
+    ports:
+      - 5499:8080
+  grafana:
+    image: docker.io/grafana/grafana-oss:10.2.6
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      # see https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
+      # To override an option, use a predefined pattern GF_<SectionName>_<KeyName>.
+      # - GF_SERVER_ROOT_URL=http://my.grafana.server/
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+      # - GF_SECURITY_ADMIN_USER=admin
+      # - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_DISABLE_SIGNOUT_MENU=true
+      # - GF_SECURITY_ALLOW_EMBEDDING=true #Allow IFRAME Calls
+      - GF_ENABLE_GZIP=true
+      - CDVIZ_RO_POSTGRES_HOST=postgres
+      - CDVIZ_RO_POSTGRES_PORT_NUMBER=5432
+      - CDVIZ_RO_POSTGRES_USER=cdviz
+      - CDVIZ_RO_POSTGRES_PASSWORD=postgres-password
+      - CDVIZ_RO_POSTGRES_DB=cdviz
+    # network_mode: host
+    ports:
+      - "3000:3000"
+    # user: "${UID}:${GID}"
+    user: "0"
+    volumes:
+      # - ./tmp/grafana/data/:/var/lib/grafana/:rw
+      - ../../cdviz-grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../../cdviz-grafana/dashboards:/var/provisioning/dashboards:rw
+      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      # - ./tmp/grafana.ini:/etc/grafana/grafana.ini

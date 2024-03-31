@@ -394,9 +394,11 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/git,vim,helm,rust,bazel,emacs,jetbrains+all,visualstudiocode,node,go
 
+tmp
+*.off
+
 # ignore downloaded charts
 *.tgz
-*.off
 
 # ignore report from MegaLinter
 report/

@@ -1,0 +1,5 @@
+[env]
+
+[tools]
+task = '*' # to have a set of simple commands for repetive task (and CI)
+# docker = '*'     # to build, to run containers, should be available for some of thoses tools
