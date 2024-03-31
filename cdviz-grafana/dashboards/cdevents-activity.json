@@ -19,14 +19,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "P3ABDE63318046581"
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdviz-db"
       },
       "gridPos": {
         "h": 8,
@@ -49,13 +48,13 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "P3ABDE63318046581"
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdviz-db"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \"timestamp\",\n    \"payload\"\nFROM \"cdevents_lake\"\nWHERE $__timeFilter(timestamp) \nORDER BY \"timestamp\" DESC",
+          "rawSql": "SELECT \"timestamp\",\n    \"subject\",\n    \"predicate\",\n    \"payload\"\nFROM \"cdevents_lake\"\nWHERE $__timeFilter(timestamp) \nORDER BY \"timestamp\" DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -81,7 +80,7 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 38,
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []

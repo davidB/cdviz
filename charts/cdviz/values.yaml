@@ -17,6 +17,8 @@ secrets:
     # RO (read-only) used by cdviz-grafana to query data from the db
     CDVIZ_RO_POSTGRES_USER: cdviz-ro
     CDVIZ_RO_POSTGRES_PASSWORD: postgres-password
+    # CDVIZ_RO_POSTGRES_HOST: cdviz-postgresql # to override if different from POSTGRES_HOST
+    # CDVIZ_RO_POSTGRES_PORT_NUMBER: "5432" # to override if different from POSTGRES_HOST
 
 cdviz-collector:
   enabled: true
