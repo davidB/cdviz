@@ -28,3 +28,19 @@ tasks:
   stack:db-admin:view:
     cmds:
       - open http://127.0.0.1:5499
+
+  cdviz-collector:build:
+    internal: true
+    dir: ../cdviz-collector
+    cmds:
+          - cargo build
+
+  example_01:run:
+    dir: example_01
+    deps: [ "cdviz-collector:build" ]
+    env:
+      RUST_LOG: "cdviz_collector::sinks=debug,info" # cdviz_collector::sources=debug
+      OTEL_TRACES_SAMPLER: always_off
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://127.0.0.1:4317"
+    cmds:
+      - ../../cdviz-collector/target/debug/cdviz-collector --config ./cdviz-collector.toml
