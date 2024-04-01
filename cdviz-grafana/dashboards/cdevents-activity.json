@@ -27,24 +27,49 @@
         "type": "grafana-postgresql-datasource",
         "uid": "cdviz-db"
       },
+      "description": "Count by Subject & Predicate",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic-by-name"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 8,
-        "w": 24,
+        "h": 6,
+        "w": 4,
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 2,
       "options": {
-        "dedupStrategy": "none",
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": true,
-        "showLabels": false,
-        "showTime": true,
-        "sortOrder": "Descending",
-        "wrapLogMessage": true
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": false,
+          "values": ["value"]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": ["allValues"],
+          "fields": "/^count$/",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "10.2.2",
       "targets": [
         {
           "datasource": {
@@ -54,7 +79,169 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \"timestamp\",\n    \"subject\",\n    \"predicate\",\n    \"payload\"\nFROM \"cdevents_lake\"\nWHERE $__timeFilter(timestamp) \nORDER BY \"timestamp\" DESC",
+          "rawSql": "SELECT COUNT(*) as count, subject, predicate\nFROM cdevents_lake\nWHERE $__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)\nGROUP BY subject, predicate\nORDER BY subject, predicate\nLIMIT $limit",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "*",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "subject",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              },
+              {
+                "property": {
+                  "name": "predicate",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cdevents_lake"
+        }
+      ],
+      "transparent": true,
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cdviz-db"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": true,
+            "minWidth": 50
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "subject"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 107
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "predicate"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 127
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "imported_at"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 177
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "timestamp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 206
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "timestamp"
+          }
+        ]
+      },
+      "pluginVersion": "10.2.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cdviz-db"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n    \"imported_at\",\n    \"timestamp\",\n    \"subject\",\n    \"predicate\",\n    \"payload\"->'subject' as \"payload_subject\",\n    \"payload\"->'context' as \"payload_context\"\nFROM cdevents_lake\nWHERE $__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)\nORDER BY imported_at DESC\nLIMIT $limit",
           "refId": "A",
           "sql": {
             "columns": [
@@ -76,23 +263,117 @@
         }
       ],
       "title": "Events Logs",
-      "type": "logs"
+      "type": "table"
     }
   ],
   "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "cdviz-db"
+        },
+        "definition": "SELECT DISTINCT \"subject\" FROM \"cdevents_lake\" WHERE \"subject\" LIKE '$__searchFilter' AND $__timeFilter(imported_at)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "subjects",
+        "multi": true,
+        "name": "subjects",
+        "options": [],
+        "query": "SELECT DISTINCT \"subject\" FROM \"cdevents_lake\" WHERE \"subject\" LIKE '$__searchFilter' AND $__timeFilter(imported_at)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": ["All"],
+          "value": ["$__all"]
+        },
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "cdviz-db"
+        },
+        "definition": "SELECT DISTINCT \"predicate\" FROM \"cdevents_lake\" WHERE \"predicate\" LIKE '$__searchFilter' AND subject IN ($subjects) AND $__timeFilter(imported_at)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "predicates",
+        "multi": true,
+        "name": "predicates",
+        "options": [],
+        "query": "SELECT DISTINCT \"predicate\" FROM \"cdevents_lake\" WHERE \"predicate\" LIKE '$__searchFilter' AND subject IN ($subjects) AND $__timeFilter(imported_at)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "50",
+          "value": "50"
+        },
+        "description": "Maximum number of value retrieved",
+        "hide": 0,
+        "includeAll": false,
+        "label": "limit",
+        "multi": false,
+        "name": "limit",
+        "options": [
+          {
+            "selected": true,
+            "text": "50",
+            "value": "50"
+          },
+          {
+            "selected": false,
+            "text": "100",
+            "value": "100"
+          },
+          {
+            "selected": false,
+            "text": "500",
+            "value": "500"
+          },
+          {
+            "selected": false,
+            "text": "1000",
+            "value": "1000"
+          }
+        ],
+        "query": "50,100,500,1000",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "hide": 2,
+        "name": "where",
+        "query": "$__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "cdevents activity",
   "uid": "a6eeda5f-2550-438c-9477-8ed28ab50ce6",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }
