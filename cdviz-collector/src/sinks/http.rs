@@ -1,3 +1,5 @@
+use cdevents_sdk::cloudevents::BuilderExt;
+use cloudevents::{EventBuilder, EventBuilderV10};
 use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use serde::{Deserialize, Serialize};
@@ -44,20 +46,29 @@ impl HttpSink {
 impl Sink for HttpSink {
     //TODO use cloudevents
     async fn send(&self, msg: &Message) -> Result<()> {
-        let json = serde_json::to_value(&msg.cdevent)?;
-        let resp = self
-            .client
-            .post(self.dest.clone())
-            .json(&json)
-            .send()
-            .await?;
-        if !resp.status().is_success() {
-            tracing::warn!(
-                cdevent = ?msg.cdevent,
-                http_status = ?resp.status(),
-                "failed to send event"
-            )
-        }
+        let cd_event = msg.cdevent.clone();
+        // convert  CdEvent to cloudevents
+        let event_result = EventBuilderV10::new().with_cdevent(cd_event).unwrap().build();
+
+        match event_result {
+            Ok(value) => {
+                let resp = self
+                    .client
+                    .post(self.dest.clone())
+                    .json(&value)
+                    .send()
+                    .await?;
+                if !resp.status().is_success() {
+                    tracing::warn!(
+                    cdevent = ?serde_json::to_value(&value)?,
+                    http_status = ?resp.status(),
+                    "failed to send event")
+                }
+            }
+            Err(err) => {
+                tracing::warn!(error = ?err, "Failed to convert to cloudevents");
+            }
+        };
         Ok(())
     }
 }
