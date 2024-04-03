@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use time::OffsetDateTime;
-use tracing::{info, Instrument};
+use tracing::Instrument;
 
 use super::Sink;
 
@@ -38,7 +38,7 @@ impl TryFrom<Config> for DbSink {
         let pool_options = PgPoolOptions::new()
             .min_connections(config.pool_connections_min)
             .max_connections(config.pool_connections_max);
-        info!(
+        tracing::info!(
             max_connections = pool_options.get_max_connections(),
             min_connections = pool_options.get_min_connections(),
             acquire_timeout = ?pool_options.get_acquire_timeout(),
@@ -118,7 +118,6 @@ async fn store_event(pg_pool: &PgPool, event: Event) -> Result<()> {
     .execute(pg_pool)
     .instrument(build_otel_span("INSERT INTO events"))
     .await?;
-
     Ok(())
 }
 
@@ -233,8 +232,8 @@ mod tests {
                 .await
                 .unwrap()
                 .get(0);
-            assert_eq!(count_n, (count + 1));
-            count = count_n;
+            count += 1;
+            assert_eq!(count_n, count);
         }
     }
 }

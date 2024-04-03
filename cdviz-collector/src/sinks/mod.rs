@@ -18,7 +18,7 @@ use http::HttpSink;
 #[serde(tag = "type")]
 pub(crate) enum Config {
     #[cfg(feature = "sink_db")]
-    #[serde(alias = "postgresql")]
+    #[serde(alias = "db")]
     Db(db::Config),
     #[serde(alias = "debug")]
     Debug(debug::Config),
@@ -59,6 +59,7 @@ pub(crate) fn start(name: String, config: Config, rx: Receiver<Message>) -> Join
         let sink = SinkEnum::try_from(config)?;
         let mut rx = rx;
         while let Ok(msg) = rx.recv().await {
+            tracing::debug!(name, event_id = ?msg.cdevent.id(), "sending");
             if let Err(err) = sink.send(&msg).await {
                 tracing::warn!(name, ?err, "fail during sending of event");
             }
