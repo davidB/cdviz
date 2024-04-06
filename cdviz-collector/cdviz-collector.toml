@@ -12,6 +12,8 @@ type = "opendal"
 kind = "fs"
 polling_interval = "10s"
 parameters = { root = "../cdevents-spec/examples" }
+recursive = true
+path_patterns = ["**/*.json"]
 
 [sources.cdevents_webhook]
 type = "http"

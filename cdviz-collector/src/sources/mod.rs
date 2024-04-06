@@ -55,12 +55,12 @@ enum SourceEnum {
 
 #[enum_dispatch(SourceEnum)]
 trait Source {
-    async fn run(&self, tx: Sender<Message>) -> Result<()>;
+    async fn run(&mut self, tx: Sender<Message>) -> Result<()>;
 }
 
 pub(crate) fn start(_name: String, config: Config, tx: Sender<Message>) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
-        let source = SourceEnum::try_from(config)?;
+        let mut source = SourceEnum::try_from(config)?;
         source.run(tx).await?;
         Ok(())
     })

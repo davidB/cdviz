@@ -49,7 +49,7 @@ struct AppState {
 }
 
 impl Source for HttpSource {
-    async fn run(&self, tx: Sender<Message>) -> Result<()> {
+    async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
         let app_state = AppState { tx };
 
         let app = app().with_state(app_state);
