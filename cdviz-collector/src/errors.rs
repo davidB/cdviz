@@ -26,6 +26,9 @@ pub(crate) enum Error {
     #[cfg(feature = "source_opendal")]
     #[error(transparent)]
     Opendal(#[from] opendal::Error),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    GlobPattern(#[from] globset::Error),
     #[error(transparent)]
     BusSend(#[from] tokio::sync::broadcast::error::SendError<Message>),
     #[error(transparent)]

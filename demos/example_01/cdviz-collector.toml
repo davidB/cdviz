@@ -12,3 +12,5 @@ type = "opendal"
 kind = "fs"
 polling_interval = "10s"
 parameters = { root = "./cdevents" }
+recursive = false
+path_patterns = ["*.json"]

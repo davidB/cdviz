@@ -21,7 +21,7 @@ impl TryFrom<Config> for NoopSource {
 pub(crate) struct NoopSource {}
 
 impl Source for NoopSource {
-    async fn run(&self, _tx: Sender<Message>) -> Result<()> {
+    async fn run(&mut self, _tx: Sender<Message>) -> Result<()> {
         loop {
             sleep(Duration::MAX).await;
         }
