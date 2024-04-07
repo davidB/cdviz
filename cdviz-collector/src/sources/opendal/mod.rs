@@ -97,7 +97,9 @@ pub(crate) async fn run_once(
         .await?;
     while let Some(entry) = lister.try_next().await? {
         if filter.accept(&entry) {
-            if let Err(err) = process_entry(tx, transformer.transform(op, &entry).await?) {
+            if let Err(err) =
+                process_entry(tx, transformer.transform(op, &entry).await?.into_iter())
+            {
                 tracing::warn!(?err, path = entry.path(), "fail to process, skip")
             }
         }

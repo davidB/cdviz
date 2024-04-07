@@ -44,7 +44,7 @@ impl TryFrom<Config> for SourceEnum {
 }
 
 #[enum_dispatch]
-#[allow(clippy::enum_variant_names)]
+#[allow(clippy::enum_variant_names, clippy::large_enum_variant)]
 enum SourceEnum {
     #[cfg(feature = "source_http")]
     HttpSource,

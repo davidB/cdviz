@@ -31,6 +31,15 @@ pub(crate) enum Error {
     #[cfg(feature = "source_opendal")]
     #[error(transparent)]
     GlobPattern(#[from] globset::Error),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    HandlebarsRender(#[from] handlebars::RenderError),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    HandlebarsTemplate(#[from] handlebars::TemplateError),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    Csv(#[from] csv::Error),
     #[error(transparent)]
     BusSend(#[from] tokio::sync::broadcast::error::SendError<Message>),
     #[error(transparent)]

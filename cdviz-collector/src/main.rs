@@ -126,6 +126,8 @@ async fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use rstest::*;
+
     use super::*;
 
     impl proptest::arbitrary::Arbitrary for Message {
@@ -136,5 +138,11 @@ mod tests {
             use proptest::prelude::*;
             (any::<CDEvent>()).prop_map(Message::from).boxed()
         }
+    }
+
+    #[rstest]
+    fn read_samples_config(#[files("../**/cdviz-collector.toml")] path: PathBuf) {
+        assert!(path.exists());
+        let _config: Config = Figment::new().merge(Toml::file(path)).extract().unwrap();
     }
 }
