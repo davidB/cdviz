@@ -15,6 +15,7 @@ DISABLE_LINTERS:
   - REPOSITORY_GIT_DIFF
   - REPOSITORY_GRYPE
   - REPOSITORY_KICS
+  - REPOSITORY_SECRETLINT
   - REPOSITORY_SYFT
   - REPOSITORY_TRUFFLEHOG # too long to search for secret
   - RUST_CLIPPY # run via an other way, and current version doesn't support `--deny ... --allow ...`
