@@ -20,7 +20,7 @@ cloudevents-sdk = { version = "0.7"}
 chrono = "0.4"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
-enum_dispatch = "0.3"
+enum_dispatch = "0.3.13"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
 globset = { version = "0.4", optional = true }
