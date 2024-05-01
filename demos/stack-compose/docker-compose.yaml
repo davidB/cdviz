@@ -49,7 +49,7 @@ services:
     ports:
       - 5499:8080
   grafana:
-    image: docker.io/grafana/grafana-oss:10.4.1
+    image: docker.io/grafana/grafana-oss:10.4.2
     container_name: grafana
     restart: unless-stopped
     environment:
