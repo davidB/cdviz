@@ -12,7 +12,7 @@ rust-version = "1.77"
 publish = false
 
 [dependencies]
-axum = { version = "0.7", optional = true }
+axum = { version = "0.7.5", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 # cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
