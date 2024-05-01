@@ -22,6 +22,8 @@ pub(crate) enum Error {
     #[error(transparent)]
     Http(#[from] reqwest_middleware::Error),
     #[error(transparent)]
+    HttpReqwest(#[from] reqwest::Error),
+    #[error(transparent)]
     Json(#[from] serde_json::Error),
     #[cfg(feature = "source_opendal")]
     #[error(transparent)]
@@ -37,6 +39,10 @@ pub(crate) enum Error {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     ConfigReader(#[from] figment::Error),
+    #[error(transparent)]
+    CloudEventBuilder(#[from] cloudevents::event::EventBuilderError),
+    #[error(transparent)]
+    CloudEventMessage(#[from] cloudevents::message::Error),
     // #[error(transparent)]
     // ConfigTomlError(#[from] toml::de::Error),
     #[error("{txt}")]
