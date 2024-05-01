@@ -17,7 +17,7 @@ axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 cloudevents-sdk = { version = "0.7"}
 # cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
-chrono = "0.4"
+chrono = "0.4.38"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
 enum_dispatch = "0.3"
