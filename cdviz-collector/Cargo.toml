@@ -15,11 +15,10 @@ publish = false
 axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
-cloudevents-sdk = { version = "0.7", features = ["reqwest"] }
-# cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
 chrono = "0.4"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
+cloudevents-sdk = { version = "0.7", features = ["reqwest"] }
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
