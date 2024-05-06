@@ -1,6 +1,6 @@
 use cdevents_sdk::cloudevents::BuilderExt;
-use cloudevents::{EventBuilder, EventBuilderV10};
 use cloudevents::binding::reqwest::RequestBuilderExt;
+use cloudevents::{EventBuilder, EventBuilderV10};
 use reqwest::Url;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use serde::{Deserialize, Serialize};
@@ -53,21 +53,15 @@ impl Sink for HttpSink {
         match event_result {
             Ok(event_builder) => {
                 let event_result = event_builder.build();
-                let value = event_result.map_err(|e| {
-                    tracing::warn!(error = ?e, "Failed to build event")
-                })?;
+                let value = event_result?;
+                //TODO use self.client (with middleware)
                 reqwest::Client::new()
                     .post(self.dest.clone())
-                    .event(value)
-                    .map_err(|e| {
-                        tracing::warn!(error = ?e, "Failed to build request-builder")
-                    })?
-                    .header("Access-Control-Allow-Origin", "*")
+                    .event(value)?
+                    //.map_err(|e| tracing::warn!(error = ?e, "Failed to build request-builder"))
+                    //.header("Access-Control-Allow-Origin", "*")
                     .send()
-                    .await
-                    .map_err(|e| {
-                        tracing::warn!(error = ?e, "Failed to get response")
-                    })?;
+                    .await?;
             }
             Err(err) => {
                 tracing::warn!(error = ?err, "Failed to convert to cloudevents");

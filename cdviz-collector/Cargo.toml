@@ -15,11 +15,10 @@ publish = false
 axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
-cloudevents-sdk = { version = "0.7"}
-# cloudevents-sdk = { version = "0.7", features = ["axum"] } // not compatible with axum 0.7
 chrono = "0.4"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
+cloudevents-sdk = { version = "0.7", features = ["reqwest"] }
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
@@ -40,7 +39,7 @@ reqwest-middleware = "0.2"
 reqwest-tracing = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_with = "3.7"
+serde_with = "3.8.1"
 sqlx = { version = "0.7", features = [
   "postgres",
   "runtime-tokio",
@@ -61,7 +60,7 @@ cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust", features = [
   "testkit",
 ] }
 proptest = "1"
-rstest = "0.18"
+rstest = "0.19.0"
 rustainers = "0.12"
 tracing-subscriber = "0.3"
 

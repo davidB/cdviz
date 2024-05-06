@@ -7,12 +7,12 @@ appVersion: 0.1.0 # TODO Change this to a version number on release
 
 dependencies:
   - name: postgresql
-    version: 15.2.2
+    version: 15.2.7
     # repository: https://charts.bitnami.com/bitnami
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: grafana
-    version: 7.3.7 # grafana 10.2.2
+    version: 7.3.9 # grafana 10.2.2
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: cdviz-collector
