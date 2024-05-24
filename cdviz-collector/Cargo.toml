@@ -29,8 +29,7 @@ init-tracing-opentelemetry = { version = "0.18", features = [
   "tracing_subscriber_ext",
   "logfmt",
 ] }
-opendal = { version = "0.45", default-features = false, features = [
-  "rustls",
+opendal = { version = "0.46", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
@@ -65,7 +64,7 @@ rustainers = "0.12"
 tracing-subscriber = "0.3"
 
 [features]
-default = ["source_http", "source_opendal", "sink_db"]
+default = ["source_http", "source_opendal", "sink_db", "reqwest/rustls"]
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = ["dep:opendal", "dep:globset"]
