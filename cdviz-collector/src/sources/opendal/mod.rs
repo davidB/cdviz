@@ -94,7 +94,8 @@ pub(crate) async fn run_once(
 }
 
 async fn process_entry(tx: &Sender<Message>, op: &Operator, entry: &Entry) -> Result<usize> {
-    let read = op.read(entry.path()).await?;
-    let cdevent: CDEvent = serde_json::from_slice::<CDEvent>(&read)?;
+    use bytes::Buf;
+    let buf = op.read(entry.path()).await?;
+    let cdevent: CDEvent = serde_json::from_reader(buf.reader())?;
     tx.send(cdevent.into()).map_err(Error::from)
 }
