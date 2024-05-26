@@ -8,6 +8,8 @@ pub(crate) type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
 pub(crate) enum Error {
+    #[error("config file not found: {path}")]
+    ConfigNotFound { path: String },
     #[error("no source found (configured or started)")]
     NoSource,
     #[error("no sink found (configured or started)")]

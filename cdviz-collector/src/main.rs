@@ -81,6 +81,11 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
 
+    if !cli.config.exists() {
+        return Err(errors::Error::ConfigNotFound {
+            path: cli.config.to_string_lossy().to_string(),
+        });
+    }
     if let Some(dir) = cli.config.parent() {
         std::env::set_current_dir(dir)?;
     }
@@ -94,6 +99,7 @@ async fn main() -> Result<()> {
     let sinks = config
         .sinks
         .into_iter()
+        .inspect(|(name, _config)| tracing::info!(kind = "sink", name, "starting"))
         .map(|(name, config)| sinks::start(name, config, tx.subscribe()))
         .collect::<Vec<_>>();
 
@@ -105,6 +111,7 @@ async fn main() -> Result<()> {
     let sources = config
         .sources
         .into_iter()
+        .inspect(|(name, _config)| tracing::info!(kind = "source", name, "starting"))
         .map(|(name, config)| sources::start(name, config, tx.clone()))
         .collect::<Vec<_>>();
 
