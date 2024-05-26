@@ -104,7 +104,7 @@ tasks:
 
   run:
     cmds:
-      - cargo run -- --config ./cdviz-collector.toml
+      - cargo run -- --config ./examples/assets/cdviz-collector.toml
 
   ci:
     desc: set of tasks run by CI

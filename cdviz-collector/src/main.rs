@@ -81,6 +81,9 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
 
+    if let Some(dir) = cli.config.parent() {
+        std::env::set_current_dir(dir)?;
+    }
     let config: Config = Figment::new()
         .merge(Toml::file(cli.config.as_path()))
         .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
