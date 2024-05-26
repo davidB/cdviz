@@ -1,0 +1,53 @@
+[sinks.debug]
+type = "debug"
+
+[sinks.cdviz_db]
+type = "db"
+url = "postgresql://postgres:passwd@localhost:5432/cdviz"
+pool_connections_min = 1
+pool_connections_max = 10
+
+[sources.cdevents_json]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
+# parameters = { root = "../cdevents-spec/examples" }
+parameters = { root = "./opendal_fs" }
+recursive = true
+path_patterns = ["**/*.json"]
+transformer = { type = "json_content_as_is" }
+
+[sources.cdevents_csv]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
+parameters = { root = "./opendal_fs" }
+recursive = false
+path_patterns = ["cdevents.csv"]
+transformer = { type = "csv_row_via_template", template = """
+{
+  "context": {
+    "version": "0.4.0-draft",
+    "id": "{{ content.uuid }}",
+    "source": "/event/source/123",
+    "type": "dev.cdevents.service.deployed.0.1.1",
+    "timestamp": "{{ metadata.last_modified }}"
+  },
+  "subject": {
+    "id": "{{ content.id }}",
+    "source": "/event/source/123",
+    "type": "service",
+    "content": {
+      "environment": {
+        "id": "{{ content.env }}"
+      },
+      "artifactId": "{{ content.artifact_id }}"
+    }
+  }
+}
+""" }
+
+[sources.cdevents_webhook]
+type = "http"
+host = "0.0.0.0"
+port = 8080

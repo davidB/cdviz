@@ -4,7 +4,7 @@ RUST_WITHOUT = "rust-docs"
 # ASDF_RUST_PROFILE = "minimal"
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 # OTEL_EXPORTER_OTLP_TRACES_PROTOCOL = "grpc"
-OTEL_TRACES_SAMPLER = "always_on"
+OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
 task = '*'                # to have a set of simple commands for repetive task (and CI)

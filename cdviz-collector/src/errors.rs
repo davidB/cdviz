@@ -8,6 +8,8 @@ pub(crate) type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
 pub(crate) enum Error {
+    #[error("config file not found: {path}")]
+    ConfigNotFound { path: String },
     #[error("no source found (configured or started)")]
     NoSource,
     #[error("no sink found (configured or started)")]
@@ -31,6 +33,15 @@ pub(crate) enum Error {
     #[cfg(feature = "source_opendal")]
     #[error(transparent)]
     GlobPattern(#[from] globset::Error),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    HandlebarsRender(#[from] handlebars::RenderError),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    HandlebarsTemplate(#[from] handlebars::TemplateError),
+    #[cfg(feature = "source_opendal")]
+    #[error(transparent)]
+    Csv(#[from] csv::Error),
     #[error(transparent)]
     BusSend(#[from] tokio::sync::broadcast::error::SendError<Message>),
     #[error(transparent)]

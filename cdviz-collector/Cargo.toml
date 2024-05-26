@@ -16,14 +16,17 @@ axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.18", optional = true }
 bytes = { version = "1.6", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
-chrono = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
 cloudevents-sdk = { version = "0.7", features = ["reqwest"] }
+csv = { version = "1", optional = true }
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
 globset = { version = "0.4", optional = true }
+handlebars = { version = "5.1", optional = true }
+handlebars_misc_helpers = { version = "0.15", optional = true }
 humantime-serde = "1.1.1"
 init-tracing-opentelemetry = { version = "0.18", features = [
   "otlp",
@@ -55,6 +58,7 @@ tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
 
 [dev-dependencies]
+assert2 = "0.3"
 # axum-test = "14"
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust", features = [
   "testkit",
@@ -66,14 +70,21 @@ tracing-subscriber = "0.3"
 
 [features]
 default = [
+  "sink_db",
   "source_http",
   "source_opendal",
-  "sink_db",
   "reqwest/rustls",
 ] #reqwest is also used as transitive dependencies
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
-source_opendal = ["dep:opendal", "dep:globset", "dep:bytes"]
+source_opendal = [
+  "dep:bytes",
+  "dep:csv",
+  "dep:globset",
+  "dep:handlebars",
+  "dep:handlebars_misc_helpers",
+  "dep:opendal",
+]
 
 [package.metadata.release]
 pre-release-commit-message = "🚀 (cargo-release) version {{version}}"

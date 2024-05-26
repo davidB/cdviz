@@ -1,11 +1,15 @@
-mod filter;
+//TODO add persistance for state (time window to not reprocess same file after restart)
 
-use crate::errors::{Error, Result};
+mod filter;
+mod transformers;
+
+use self::filter::{globset_from, Filter};
+use self::transformers::{Transformer, TransformerEnum};
+use super::Source;
+use crate::errors::Result;
 use crate::{Message, Sender};
 use cdevents_sdk::CDEvent;
-use filter::{globset_from, Filter};
 use futures::TryStreamExt;
-use opendal::Entry;
 use opendal::Metakey;
 use opendal::Operator;
 use opendal::Scheme;
@@ -17,11 +21,6 @@ use std::time::Duration;
 use tokio::time::sleep;
 use tracing::instrument;
 
-use super::Source;
-
-//TODO add persistance for state (time window to not reprocess same file after restart)
-//TODO add transformer: identity, csv+template -> bunch, jsonl
-
 #[serde_as]
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub(crate) struct Config {
@@ -32,6 +31,7 @@ pub(crate) struct Config {
     parameters: HashMap<String, String>,
     recursive: bool,
     path_patterns: Vec<String>,
+    transformer: transformers::Config,
 }
 
 impl TryFrom<Config> for OpendalSource {
@@ -40,11 +40,13 @@ impl TryFrom<Config> for OpendalSource {
     fn try_from(value: Config) -> Result<Self> {
         let op: Operator = Operator::via_map(value.kind, value.parameters)?;
         let filter = Filter::from_patterns(globset_from(&value.path_patterns)?);
+        let transformer = value.transformer.try_into()?;
         Ok(Self {
             op,
             polling_interval: value.polling_interval,
             recursive: value.recursive,
             filter,
+            transformer,
         })
     }
 }
@@ -54,12 +56,21 @@ pub(crate) struct OpendalSource {
     polling_interval: Duration,
     recursive: bool,
     filter: Filter,
+    transformer: TransformerEnum,
 }
 
 impl Source for OpendalSource {
     async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
         loop {
-            if let Err(err) = run_once(&tx, &self.op, &self.filter, self.recursive).await {
+            if let Err(err) = run_once(
+                &tx,
+                &self.op,
+                &self.filter,
+                self.recursive,
+                &self.transformer,
+            )
+            .await
+            {
                 tracing::warn!(?err, filter = ?self.filter, scheme =? self.op.info().scheme(), root =? self.op.info().root(), "fail during scanning");
             }
             sleep(self.polling_interval).await;
@@ -74,6 +85,7 @@ pub(crate) async fn run_once(
     op: &Operator,
     filter: &Filter,
     recursive: bool,
+    transformer: &TransformerEnum,
 ) -> Result<()> {
     // TODO convert into arg of instrument
     tracing::debug!(filter=? filter, scheme =? op.info().scheme(), root =? op.info().root(), "scanning");
@@ -85,7 +97,9 @@ pub(crate) async fn run_once(
         .await?;
     while let Some(entry) = lister.try_next().await? {
         if filter.accept(&entry) {
-            if let Err(err) = process_entry(tx, op, &entry).await {
+            if let Err(err) =
+                process_entry(tx, transformer.transform(op, &entry).await?.into_iter())
+            {
                 tracing::warn!(?err, path = entry.path(), "fail to process, skip")
             }
         }
@@ -93,9 +107,12 @@ pub(crate) async fn run_once(
     Ok(())
 }
 
-async fn process_entry(tx: &Sender<Message>, op: &Operator, entry: &Entry) -> Result<usize> {
-    use bytes::Buf;
-    let buf = op.read(entry.path()).await?;
-    let cdevent: CDEvent = serde_json::from_reader(buf.reader())?;
-    tx.send(cdevent.into()).map_err(Error::from)
+fn process_entry(tx: &Sender<Message>, provider: impl Iterator<Item = Vec<u8>>) -> Result<usize> {
+    let mut count = 0;
+    for json in provider {
+        let cdevent: CDEvent = serde_json::from_slice::<CDEvent>(&json)?;
+        tx.send(cdevent.into())?;
+        count += 1;
+    }
+    Ok(count)
 }

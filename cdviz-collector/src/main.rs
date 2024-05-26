@@ -81,6 +81,14 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
 
+    if !cli.config.exists() {
+        return Err(errors::Error::ConfigNotFound {
+            path: cli.config.to_string_lossy().to_string(),
+        });
+    }
+    if let Some(dir) = cli.config.parent() {
+        std::env::set_current_dir(dir)?;
+    }
     let config: Config = Figment::new()
         .merge(Toml::file(cli.config.as_path()))
         .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
@@ -91,6 +99,7 @@ async fn main() -> Result<()> {
     let sinks = config
         .sinks
         .into_iter()
+        .inspect(|(name, _config)| tracing::info!(kind = "sink", name, "starting"))
         .map(|(name, config)| sinks::start(name, config, tx.subscribe()))
         .collect::<Vec<_>>();
 
@@ -102,6 +111,7 @@ async fn main() -> Result<()> {
     let sources = config
         .sources
         .into_iter()
+        .inspect(|(name, _config)| tracing::info!(kind = "source", name, "starting"))
         .map(|(name, config)| sources::start(name, config, tx.clone()))
         .collect::<Vec<_>>();
 
@@ -126,6 +136,8 @@ async fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use rstest::*;
+
     use super::*;
 
     impl proptest::arbitrary::Arbitrary for Message {
@@ -136,5 +148,11 @@ mod tests {
             use proptest::prelude::*;
             (any::<CDEvent>()).prop_map(Message::from).boxed()
         }
+    }
+
+    #[rstest]
+    fn read_samples_config(#[files("../**/cdviz-collector.toml")] path: PathBuf) {
+        assert!(path.exists());
+        let _config: Config = Figment::new().merge(Toml::file(path)).extract().unwrap();
     }
 }
