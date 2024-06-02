@@ -26,7 +26,7 @@ figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
 globset = { version = "0.4", optional = true }
 handlebars = { version = "5.1", optional = true }
-handlebars_misc_helpers = { version = "0.15", optional = true }
+handlebars_misc_helpers = { version = "0.16", optional = true }
 humantime-serde = "1.1.1"
 init-tracing-opentelemetry = { version = "0.18", features = [
   "otlp",
