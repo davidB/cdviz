@@ -6,4 +6,3 @@ PG_LOCAL_URL = "postgres://{{env.PG_LOCAL_USER}}:{{env.PG_LOCAL_PWD}}@127.0.0.1:
 [tools]
 # docker = '*'
 atlas = '0.19'
-task = '*'
