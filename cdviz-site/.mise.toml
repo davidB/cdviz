@@ -1,0 +1,2 @@
+[tools]
+hugo = 'extended_0.126.2' # Install specific extended version (for Sass/SCSS support)
