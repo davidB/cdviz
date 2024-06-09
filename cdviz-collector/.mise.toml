@@ -7,7 +7,6 @@ OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
-task = '*'                # to have a set of simple commands for repetive task (and CI)
 rust = '1.77.0'           # the rust tool stack (with cargo, fmt, clippy) to build source
 cargo-binstall = 'latest'
 
