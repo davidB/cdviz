@@ -33,7 +33,7 @@ init-tracing-opentelemetry = { version = "0.18", features = [
   "tracing_subscriber_ext",
   "logfmt",
 ] }
-opendal = { version = "0.46", default-features = false, features = [
+opendal = { version = "0.47", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
