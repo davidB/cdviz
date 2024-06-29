@@ -32,7 +32,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic-by-name"
+            "mode": "palette-classic"
           },
           "custom": {
             "hideFrom": {
@@ -71,6 +71,7 @@
           "sort": "asc"
         }
       },
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -364,11 +365,25 @@
         "type": "custom"
       },
       {
+        "current": {
+          "selected": false,
+          "text": "$__timeFilter(imported_at) AND predicate IN ('%') AND subject IN ('%')",
+          "value": "$__timeFilter(imported_at) AND predicate IN ('%') AND subject IN ('%')"
+        },
         "hide": 2,
+        "includeAll": false,
+        "multi": false,
         "name": "where",
-        "query": "$__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)",
+        "options": [
+          {
+            "selected": true,
+            "text": "$__timeFilter(imported_at) AND predicate IN ('%') AND subject IN ('%')",
+            "value": "$__timeFilter(imported_at) AND predicate IN ('%') AND subject IN ('%')"
+          }
+        ],
+        "query": "$__timeFilter(imported_at) AND predicate IN ($predicates) AND subject IN ($subjects)",
         "skipUrlSync": false,
-        "type": "constant"
+        "type": "custom"
       }
     ]
   },
@@ -376,6 +391,7 @@
     "from": "now-24h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "cdevents activity",
