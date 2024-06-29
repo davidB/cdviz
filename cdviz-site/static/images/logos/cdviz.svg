@@ -26,12 +26,12 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     showgrid="true"
-     inkscape:zoom="0.80760913"
-     inkscape:cx="296.55435"
-     inkscape:cy="462.4762"
-     inkscape:window-width="3440"
-     inkscape:window-height="1417"
+     showgrid="false"
+     inkscape:zoom="3.2304365"
+     inkscape:cx="181.86397"
+     inkscape:cy="84.818259"
+     inkscape:window-width="3396"
+     inkscape:window-height="1347"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -53,7 +53,7 @@
        dotted="false"
        gridanglex="30"
        gridanglez="30"
-       visible="true" />
+       visible="false" />
   </sodipodi:namedview>
   <defs
      id="defs1" />
@@ -62,38 +62,43 @@
      inkscape:groupmode="layer"
      id="layer1" />
   <rect
-     style="fill:#fcfff9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.24312;stroke-linejoin:round"
+     style="fill:#fcfff9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.23788;stroke-linejoin:round"
      id="rect1"
      width="101.50806"
-     height="101.85559"
+     height="101.52661"
      x="0.22281978"
      y="0.12064902" />
-  <g
-     id="g2"
-     transform="matrix(3.5085006,0,0,3.4886013,-246.52177,-255.13049)"
-     style="fill:#162e31;fill-opacity:1">
-    <text
-       xml:space="preserve"
-       style="font-size:25.6234px;line-height:1.25;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, ';fill:#162e31;fill-opacity:1;stroke-width:0.640586"
-       x="70.259392"
-       y="93.206787"
-       id="text1"><tspan
-         sodipodi:role="line"
-         id="tspan1"
-         style="fill:#162e31;fill-opacity:1;stroke-width:0.640586"
-         x="70.259392"
-         y="93.206787">CD</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:10.7886px;line-height:4.95;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, ';fill:#162e31;fill-opacity:1;stroke-width:0.269715"
-       x="61.854355"
-       y="118.46054"
-       id="text2"
-       transform="scale(1.1716832,0.853473)"><tspan
-         sodipodi:role="line"
-         id="tspan2"
-         style="line-height:4.95;fill:#162e31;fill-opacity:1;stroke-width:0.269715"
-         x="61.854355"
-         y="118.46054">v  i  z</tspan></text>
-  </g>
+  <rect
+     style="fill:#162e31;fill-rule:evenodd;stroke:none;stroke-width:3.16742;stroke-linejoin:round"
+     id="rect2"
+     width="101.67479"
+     height="34.206238"
+     x="0.090578005"
+     y="67.634933" />
+  <text
+     xml:space="preserve"
+     style="font-size:89.6444px;line-height:1.25;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, ';fill:#162e31;fill-opacity:1;stroke-width:2.24111"
+     x="-0.29061183"
+     y="70.471146"
+     id="text1"
+     transform="scale(1.002848,0.99716009)"
+     inkscape:label="cd"><tspan
+       sodipodi:role="line"
+       id="tspan1"
+       style="fill:#162e31;fill-opacity:1;stroke-width:2.24111"
+       x="-0.29061183"
+       y="70.471146">CD</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:37.7443px;line-height:4.95;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, ';fill:#e5f2f4;fill-opacity:1;stroke:#162e31;stroke-width:0.943608;stroke-opacity:1"
+     x="5.5737939"
+     y="113.28465"
+     id="text2"
+     transform="scale(1.1750202,0.8510492)"
+     inkscape:label="viz"><tspan
+       sodipodi:role="line"
+       id="tspan2"
+       style="line-height:4.95;fill:#e5f2f4;fill-opacity:1;stroke:#162e31;stroke-width:0.943608;stroke-opacity:1"
+       x="5.5737939"
+       y="113.28465">v  i  z</tspan></text>
 </svg>
