@@ -1,0 +1,6 @@
+version: "3"
+
+tasks:
+  serve:
+    cmds:
+      - hugo serve
