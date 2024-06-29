@@ -21,7 +21,7 @@ Goals:
 - to send (broadcast) cdevents to various destination database, http, kafka, nats
 - to expose some metrics (TBD)
 
-cdviz-collector is configured via a config file + override by environment variable.
+cdviz-collector is configured via a config file + override by environment variables.
 
 ```mermaid
 flowchart LR
