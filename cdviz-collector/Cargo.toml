@@ -55,7 +55,7 @@ thiserror = "1"
 time = "0.3"
 tokio = { version = "1.37", features = ["full"] }
 tracing = "0.1"
-tracing-opentelemetry-instrumentation-sdk = { version = "0.18" }
+tracing-opentelemetry-instrumentation-sdk = { version = "0.19" }
 
 [dev-dependencies]
 assert2 = "0.3"
