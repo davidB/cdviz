@@ -13,7 +13,7 @@ publish = false
 
 [dependencies]
 axum = { version = "0.7", optional = true }
-axum-tracing-opentelemetry = { version = "0.18", optional = true }
+axum-tracing-opentelemetry = { version = "0.19", optional = true }
 bytes = { version = "1.6", optional = true }
 cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 chrono = { version = "0.4", features = ["serde"] }
