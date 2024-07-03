@@ -151,7 +151,7 @@ mod tests {
     }
 
     #[rstest]
-    fn read_samples_config(#[files("../**/cdviz-collector.toml")] path: PathBuf) {
+    fn read_samples_config(#[files("./**/cdviz-collector.toml")] path: PathBuf) {
         assert!(path.exists());
         let _config: Config = Figment::new().merge(Toml::file(path)).extract().unwrap();
     }
