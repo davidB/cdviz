@@ -1,6 +1,7 @@
 //TODO add persistance for state (time window to not reprocess same file after restart)
 
 mod filter;
+mod texecutors;
 mod transformers;
 
 use self::filter::{globset_from, Filter};
@@ -22,7 +23,7 @@ use tokio::time::sleep;
 use tracing::instrument;
 
 #[serde_as]
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     #[serde(with = "humantime_serde")]
     polling_interval: Duration,

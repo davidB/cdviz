@@ -3,23 +3,21 @@ use std::collections::HashMap;
 use crate::errors::Result;
 use bytes::Buf;
 use enum_dispatch::enum_dispatch;
-use handlebars::Handlebars;
 use opendal::{Entry, Operator};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-#[derive(Debug, Deserialize, Serialize, Default)]
-#[serde(tag = "type")]
+use super::texecutors::{TExecutor, TExecutorConfig, TExecutorEnum};
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(tag = "extractor")]
 pub(crate) enum Config {
-    #[serde(alias = "json_content_as_is")]
-    #[default]
-    JsonContentAsIs,
-    #[serde(alias = "metadata_only_via_template")]
-    MetadataOnlyViaTemplate { template: String },
-    #[serde(alias = "json_via_template")]
-    JsonViaTemplate { template: String },
-    #[serde(alias = "csv_row_via_template")]
-    CsvRowViaTemplate { template: String },
+    #[serde(alias = "json")]
+    Json { transform: Option<TExecutorConfig> },
+    #[serde(alias = "metadata")]
+    Metadata { transform: TExecutorConfig },
+    #[serde(alias = "csv_row")]
+    CsvRow { transform: TExecutorConfig },
 }
 
 impl TryFrom<Config> for TransformerEnum {
@@ -27,12 +25,12 @@ impl TryFrom<Config> for TransformerEnum {
 
     fn try_from(value: Config) -> Result<Self> {
         let out = match value {
-            Config::JsonContentAsIs => JsonContentAsIs {}.into(),
-            Config::MetadataOnlyViaTemplate { template } => {
-                MetadataOnlyViaTemplate::new(&template)?.into()
-            }
-            Config::JsonViaTemplate { template } => JsonViaTemplate::new(&template)?.into(),
-            Config::CsvRowViaTemplate { template } => CsvRowViaTemplate::new(&template)?.into(),
+            Config::Json { transform } => match transform {
+                None => JsonContentAsIs {}.into(),
+                Some(te) => JsonExtractor::new(te.try_into()?).into(),
+            },
+            Config::Metadata { transform } => MetadataExtractor::new(transform.try_into()?).into(),
+            Config::CsvRow { transform } => CsvRowExtractor::new(transform.try_into()?).into(),
         };
         Ok(out)
     }
@@ -42,9 +40,9 @@ impl TryFrom<Config> for TransformerEnum {
 #[derive(Debug)]
 pub(crate) enum TransformerEnum {
     JsonContentAsIs,
-    MetadataOnlyViaTemplate,
-    JsonViaTemplate,
-    CsvRowViaTemplate,
+    JsonExtractor,
+    MetadataExtractor,
+    CsvRowExtractor,
 }
 
 #[enum_dispatch(TransformerEnum)]
@@ -64,41 +62,39 @@ impl Transformer for JsonContentAsIs {
 }
 
 #[derive(Debug)]
-pub(crate) struct MetadataOnlyViaTemplate {
-    hbs: Handlebars<'static>,
+pub(crate) struct MetadataExtractor {
+    texecutor: TExecutorEnum,
 }
 
-impl MetadataOnlyViaTemplate {
-    fn new(template: &str) -> Result<Self> {
-        let hbs = new_renderer(template)?;
-        Ok(Self { hbs })
+impl MetadataExtractor {
+    fn new(texecutor: TExecutorEnum) -> Self {
+        Self { texecutor }
     }
 }
 
-impl Transformer for MetadataOnlyViaTemplate {
+impl Transformer for MetadataExtractor {
     async fn transform(&self, op: &Operator, entry: &Entry) -> Result<Vec<Vec<u8>>> {
         let metadata = extract_metadata(op, entry);
         let data = json!({
             "metadata" : metadata,
         });
-        let output = self.hbs.render("tpl", &data)?;
-        Ok(vec![output.into_bytes()])
+        let output = self.texecutor.execute(data)?;
+        Ok(vec![output])
     }
 }
 
 #[derive(Debug)]
-pub(crate) struct JsonViaTemplate {
-    hbs: Handlebars<'static>,
+pub(crate) struct JsonExtractor {
+    texecutor: TExecutorEnum,
 }
 
-impl JsonViaTemplate {
-    fn new(template: &str) -> Result<Self> {
-        let hbs = new_renderer(template)?;
-        Ok(Self { hbs })
+impl JsonExtractor {
+    fn new(texecutor: TExecutorEnum) -> Self {
+        Self { texecutor }
     }
 }
 
-impl Transformer for JsonViaTemplate {
+impl Transformer for JsonExtractor {
     async fn transform(&self, op: &Operator, entry: &Entry) -> Result<Vec<Vec<u8>>> {
         let bytes = op.read(entry.path()).await?;
         let metadata = extract_metadata(op, entry);
@@ -107,24 +103,23 @@ impl Transformer for JsonViaTemplate {
             "metadata" : metadata,
             "content": content,
         });
-        let output = self.hbs.render("tpl", &data)?;
-        Ok(vec![output.into_bytes()])
+        let output = self.texecutor.execute(data)?;
+        Ok(vec![output])
     }
 }
 
 #[derive(Debug)]
-pub(crate) struct CsvRowViaTemplate {
-    hbs: Handlebars<'static>,
+pub(crate) struct CsvRowExtractor {
+    texecutor: TExecutorEnum,
 }
 
-impl CsvRowViaTemplate {
-    fn new(template: &str) -> Result<Self> {
-        let hbs = new_renderer(template)?;
-        Ok(Self { hbs })
+impl CsvRowExtractor {
+    fn new(texecutor: TExecutorEnum) -> Self {
+        Self { texecutor }
     }
 }
 
-impl Transformer for CsvRowViaTemplate {
+impl Transformer for CsvRowExtractor {
     async fn transform(&self, op: &Operator, entry: &Entry) -> Result<Vec<Vec<u8>>> {
         use csv::Reader;
 
@@ -143,19 +138,11 @@ impl Transformer for CsvRowViaTemplate {
                 "metadata" : metadata.clone(),
                 "content": content,
             });
-            let output = self.hbs.render("tpl", &data)?;
-            out.push(output.into_bytes());
+            let output = self.texecutor.execute(data)?;
+            out.push(output);
         }
         Ok(out)
     }
-}
-
-fn new_renderer(template: &str) -> Result<Handlebars<'static>> {
-    let mut hbs = Handlebars::new();
-    hbs.set_dev_mode(false);
-    hbs.set_strict_mode(true);
-    hbs.register_template_string("tpl", template)?;
-    Ok(hbs)
 }
 
 fn extract_metadata(op: &Operator, entry: &Entry) -> Value {
@@ -170,6 +157,8 @@ fn extract_metadata(op: &Operator, entry: &Entry) -> Value {
 #[cfg(test)]
 mod tests {
     use std::path::Path;
+
+    use crate::sources::opendal::texecutors::Hbs;
 
     use super::*;
     use assert2::{check, let_assert};
@@ -212,7 +201,8 @@ mod tests {
     #[tokio::test]
     async fn csv_row_via_template_works() {
         let (op, entry) = provide_op_entry("cdevents.").await;
-        let sut = CsvRowViaTemplate::new(r#"{{content.env}}"#).unwrap();
+        let sut =
+            CsvRowExtractor::new(TExecutorEnum::from(Hbs::new(r#"{{content.env}}"#).unwrap()));
         let_assert!(Ok(actual) = sut.transform(&op, &entry).await);
         check!(actual.len() == 3);
         check!(actual[0] == "dev".as_bytes());
