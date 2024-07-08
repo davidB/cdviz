@@ -4,10 +4,11 @@
 
 - [x] bootstrap db
 - [x] bootstrap `cdviz-collector`: store on db
-- [ ] bootstrap `cdviz-sensors`: push events from folder to `cdviz-collector` via http
+- [ ] bootstrap `cdviz-collector`: push events from folder or csv to db
 - [ ] bootstrap `cdviz-demo`
 - [ ] bootstrap grafana dashboards
 - [x] helm charts to deploy (on local)
+- [ ] bootstrap docker-compose for demo
 - [ ] publish workflow, host runtime packages on github (container images and chart)
 
 ## 0.2.0
@@ -15,7 +16,7 @@
 - [ ] autocreate the read-only user on db (how?)
 - [ ] validate [cdevents] (rust library) on `cdviz-collector` and `cdviz-sensors`
 - [ ] connects to NATS (`cdviz-collector` and `cdviz-sensors`)
-- [ ] bootstrap the demo stack: NATS, testkube
+- [ ] bootstrap the demo stack: NATS, [Testkube](https://testkube.io/), [MinIO (S3)](https://min.io/), [Harbor](https://goharbor.io/)
 
 ## 0.3.0
 
@@ -23,7 +24,7 @@
 - [ ] document DB schema
 - [ ] document for contribution
 - [ ] document the demo
-- [ ] cdviz-sensors start to watch K8S events for "deployment" (remove & update)
+- [ ] cdviz-collectors start to watch K8S events for "deployment" (remove & update)
 
 ## ?.?.?
 

@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 tasks:
-
   install:cargo-binstall:
     internal: true
     cmds:
@@ -11,8 +10,8 @@ tasks:
   install:*:
     internal: true
     vars:
-      ARG: '{{index .MATCH 0}}'
-    deps: [ install:cargo-binstall ]
+      ARG: "{{index .MATCH 0}}"
+    deps: [install:cargo-binstall]
     cmds:
       - (cargo binstall -y {{.ARG}} || cargo install --locked {{.ARG}})
 
@@ -34,47 +33,53 @@ tasks:
       - cargo install sqlx-cli --no-default-features --features rustls,postgres --locked
 
   check:
-    deps: [ install:cargo-hack ]
+    deps: [install:cargo-hack]
     cmd: cargo hack check --each-feature --no-dev-deps
 
   build:
     cmd: cargo build
 
-
   format:
     aliases: [fmt]
     desc: Format the code and sort dependencies
-    deps: [ install:cargo-sort, install:rustfmt ]
+    deps: [install:cargo-sort, install:rustfmt]
     cmds:
       - cargo fmt
       - cargo sort --grouped
 
   deny:
-    deps: [ install:cargo-deny ]
+    deps: [install:cargo-deny]
     cmds:
       - cargo deny check advisories
       - cargo deny check bans licenses sources
 
   lint:
     desc: Lint all the code (megalinter + lint_rust)
-    deps: 
+    deps:
       - lint:rust
       # - lint:megalinter
 
   lint:rust:
-    deps: [ install:cargo-sort, install:rustfmt, install:clippy ]
+    deps: [install:cargo-sort, install:rustfmt, install:clippy]
     cmds:
       - cargo fmt --all -- --check
       - cargo sort --grouped --check
       - cargo clippy --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
 
+  lint:dependencies:
+    deps: [install:cargo-machete]
+    cmds:
+      # check unused with cargo-machete or cargo-udeps
+      - cargo machete --with-metadata
+      # TODO check licenses, multiversion `cargo-deny`
+      # TODO check outdated
+
   test:
-    deps: [ install:cargo-nextest ]
+    deps: [install:cargo-nextest]
     cmds:
       - cargo nextest run
       # - cargo test --doc
       # - cargo hack nextest --each-feature -- --test-threads=1
-
 
   # # release *arguments: install:cargo-release install:git-cliff
   # #   cargo release --workspace --execute {{ arguments }}
@@ -84,7 +89,7 @@ tasks:
 
   db:prepare-offline:
     desc: update db definition to be able compile sqlx code
-    deps: [ install:sqlx-cli ]
+    deps: [install:sqlx-cli]
     vars:
       PG_OFFLINE_PWD: "mysecretpassword"
       PG_OFFLINE_USER: "me"

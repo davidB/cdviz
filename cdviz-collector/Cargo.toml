@@ -91,3 +91,9 @@ pre-release-commit-message = "🚀 (cargo-release) version {{version}}"
 tag-prefix = ""
 tag-name = "{{prefix}}{{version}}"
 tag-message = "🔖 {{version}}"
+
+[package.metadata.cargo-machete]
+ignored = [
+  "handlebars_misc_helpers",
+  "humantime_serde",
+] # auto-registered and used at runtime
