@@ -394,6 +394,8 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/git,vim,helm,rust,bazel,emacs,jetbrains+all,visualstudiocode,node,go
 
+.envrc
+
 tmp
 *.off
 
