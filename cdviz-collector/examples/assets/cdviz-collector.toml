@@ -15,7 +15,7 @@ polling_interval = "10s"
 parameters = { root = "./opendal_fs" }
 recursive = true
 path_patterns = ["**/*.json"]
-transformer = { type = "json_content_as_is" }
+transformer = { extractor = "json" }
 
 [sources.cdevents_csv]
 type = "opendal"
@@ -24,14 +24,14 @@ polling_interval = "10s"
 parameters = { root = "./opendal_fs" }
 recursive = false
 path_patterns = ["cdevents.csv"]
-transformer = { type = "csv_row_via_template", template = """
+transformer = { extractor = "csv_row", transform = { format = "hbs", content = """
 {
   "context": {
     "version": "0.4.0-draft",
     "id": "{{ content.uuid }}",
     "source": "/event/source/123",
     "type": "dev.cdevents.service.deployed.0.1.1",
-    "timestamp": "{{ metadata.last_modified }}"
+    "timestamp": "{{ content.timestamp }}"
   },
   "subject": {
     "id": "{{ content.id }}",
@@ -45,7 +45,7 @@ transformer = { type = "csv_row_via_template", template = """
     }
   }
 }
-""" }
+""" } }
 
 [sources.cdevents_webhook]
 type = "http"
