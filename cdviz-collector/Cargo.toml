@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = ["David Bernard"]
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/davidB/cdviz"
-rust-version = "1.77"
+rust-version = "1.80.1"
 publish = false
 
 [dependencies]
