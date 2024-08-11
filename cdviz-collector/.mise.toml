@@ -9,7 +9,7 @@ OTEL_TRACES_SAMPLER = "always_off"
 [tools]
 sccache = '0.8'
 task = '3'         # to have a set of simple commands for repetive task (and CI)
-rust = '1.79.0'    # the rust tool stack (with cargo, fmt, clippy) to build source
+rust = '1.80.1'    # the rust tool stack (with cargo, fmt, clippy) to build source
 binstall = '1.7.4' # do not use cargo-binstall (it's a special name used by mise)
 
 [plugins]
