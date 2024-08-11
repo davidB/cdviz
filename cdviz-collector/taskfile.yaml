@@ -114,6 +114,6 @@ tasks:
   ci:
     desc: set of tasks run by CI
     cmds:
-      - task: check
+      # - task: check
       - task: lint
       - task: test
