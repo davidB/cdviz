@@ -6,7 +6,7 @@ task = '*' # to have a set of simple commands for repetive task (and CI)
 # local kubernetes (k8s)
 # docker = '*'     # to build, to run containers, should be available for some of thoses tools
 # dive = '*'       # to explore content of image container
-helm = '3.12'    # to deploy, check helm chart
+helm = '3.15.3'    # to deploy, check helm chart
 kubectl = '1.30.3' # to interact with k8s cluster
 ctlptl = '0.8'   # to setup / manage local k8s (kind) cluster
 kind = '0.23.0'    # to have a local k8s cluster (on top of docker)
