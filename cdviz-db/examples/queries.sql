@@ -4,7 +4,7 @@ SELECT DISTINCT "subject" FROM "cdevents_lake";
 -- find all predicate for a subject
 SELECT DISTINCT "predicate" FROM "cdevents_lake" WHERE subject IN ($subjects)
 
--- 
+--
 select payload -> 'subject' -> 'content' -> 'artifactId' as artifact from cdevents_lake
 where subject = 'service'
 and  predicate = 'deployed'
@@ -13,12 +13,13 @@ and  predicate = 'deployed'
 ;
 
 -- 'pkg:oci/myapp@sha256%3A0b31b1c02ff458ad9b7b81cbdf8f028bd54699fa151f221d1e8de6817db93427'
-select alias, description, token from ts_debug('pkg:oci/myapp@sha256%3A0b31b1c02ff458ad9b7b81cbdf8f028bd54699fa151f221d1e8de6817db93427')
+select alias, description, token
+from ts_debug('pkg:oci/myapp@sha256%3A0b31b1c02ff458ad9b7b81cbdf8f028bd54699fa151f221d1e8de6817db93427')
 ;
 
 select regexp_match (
- 'pkg:oci/myapp@sha256%3A0b31b1c02ff458ad9b7b81cbdf8f028bd54699fa151f221d1e8de6817db93427',
-  'pkg:(\w*)/(.*)@(.*)(\?.*)?(#.*)?' 
+  'pkg:oci/myapp@sha256%3A0b31b1c02ff458ad9b7b81cbdf8f028bd54699fa151f221d1e8de6817db93427',
+  'pkg:(\w*)/(.*)@(.*)(\?.*)?(#.*)?'
 )
 ;
 
@@ -27,9 +28,9 @@ DROP type purl_fields;
 
 create TYPE purl_fields AS ("type" varchar(32), "name" varchar(256) , "version" varchar(128), "qualifier" varchar(256), "subpath" varchar(256));
 
-CREATE OR REPLACE FUNCTION extract_purl_fields(purl text) 
-RETURNS purl_fields 
-AS 
+CREATE OR REPLACE FUNCTION extract_purl_fields(purl text)
+RETURNS purl_fields
+AS
 $$
 DECLARE
   result_record public.purl_fields;
