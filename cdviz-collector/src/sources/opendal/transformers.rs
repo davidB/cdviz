@@ -168,9 +168,8 @@ mod tests {
 
     async fn provide_op_entry(prefix: &str) -> (Operator, Entry) {
         // Create fs backend builder.
-        let mut builder = opendal::services::Fs::default();
         let root = Path::new("examples/assets/opendal_fs");
-        builder.root(&root.to_string_lossy());
+        let builder = opendal::services::Fs::default().root(&root.to_string_lossy());
         let op: Operator = Operator::new(builder).unwrap().finish();
         let mut entries = op
             .lister_with(prefix)
