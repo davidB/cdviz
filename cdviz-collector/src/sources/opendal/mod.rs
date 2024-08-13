@@ -39,7 +39,7 @@ impl TryFrom<Config> for OpendalSource {
     type Error = crate::errors::Error;
 
     fn try_from(value: Config) -> Result<Self> {
-        let op: Operator = Operator::via_map(value.kind, value.parameters)?;
+        let op: Operator = Operator::via_iter(value.kind, value.parameters)?;
         let filter = Filter::from_patterns(globset_from(&value.path_patterns)?);
         let transformer = value.transformer.try_into()?;
         Ok(Self {
