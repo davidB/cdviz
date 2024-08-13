@@ -19,7 +19,7 @@ cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2.0"
-cloudevents-sdk = { version = "0.7", features = ["reqwest"] }
+cloudevents-sdk = { version = "0.7", features = ["http-binding"] }
 csv = { version = "1", optional = true }
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
@@ -37,9 +37,9 @@ opendal = { version = "0.46", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
-reqwest = "0.11"
-reqwest-middleware = "0.2"
-reqwest-tracing = "0.4"
+reqwest = "0.12"
+reqwest-middleware = { version = "0.3", features = ["json"] }
+reqwest-tracing = "0.5"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.8.1"
@@ -73,7 +73,6 @@ default = [
   "sink_db",
   "source_http",
   "source_opendal",
-  "reqwest/rustls",
 ] #reqwest is also used as transitive dependencies
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
