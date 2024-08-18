@@ -18,7 +18,7 @@ HEALTHCHECK NONE
 # trivy:ignore:AVD-DS-0001
 FROM cgr.dev/chainguard/glibc-dynamic as cdviz-collector
 LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
-LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 ARG PROFILE=release
 USER nonroot
 COPY --from=build /work/target/${PROFILE}/cdviz-collector /usr/local/bin/cdviz-collector

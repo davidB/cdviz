@@ -2,18 +2,7 @@
 
 License names used in this document are as per [SPDX License List](https://spdx.org/licenses/).
 
-The default license for this project is [AGPL-3.0-only](LICENSE).
-
-## Apache-2.0
-
-The following directories and their subdirectories are licensed under Apache-2.0:
-
-```txt
-examples
-data
-charts
-cdviz-dashboard
-```
+The default license for this project is [Apache License 2.0](LICENSE).
 
 The following directories and their subdirectories are licensed under their original upstream licenses:
 
