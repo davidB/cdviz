@@ -4,7 +4,7 @@
 # see https://edu.chainguard.dev/chainguard/chainguard-images/reference/rust/image_specs/
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
-FROM cgr.dev/chainguard/rust:1.77.0 as build
+FROM cgr.dev/chainguard/rust:1.80.1 as build
 ARG PROFILE=release
 USER nonroot
 WORKDIR /work
