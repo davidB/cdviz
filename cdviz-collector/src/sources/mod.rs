@@ -65,3 +65,51 @@ pub(crate) fn start(_name: String, config: Config, tx: Sender<Message>) -> JoinH
         Ok(())
     })
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct EventPipeline {
+    metadata: Json::Value,
+    header: HashMap<String, String>,
+    body: Json::Value,
+}
+
+pub struct SourcePipeline {
+    extractor: Extractor,
+    transformers: Vec<TransformerEnum>,
+}
+
+trait Extractor {
+    async fn try_next(&mut self) -> Option<Vec<EventPipeline>>;
+}
+
+impl SourcePipeline {
+    fn new(extractor: Extractor, transformers: Vec<Transformer>) -> Self {
+        Self {
+            extractor,
+            transformers,
+        }
+    }
+}
+
+impl Source for SourcePipeline {
+    // TODO optimize avoid using vector and wave (eg replace by stream pipeline, rx for rust ? (stream/visitor flow are harder to test)
+    // TODO avoid crash on Error
+    // Poll from extractor or provide a function "push" to extractor?
+    async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
+        while let Some(event) = self.extractor.try_next().await? {
+            let mut events = vec![event];
+            for transformer in transformers {
+                let mut next_events = vec![];
+                for e in events {
+                    next_events.push_all(transformer.process(event)?);
+                }
+                events = next_events;
+            }
+            for e in events {
+                let cdevent: CDEvent = serde_json::from_slice::<CDEvent>(&e.body)?;
+                // TODO include headers into message
+                tx.send(cdevent.into())?;
+            }
+        }
+    }
+}
