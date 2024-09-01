@@ -12,6 +12,7 @@ rust-version = "1.80.1"
 publish = false
 
 [dependencies]
+async-trait = "0.1"
 axum = { version = "0.7", optional = true }
 axum-tracing-opentelemetry = { version = "0.21", optional = true }
 bytes = { version = "1.7", optional = true }

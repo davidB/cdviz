@@ -1,15 +1,13 @@
 //TODO add persistance for state (time window to not reprocess same file after restart)
 
 mod filter;
-mod texecutors;
-mod transformers;
+mod parsers;
 
 use self::filter::{globset_from, Filter};
-use self::transformers::{Transformer, TransformerEnum};
-use super::Source;
+use self::parsers::{Parser, ParserEnum};
+use super::{EventSourcePipe, Extractor};
 use crate::errors::Result;
-use crate::{Message, Sender};
-use cdevents_sdk::CDEvent;
+use async_trait::async_trait;
 use futures::TryStreamExt;
 use opendal::Metakey;
 use opendal::Operator;
@@ -23,7 +21,7 @@ use tokio::time::sleep;
 use tracing::instrument;
 
 #[serde_as]
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     #[serde(with = "humantime_serde")]
     polling_interval: Duration,
@@ -32,39 +30,38 @@ pub(crate) struct Config {
     parameters: HashMap<String, String>,
     recursive: bool,
     path_patterns: Vec<String>,
-    transformer: transformers::Config,
+    parser: parsers::Config,
 }
 
-impl TryFrom<Config> for OpendalSource {
-    type Error = crate::errors::Error;
+pub(crate) struct OpendalExtractor {
+    op: Operator,
+    polling_interval: Duration,
+    recursive: bool,
+    filter: Filter,
+    parser: ParserEnum,
+}
 
-    fn try_from(value: Config) -> Result<Self> {
-        let op: Operator = Operator::via_iter(value.kind, value.parameters)?;
+impl OpendalExtractor {
+    pub(crate) fn try_from(value: &Config, next: EventSourcePipe) -> Result<Self> {
+        let op: Operator = Operator::via_iter(value.kind, value.parameters.clone())?;
         let filter = Filter::from_patterns(globset_from(&value.path_patterns)?);
-        let transformer = value.transformer.try_into()?;
+        let parser = value.parser.into_parser(next)?;
         Ok(Self {
             op,
             polling_interval: value.polling_interval,
             recursive: value.recursive,
             filter,
-            transformer,
+            parser,
         })
     }
 }
 
-pub(crate) struct OpendalSource {
-    op: Operator,
-    polling_interval: Duration,
-    recursive: bool,
-    filter: Filter,
-    transformer: TransformerEnum,
-}
-
-impl Source for OpendalSource {
-    async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
+#[async_trait]
+impl Extractor for OpendalExtractor {
+    async fn run(&mut self) -> Result<()> {
         loop {
             if let Err(err) =
-                run_once(&tx, &self.op, &self.filter, self.recursive, &self.transformer).await
+                run_once(&self.op, &self.filter, self.recursive, &mut self.parser).await
             {
                 tracing::warn!(?err, filter = ?self.filter, scheme =? self.op.info().scheme(), root =? self.op.info().root(), "fail during scanning");
             }
@@ -74,13 +71,12 @@ impl Source for OpendalSource {
     }
 }
 
-#[instrument]
+#[instrument(skip(parser))]
 pub(crate) async fn run_once(
-    tx: &Sender<Message>,
     op: &Operator,
     filter: &Filter,
     recursive: bool,
-    transformer: &TransformerEnum,
+    parser: &mut ParserEnum,
 ) -> Result<()> {
     // TODO convert into arg of instrument
     tracing::debug!(filter=? filter, scheme =? op.info().scheme(), root =? op.info().root(), "scanning");
@@ -92,22 +88,10 @@ pub(crate) async fn run_once(
         .await?;
     while let Some(entry) = lister.try_next().await? {
         if filter.accept(&entry) {
-            if let Err(err) =
-                process_entry(tx, transformer.transform(op, &entry).await?.into_iter())
-            {
+            if let Err(err) = parser.parse(op, &entry).await {
                 tracing::warn!(?err, path = entry.path(), "fail to process, skip")
             }
         }
     }
     Ok(())
-}
-
-fn process_entry(tx: &Sender<Message>, provider: impl Iterator<Item = Vec<u8>>) -> Result<usize> {
-    let mut count = 0;
-    for json in provider {
-        let cdevent: CDEvent = serde_json::from_slice::<CDEvent>(&json)?;
-        tx.send(cdevent.into())?;
-        count += 1;
-    }
-    Ok(count)
 }

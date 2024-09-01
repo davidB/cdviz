@@ -5,7 +5,7 @@ use crate::Message;
 
 use super::Sink;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {}
 
 impl TryFrom<Config> for DebugSink {

@@ -14,7 +14,7 @@ use db::DbSink;
 use debug::DebugSink;
 use http::HttpSink;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub(crate) enum Config {
     #[cfg(feature = "sink_db")]

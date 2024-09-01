@@ -26,7 +26,7 @@ pub(crate) struct Cli {
     verbose: clap_verbosity_flag::Verbosity,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     sources: HashMap<String, sources::Config>,
     sinks: HashMap<String, sinks::Config>,

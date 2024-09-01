@@ -6,7 +6,7 @@ use tokio::sync::broadcast::Sender;
 
 use super::EventSource;
 
-struct Processor {
+pub(crate) struct Processor {
     next: Sender<Message>,
 }
 

@@ -3,6 +3,7 @@ use crate::{
     errors::{self, Error},
     sources::EventSource,
 };
+use async_trait::async_trait;
 use axum::{
     extract::State,
     http,
@@ -15,7 +16,6 @@ use errors::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::{
-    collections::HashMap,
     net::{IpAddr, SocketAddr},
     sync::{Arc, Mutex},
 };
@@ -47,6 +47,7 @@ struct AppState {
     next: Arc<Mutex<EventSourcePipe>>,
 }
 
+#[async_trait]
 impl Extractor for HttpExtractor {
     async fn run(&mut self) -> Result<()> {
         let app_state = AppState { next: Arc::clone(&self.next) };
@@ -93,7 +94,7 @@ async fn events_collect(
     Json(body): Json<serde_json::Value>,
 ) -> Result<http::StatusCode> {
     tracing::trace!("received {:?}", &body);
-    let event = EventSource { metadata: serde_json::Value::Null, header: HashMap::new(), body };
+    let event = EventSource { body, ..Default::default() };
     let mut next = app_state.next.lock().unwrap();
     next.as_mut().send(event)?;
     Ok(http::StatusCode::CREATED)

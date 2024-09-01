@@ -11,7 +11,7 @@ use reqwest_tracing::TracingMiddleware;
 
 use super::Sink;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     destination: Url,
 }
