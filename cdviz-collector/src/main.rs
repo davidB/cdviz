@@ -1,4 +1,5 @@
 mod errors;
+mod pipes;
 mod sinks;
 mod sources;
 
@@ -29,6 +30,8 @@ pub(crate) struct Cli {
 pub(crate) struct Config {
     sources: HashMap<String, sources::Config>,
     sinks: HashMap<String, sinks::Config>,
+    extractors: HashMap<String, sources::extractors::Config>,
+    transformers: HashMap<String, sources::transformers::Config>,
 }
 
 type Sender<T> = tokio::sync::broadcast::Sender<T>;
