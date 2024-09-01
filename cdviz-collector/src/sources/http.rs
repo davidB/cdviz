@@ -33,9 +33,7 @@ impl TryFrom<Config> for HttpSource {
     type Error = crate::errors::Error;
 
     fn try_from(value: Config) -> Result<Self> {
-        Ok(HttpSource {
-            config: value.clone(),
-        })
+        Ok(HttpSource { config: value.clone() })
     }
 }
 

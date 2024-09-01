@@ -130,10 +130,7 @@ impl Transformer for CsvRowExtractor {
         let mut out = Vec::new();
         for record in rdr.records() {
             let record = record?;
-            let content = headers
-                .iter()
-                .zip(record.iter())
-                .collect::<HashMap<&str, &str>>();
+            let content = headers.iter().zip(record.iter()).collect::<HashMap<&str, &str>>();
             let data = json!({
                 "metadata" : metadata.clone(),
                 "content": content,
@@ -190,10 +187,7 @@ mod tests {
         let_assert!(Some(abs_root) = result["root"].as_str());
         check!(abs_root.ends_with("examples/assets/opendal_fs"));
         let_assert!(
-            Ok(_) = result["last_modified"]
-                .as_str()
-                .unwrap_or_default()
-                .parse::<DateTime<Utc>>()
+            Ok(_) = result["last_modified"].as_str().unwrap_or_default().parse::<DateTime<Utc>>()
         );
     }
 

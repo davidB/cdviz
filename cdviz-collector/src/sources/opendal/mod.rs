@@ -63,14 +63,8 @@ pub(crate) struct OpendalSource {
 impl Source for OpendalSource {
     async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
         loop {
-            if let Err(err) = run_once(
-                &tx,
-                &self.op,
-                &self.filter,
-                self.recursive,
-                &self.transformer,
-            )
-            .await
+            if let Err(err) =
+                run_once(&tx, &self.op, &self.filter, self.recursive, &self.transformer).await
             {
                 tracing::warn!(?err, filter = ?self.filter, scheme =? self.op.info().scheme(), root =? self.op.info().root(), "fail during scanning");
             }

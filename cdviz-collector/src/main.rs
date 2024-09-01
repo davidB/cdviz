@@ -19,11 +19,7 @@ use tokio::sync::broadcast;
 
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
-    #[clap(
-        long = "config",
-        env("CDVIZ_COLLECTOR_CONFIG"),
-        default_value = "cdviz-collector.toml"
-    )]
+    #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"), default_value = "cdviz-collector.toml")]
     config: PathBuf,
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,

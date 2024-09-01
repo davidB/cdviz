@@ -164,26 +164,15 @@ mod tests {
             .expect("start container");
 
         let config = Config {
-            url: pg_container
-                .url()
-                .await
-                .expect("find db url")
-                .replace("localhost", "127.0.0.1"), // replace localhost by 127.0.0.1 because localhost in ipv6 doesn't work
+            url: pg_container.url().await.expect("find db url").replace("localhost", "127.0.0.1"), // replace localhost by 127.0.0.1 because localhost in ipv6 doesn't work
             pool_connections_min: 1,
             pool_connections_max: 30,
         };
         let dbsink = DbSink::try_from(config).unwrap();
         //Basic initialize the db schema
         //TODO improve the loading, initialisation of the db
-        for sql in read_to_string("../cdviz-db/src/schema.sql")
-            .unwrap()
-            .split(';')
-        {
-            sqlx::QueryBuilder::new(sql)
-                .build()
-                .execute(&dbsink.pool)
-                .await
-                .unwrap();
+        for sql in read_to_string("../cdviz-db/src/schema.sql").unwrap().split(';') {
+            sqlx::QueryBuilder::new(sql).build().execute(&dbsink.pool).await.unwrap();
         }
         // container should be keep, else it is remove on drop
         (dbsink, pg_container)
@@ -199,11 +188,7 @@ mod tests {
         let _tracing_guard = tracing::subscriber::set_default(subscriber);
 
         let (sink, _db_guard) = async_pg.await;
-        TestContext {
-            sink,
-            _db_guard,
-            _tracing_guard,
-        }
+        TestContext { sink, _db_guard, _tracing_guard }
     }
 
     #[rstest()]
