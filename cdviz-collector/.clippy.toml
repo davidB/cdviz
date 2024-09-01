@@ -1,0 +1,13 @@
+# Clippy configuration
+# https://doc.rust-lang.org/nightly/clippy/lint_configuration.html
+
+allow-private-module-inception = true
+avoid-breaking-exported-api = false
+disallowed-names = []
+disallowed-macros = [
+    { path = "std::dbg", reason = "it is okay to use during development, but please do not include it in main branch" },
+    { path = "std::println", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log" },
+    { path = "std::eprintln", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log" },
+]
+disallowed-methods = []
+disallowed-types = []
