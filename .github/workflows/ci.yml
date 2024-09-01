@@ -26,12 +26,19 @@ jobs:
     env:
       CARGO_TERM_COLOR: always
       RUST_BACKTRACE: full
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
+      - uses: mozilla-actions/sccache-action@v0.0.5
       - uses: jdx/mise-action@v2
         with:
           experimental: true
       - run: mise install
+        shell: bash
         working-directory: ${{ matrix.folder }}
       - run: task ci
+        shell: bash
         working-directory: ${{ matrix.folder }}
+      - run: ${SCCACHE_PATH} --show-stats
+        shell: bash
