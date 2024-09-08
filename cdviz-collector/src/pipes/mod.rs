@@ -2,6 +2,7 @@ use crate::errors::Result;
 pub mod collect_to_vec;
 pub mod discard_all;
 pub mod log;
+pub mod passthrough;
 
 /// A pipe is an interface to implement processor for inputs.
 /// The implementations can:

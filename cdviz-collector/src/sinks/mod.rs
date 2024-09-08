@@ -26,6 +26,12 @@ pub(crate) enum Config {
     Http(http::Config),
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Self::Debug(debug::Config {})
+    }
+}
+
 impl TryFrom<Config> for SinkEnum {
     type Error = crate::errors::Error;
 

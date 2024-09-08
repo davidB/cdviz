@@ -27,9 +27,11 @@ use tokio::task::JoinHandle;
 // }
 
 // TODO support name/reference for extractor / transformer
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub(crate) struct Config {
+    #[serde(default)]
     extractor: extractors::Config,
+    #[serde(default)]
     transformers: Vec<transformers::Config>,
 }
 

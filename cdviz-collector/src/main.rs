@@ -10,7 +10,7 @@ use clap::Parser;
 use clap_verbosity_flag::Verbosity;
 use errors::{Error, Result};
 use figment::{
-    providers::{Env, Format, Toml},
+    providers::{Env, Format, Serialized, Toml},
     Figment,
 };
 use futures::future::TryJoinAll;
@@ -26,12 +26,12 @@ pub(crate) struct Cli {
     verbose: clap_verbosity_flag::Verbosity,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub(crate) struct Config {
     sources: HashMap<String, sources::Config>,
     sinks: HashMap<String, sinks::Config>,
-    extractors: HashMap<String, sources::extractors::Config>,
-    transformers: HashMap<String, sources::transformers::Config>,
+    // extractors: HashMap<String, sources::extractors::Config>,
+    // transformers: HashMap<String, sources::transformers::Config>,
 }
 
 type Sender<T> = tokio::sync::broadcast::Sender<T>;
@@ -88,7 +88,7 @@ async fn main() -> Result<()> {
     if let Some(dir) = cli.config.parent() {
         std::env::set_current_dir(dir)?;
     }
-    let config: Config = Figment::new()
+    let config: Config = Figment::from(Serialized::defaults(Config::default()))
         .merge(Toml::file(cli.config.as_path()))
         .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
         .extract()?;

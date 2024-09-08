@@ -3,7 +3,6 @@ use crate::{
     errors::{self, Error},
     sources::EventSource,
 };
-use async_trait::async_trait;
 use axum::{
     extract::State,
     http,
@@ -47,7 +46,7 @@ struct AppState {
     next: Arc<Mutex<EventSourcePipe>>,
 }
 
-#[async_trait]
+#[async_trait::async_trait]
 impl Extractor for HttpExtractor {
     async fn run(&mut self) -> Result<()> {
         let app_state = AppState { next: Arc::clone(&self.next) };

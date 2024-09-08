@@ -2,13 +2,6 @@ use super::{EventSource, EventSourcePipe};
 use crate::errors::Result;
 use crate::pipes::Pipe;
 use handlebars::Handlebars;
-use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub(crate) struct Config {
-    template: String,
-}
 
 pub(crate) struct Processor {
     next: EventSourcePipe,
@@ -22,10 +15,6 @@ impl Processor {
         hbs.set_strict_mode(true);
         hbs.register_template_string("tpl", template)?;
         Ok(Self { next, hbs })
-    }
-
-    pub(crate) fn try_from(config: Config, next: EventSourcePipe) -> Result<Self> {
-        Self::new(&config.template, next)
     }
 }
 
