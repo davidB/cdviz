@@ -54,7 +54,7 @@ sqlx = { version = "0.8", features = [
 ], default-features = false, optional = true }
 thiserror = "1"
 time = "0.3"
-tokio = { version = "1.37", features = ["full"] }
+tokio = { version = "1.38", features = ["full"] }
 tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.21" }
 
@@ -64,7 +64,7 @@ assert2 = "0.3"
 cdevents-sdk = { version = "0.1", features = ["testkit"] }
 proptest = "1"
 rstest = "0.22.0"
-rustainers = "0.13"
+rustainers = "0.12"
 tracing-subscriber = "0.3"
 
 [features]
