@@ -32,7 +32,7 @@ env:
   APPLY_FIXES_MODE: commit
 
 concurrency:
-  group: ${{ github.ref }}-${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 # Give the default GITHUB_TOKEN write permission to commit and push, comment
