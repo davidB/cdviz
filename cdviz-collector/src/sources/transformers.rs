@@ -19,12 +19,12 @@ pub(crate) enum Config {
 }
 
 impl Config {
-    pub(crate) fn into_transformer(&self, next: EventSourcePipe) -> Result<EventSourcePipe> {
+    pub(crate) fn make_transformer(&self, next: EventSourcePipe) -> Result<EventSourcePipe> {
         let out: EventSourcePipe = match &self {
             Config::Passthrough => Box::new(passthrough::Processor::new(next)),
             Config::Log(config) => Box::new(log::Processor::try_from(config, next)?),
             Config::DiscardAll => Box::new(discard_all::Processor::new()),
-            Config::Hbs { template } => Box::new(hbs::Processor::new(&template, next)?),
+            Config::Hbs { template } => Box::new(hbs::Processor::new(template, next)?),
         };
         Ok(out)
     }

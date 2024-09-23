@@ -17,7 +17,7 @@ pub(crate) enum Config {
 }
 
 impl Config {
-    pub(crate) fn into_extractor(&self, next: EventSourcePipe) -> Result<Box<dyn Extractor>> {
+    pub(crate) fn make_extractor(&self, next: EventSourcePipe) -> Result<Box<dyn Extractor>> {
         let out: Box<dyn Extractor> = match self {
             Config::Sleep => Box::new(SleepExtractor {}),
             #[cfg(feature = "source_http")]

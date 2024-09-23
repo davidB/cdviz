@@ -16,10 +16,6 @@ impl<I, N> Processor<I, N> {
     pub(crate) fn new(next: N) -> Self {
         Self { next, input_type: PhantomData }
     }
-
-    pub(crate) fn try_from(_config: &Config, next: N) -> Result<Self> {
-        Ok(Self::new(next))
-    }
 }
 
 impl<I, N> Pipe for Processor<I, N>

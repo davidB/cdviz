@@ -41,9 +41,9 @@ pub(crate) fn start(_name: String, config: Config, tx: Sender<Message>) -> JoinH
         let mut tconfigs = config.transformers.clone();
         tconfigs.reverse();
         for tconfig in tconfigs {
-            pipe = tconfig.into_transformer(pipe)?
+            pipe = tconfig.make_transformer(pipe)?
         }
-        let mut extractor = config.extractor.into_extractor(pipe)?;
+        let mut extractor = config.extractor.make_extractor(pipe)?;
         extractor.run().await?;
         Ok(())
     })

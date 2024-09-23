@@ -1,11 +1,11 @@
 use crate::errors::Result;
-pub mod collect_to_vec;
 pub mod discard_all;
 pub mod log;
 pub mod passthrough;
 
 /// A pipe is an interface to implement processor for inputs.
 /// The implementations can:
+///
 /// - discard / drop all inputs
 /// - filter
 /// - transform
@@ -13,6 +13,7 @@ pub mod passthrough;
 /// - retry
 /// - timeout
 /// - ...
+///
 /// The composition of Pipes to create pipeline could be done by configuration,
 /// and the behavior of the pipe should be internal,
 /// so chaining of pipes should not depends of method `map`, `fold`, `filter`,

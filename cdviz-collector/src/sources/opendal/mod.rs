@@ -45,7 +45,7 @@ impl OpendalExtractor {
     pub(crate) fn try_from(value: &Config, next: EventSourcePipe) -> Result<Self> {
         let op: Operator = Operator::via_iter(value.kind, value.parameters.clone())?;
         let filter = Filter::from_patterns(globset_from(&value.path_patterns)?);
-        let parser = value.parser.into_parser(next)?;
+        let parser = value.parser.make_parser(next)?;
         Ok(Self {
             op,
             polling_interval: value.polling_interval,
