@@ -50,8 +50,8 @@ tasks:
   deny:
     deps: [install:cargo-deny]
     cmds:
-      - cargo deny check advisories
-      - cargo deny check bans licenses sources
+      - cargo tree -i opentelemetry
+      - cargo deny --all-features check
 
   lint:
     desc: Lint all the code (megalinter + lint_rust)
@@ -117,3 +117,4 @@ tasks:
       # - task: check
       - task: lint
       - task: test
+      - task: deny
