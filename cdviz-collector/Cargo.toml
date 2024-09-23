@@ -69,7 +69,7 @@ assert2 = "0.3"
 cdevents-sdk = { version = "0.1", features = ["testkit"] }
 proptest = "1"
 rstest = "0.22.0"
-rustainers = "0.12"
+rustainers = "0.13"
 tracing-subscriber = "0.3"
 
 [features]
