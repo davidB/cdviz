@@ -29,7 +29,7 @@ globset = { version = "0.4", optional = true }
 handlebars = { version = "6.0", optional = true }
 handlebars_misc_helpers = { version = "0.16", optional = true }
 humantime-serde = "1.1.1"
-init-tracing-opentelemetry = { version = "0.21", features = [
+init-tracing-opentelemetry = { version = "0.22", features = [
   "otlp",
   "tracing_subscriber_ext",
   "logfmt",
