@@ -14,7 +14,7 @@ use db::DbSink;
 use debug::DebugSink;
 use http::HttpSink;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub(crate) enum Config {
     #[cfg(feature = "sink_db")]
@@ -24,6 +24,12 @@ pub(crate) enum Config {
     Debug(debug::Config),
     #[serde(alias = "http")]
     Http(http::Config),
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self::Debug(debug::Config {})
+    }
 }
 
 impl TryFrom<Config> for SinkEnum {

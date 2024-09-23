@@ -1,7 +1,7 @@
-use super::Source;
+use super::{EventSourcePipe, Extractor};
 use crate::{
     errors::{self, Error},
-    Message, Sender,
+    sources::EventSource,
 };
 use axum::{
     extract::State,
@@ -11,11 +11,13 @@ use axum::{
     Json, Router,
 };
 use axum_tracing_opentelemetry::middleware::{OtelAxumLayer, OtelInResponseLayer};
-use cdevents_sdk::CDEvent;
 use errors::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::net::{IpAddr, SocketAddr};
+use std::{
+    net::{IpAddr, SocketAddr},
+    sync::{Arc, Mutex},
+};
 
 /// The http server config
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -29,26 +31,25 @@ pub(crate) struct Config {
     pub(crate) port: u16,
 }
 
-impl TryFrom<Config> for HttpSource {
-    type Error = crate::errors::Error;
+pub(crate) struct HttpExtractor {
+    config: Config,
+    next: Arc<Mutex<EventSourcePipe>>,
+}
 
-    fn try_from(value: Config) -> Result<Self> {
-        Ok(HttpSource { config: value.clone() })
+impl HttpExtractor {
+    pub fn try_from(value: &Config, next: EventSourcePipe) -> Result<Self> {
+        Ok(HttpExtractor { config: value.clone(), next: Arc::new(Mutex::new(next)) })
     }
 }
-
-pub(crate) struct HttpSource {
-    config: Config,
-}
-
 #[derive(Clone)]
 struct AppState {
-    tx: Sender<Message>,
+    next: Arc<Mutex<EventSourcePipe>>,
 }
 
-impl Source for HttpSource {
-    async fn run(&mut self, tx: Sender<Message>) -> Result<()> {
-        let app_state = AppState { tx };
+#[async_trait::async_trait]
+impl Extractor for HttpExtractor {
+    async fn run(&mut self) -> Result<()> {
+        let app_state = AppState { next: Arc::clone(&self.next) };
 
         let app = app().with_state(app_state);
         // run it
@@ -64,10 +65,11 @@ impl Source for HttpSource {
     }
 }
 
+//TODO make route per extractor/sources
 fn app() -> Router<AppState> {
     // build our application with a route
     Router::new()
-        .route("/cdevents", post(cdevents_collect))
+        .route("/cdevents", post(events_collect))
         // include trace context as header into the response
         .layer(OtelInResponseLayer)
         //start OpenTelemetry trace on incoming request
@@ -80,17 +82,20 @@ async fn health() -> impl IntoResponse {
     http::StatusCode::OK
 }
 
-//TODO validate format of cdevents JSON
 //TODO support events in cloudevents format (extract info from headers)
 //TODO try [deser](https://crates.io/crates/deserr) to return good error
 //TODO use cloudevents
-#[tracing::instrument(skip(app_state, payload))]
-async fn cdevents_collect(
+//TODO add metadata & headers info into SourceEvent
+//TODO log & convert error
+#[tracing::instrument(skip(app_state, body))]
+async fn events_collect(
     State(app_state): State<AppState>,
-    Json(payload): Json<CDEvent>,
+    Json(body): Json<serde_json::Value>,
 ) -> Result<http::StatusCode> {
-    tracing::trace!("received cloudevent {:?}", &payload);
-    app_state.tx.send(Message::from(payload))?;
+    tracing::trace!("received {:?}", &body);
+    let event = EventSource { body, ..Default::default() };
+    let mut next = app_state.next.lock().unwrap();
+    next.as_mut().send(event)?;
     Ok(http::StatusCode::CREATED)
 }
 

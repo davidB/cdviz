@@ -9,7 +9,7 @@ use tracing::Instrument;
 use super::Sink;
 
 /// The database client config
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     /// The database url (with username, password and the database)
     url: String,

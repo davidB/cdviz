@@ -8,6 +8,9 @@ pool_connections_min = 1
 pool_connections_max = 10
 
 [sources.cdevents_json]
+transformers = []
+
+[sources.cdevents_json.extractor]
 type = "opendal"
 kind = "fs"
 polling_interval = "10s"
@@ -15,16 +18,11 @@ polling_interval = "10s"
 parameters = { root = "./opendal_fs" }
 recursive = true
 path_patterns = ["**/*.json"]
-transformer = { extractor = "json" }
+parser = "json"
 
-[sources.cdevents_csv]
-type = "opendal"
-kind = "fs"
-polling_interval = "10s"
-parameters = { root = "./opendal_fs" }
-recursive = false
-path_patterns = ["cdevents.csv"]
-transformer = { extractor = "csv_row", transform = { format = "hbs", content = """
+[[sources.cdevents_csv.transformers]]
+type = "hbs"
+template = """
 {
   "context": {
     "version": "0.4.0-draft",
@@ -45,9 +43,18 @@ transformer = { extractor = "csv_row", transform = { format = "hbs", content = "
     }
   }
 }
-""" } }
+"""
 
-[sources.cdevents_webhook]
+[sources.cdevents_csv.extractor]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
+parameters = { root = "./opendal_fs" }
+recursive = false
+path_patterns = ["cdevents.csv"]
+parser = "csv_row"
+
+[sources.cdevents_webhook.extractor]
 type = "http"
 host = "0.0.0.0"
 port = 8080
