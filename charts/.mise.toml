@@ -2,13 +2,13 @@
 CLUSTER_NAME = "kind-local"
 
 [tools]
-task = '*' # to have a set of simple commands for repetive task (and CI)
+task = '3' # to have a set of simple commands for repetive task (and CI)
 # local kubernetes (k8s)
-# docker = '*'     # to build, to run containers, should be available for some of thoses tools
-# dive = '*'       # to explore content of image container
+# docker = 'latest'     # to build, to run containers, should be available for some of thoses tools
+# dive = 'latest'       # to explore content of image container
 helm = '3.15.4'    # to deploy, check helm chart
 kubectl = '1.31.0' # to interact with k8s cluster
-ctlptl = '0.8'   # to setup / manage local k8s (kind) cluster
+ctlptl = '0.8'     # to setup / manage local k8s (kind) cluster
 kind = '0.24.0'    # to have a local k8s cluster (on top of docker)
-java = '*'       # required by skaffold
-skaffold = '2'   # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
+java = '21'        # required by skaffold
+skaffold = '2'     # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
