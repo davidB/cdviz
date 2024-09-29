@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = ["David Bernard"]
 license = "Apache-2.0"
 repository = "https://github.com/davidB/cdviz"
-rust-version = "1.81.0"
+rust-version = "1.80.0"
 publish = false
 
 [dependencies]
@@ -20,7 +20,7 @@ bytes = { version = "1.7", optional = true }
 cdevents-sdk = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "env"] }
-clap-verbosity-flag = "2.2.0"
+clap-verbosity-flag = "2.2"
 cloudevents-sdk = { version = "0.7", features = ["http-binding"] }
 csv = { version = "1", optional = true }
 enum_dispatch = "0.3"
@@ -34,7 +34,7 @@ handlebars_misc_helpers = { version = "0.17", optional = true, default-features 
   "regex",
   "uuid",
 ] }
-humantime-serde = "1.1.1"
+humantime-serde = "1.1"
 init-tracing-opentelemetry = { version = "0.22", features = [
   "otlp",
   "tracing_subscriber_ext",
@@ -44,7 +44,7 @@ opendal = { version = "0.50", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
-reqwest = "0.12"
+reqwest = { version = "0.12", default-features = false }
 reqwest-middleware = { version = "0.3", features = ["json"] }
 reqwest-tracing = "0.5"
 serde = { version = "1.0", features = ["derive"] }
@@ -69,7 +69,7 @@ assert2 = "0.3"
 # axum-test = "14"
 cdevents-sdk = { version = "0.1", features = ["testkit"] }
 proptest = "1"
-rstest = "0.23.0"
+rstest = "0.23"
 rustainers = "0.12"
 tracing-subscriber = "0.3"
 
@@ -78,7 +78,11 @@ default = [
   "sink_db",
   "source_http",
   "source_opendal",
-  "reqwest/rustls-tls", #reqwest is also used as transitive dependencies
+  #reqwest is also used as transitive dependencies
+  "reqwest/charset",
+  "reqwest/http2",
+  "reqwest/json",
+  "reqwest/rustls-tls",
 ]
 sink_db = ["dep:sqlx"]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
