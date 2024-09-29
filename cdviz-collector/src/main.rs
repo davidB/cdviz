@@ -18,6 +18,11 @@ use serde::{Deserialize, Serialize};
 // use time::OffsetDateTime;
 use tokio::sync::broadcast;
 
+// Use Jemalloc only for musl-64 bits platforms
+#[cfg(all(target_env = "musl", target_pointer_width = "64"))]
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
     #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"), default_value = "cdviz-collector.toml")]

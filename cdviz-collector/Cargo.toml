@@ -95,6 +95,9 @@ source_opendal = [
   "dep:opendal",
 ]
 
+[target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
+version = "0.5"
+
 [package.metadata.release]
 pre-release-commit-message = "🚀 (cargo-release) version {{version}}"
 tag-prefix = ""
