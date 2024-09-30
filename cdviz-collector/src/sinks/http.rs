@@ -13,6 +13,8 @@ use super::Sink;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
+    /// Is the sink is enabled?
+    pub(crate) enabled: bool,
     destination: Url,
 }
 

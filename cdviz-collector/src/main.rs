@@ -23,6 +23,8 @@ use tokio::sync::broadcast;
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
+// TODO add options (or subcommand) to `check-configuration` (regardless of enabled), `configuration-dump` (after consolidation (with filter or not enabled) and exit or not),
+// TODO add options to overide config from cli arguments (like from env)
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
     #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"), default_value = "cdviz-collector.toml")]
@@ -71,6 +73,22 @@ fn init_log(verbose: Verbosity) -> Result<()> {
     Ok(())
 }
 
+fn read_config(config: PathBuf) -> Result<Config> {
+    if !config.exists() {
+        return Err(errors::Error::ConfigNotFound { path: config.to_string_lossy().to_string() });
+    }
+    if let Some(dir) = config.parent() {
+        std::env::set_current_dir(dir)?;
+    }
+    let base_config = include_str!("assets/cdviz-collector.base.toml");
+    let config: Config = Figment::from(Serialized::defaults(Config::default()))
+        .merge(Toml::string(base_config))
+        .merge(Toml::file(config.as_path()))
+        .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
+        .extract()?;
+    Ok(config)
+}
+
 //TODO add garcefull shutdown
 //TODO use logfmt
 //TODO use verbosity to configure tracing & log, but allow override and finer control with RUST_LOG & CDVIZ_COLLECTOR_LOG (higher priority)
@@ -84,25 +102,14 @@ fn init_log(verbose: Verbosity) -> Result<()> {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
-
-    if !cli.config.exists() {
-        return Err(errors::Error::ConfigNotFound {
-            path: cli.config.to_string_lossy().to_string(),
-        });
-    }
-    if let Some(dir) = cli.config.parent() {
-        std::env::set_current_dir(dir)?;
-    }
-    let config: Config = Figment::from(Serialized::defaults(Config::default()))
-        .merge(Toml::file(cli.config.as_path()))
-        .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
-        .extract()?;
+    let config = read_config(cli.config)?;
 
     let (tx, _) = broadcast::channel::<Message>(100);
 
     let sinks = config
         .sinks
         .into_iter()
+        .filter(|(_name, config)| config.is_enabled())
         .inspect(|(name, _config)| tracing::info!(kind = "sink", name, "starting"))
         .map(|(name, config)| sinks::start(name, config, tx.subscribe()))
         .collect::<Vec<_>>();
@@ -115,6 +122,7 @@ async fn main() -> Result<()> {
     let sources = config
         .sources
         .into_iter()
+        .filter(|(_name, config)| config.is_enabled())
         .inspect(|(name, _config)| tracing::info!(kind = "source", name, "starting"))
         .map(|(name, config)| sources::start(name, config, tx.clone()))
         .collect::<Vec<_>>();
@@ -155,8 +163,16 @@ mod tests {
     }
 
     #[rstest]
+    fn read_base_config() {
+        let _config: Config = Figment::new()
+            .merge(Toml::file("./src/assets/cdviz-collector.base.toml"))
+            .extract()
+            .unwrap();
+    }
+
+    #[rstest]
     fn read_samples_config(#[files("./**/cdviz-collector.toml")] path: PathBuf) {
         assert!(path.exists());
-        let _config: Config = Figment::new().merge(Toml::file(path)).extract().unwrap();
+        let _config: Config = read_config(path).unwrap();
     }
 }

@@ -1,0 +1,66 @@
+[sinks.debug]
+enabled = false
+type = "debug"
+
+[sinks.cdviz_db]
+enabled = false
+type = "db"
+url = "postgresql://postgres:passwd@localhost:5432/cdviz"
+pool_connections_min = 1
+pool_connections_max = 10
+
+[sources.cdevents_local_json]
+enabled = false
+transformers = []
+
+[sources.cdevents_local_json.extractor]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
+parameters = { root = "." }
+recursive = true
+path_patterns = ["**/*.json"]
+parser = "json"
+
+[sources.cdevents_local_csv]
+enabled = false
+
+[sources.cdevents_local_csv.extractor]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
+parameters = { root = "." }
+recursive = false
+path_patterns = ["cdevents.csv"]
+parser = "csv_row"
+
+[[sources.cdevents_local_csv.transformers]]
+type = "hbs"
+template = """
+{
+  "context": {
+    "version": "0.4.0-draft",
+    "id": "{{ content.uuid }}",
+    "source": "/event/source/123",
+    "type": "dev.cdevents.service.deployed.0.1.1",
+    "timestamp": "{{ content.timestamp }}"
+  },
+  "subject": {
+    "id": "{{ content.id }}",
+    "source": "/event/source/123",
+    "type": "service",
+    "content": {
+      "environment": {
+        "id": "{{ content.env }}"
+      },
+      "artifactId": "{{ content.artifact_id }}"
+    }
+  }
+}
+"""
+
+[sources.cdevents_webhook.extractor]
+enabled = false
+type = "http"
+host = "0.0.0.0"
+port = 8080

@@ -28,7 +28,17 @@ pub(crate) enum Config {
 
 impl Default for Config {
     fn default() -> Self {
-        Self::Debug(debug::Config {})
+        Self::Debug(debug::Config { enabled: true })
+    }
+}
+
+impl Config {
+    pub(crate) fn is_enabled(&self) -> bool {
+        match self {
+            Self::Db(db::Config { enabled, .. }) => *enabled,
+            Self::Debug(debug::Config { enabled, .. }) => *enabled,
+            Self::Http(http::Config { enabled, .. }) => *enabled,
+        }
     }
 }
 

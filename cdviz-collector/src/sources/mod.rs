@@ -30,9 +30,17 @@ use tokio::task::JoinHandle;
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub(crate) struct Config {
     #[serde(default)]
+    enabled: bool,
+    #[serde(default)]
     extractor: extractors::Config,
     #[serde(default)]
     transformers: Vec<transformers::Config>,
+}
+
+impl Config {
+    pub fn is_enabled(&self) -> bool {
+        self.enabled
+    }
 }
 
 pub(crate) fn start(_name: String, config: Config, tx: Sender<Message>) -> JoinHandle<Result<()>> {

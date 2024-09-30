@@ -6,7 +6,10 @@ use crate::Message;
 use super::Sink;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
-pub(crate) struct Config {}
+pub(crate) struct Config {
+    /// Is the sink is enabled?
+    pub(crate) enabled: bool,
+}
 
 impl TryFrom<Config> for DebugSink {
     type Error = crate::errors::Error;
