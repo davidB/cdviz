@@ -176,7 +176,7 @@ mod tests {
     fn read_base_config_only() {
         Jail::expect_with(|_jail| {
             let config: Config = read_config(None).unwrap();
-            assert_eq!(config.sinks.get("debug").unwrap().is_enabled(), false);
+            assert!(!config.sinks.get("debug").unwrap().is_enabled());
             Ok(())
         });
     }
@@ -186,7 +186,7 @@ mod tests {
         Jail::expect_with(|jail| {
             jail.set_env("CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED", "true");
             let config: Config = read_config(None).unwrap();
-            assert_eq!(config.sinks.get("debug").unwrap().is_enabled(), true);
+            assert!(config.sinks.get("debug").unwrap().is_enabled());
             Ok(())
         });
     }

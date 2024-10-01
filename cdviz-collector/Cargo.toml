@@ -68,11 +68,11 @@ tracing-opentelemetry-instrumentation-sdk = { version = "0.21" }
 assert2 = "0.3"
 # axum-test = "14"
 cdevents-sdk = { version = "0.1", features = ["testkit"] }
+figment = { version = "0.10", features = ["toml", "env", "test"] }
 proptest = "1"
 rstest = "0.23"
 rustainers = "0.12"
 tracing-subscriber = "0.3"
-figment = { version = "0.10", features = ["toml", "env", "test"] }
 
 [features]
 default = [
