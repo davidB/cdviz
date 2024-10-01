@@ -1,4 +1,4 @@
-# hadolint global ignore=DL3006
+# hadolint global ignore=DL3006,DL3008
 # see [How to create small Docker images for Rust](https://kerkour.com/rust-small-docker-image)
 # alternative: https://edu.chainguard.dev/chainguard/chainguard-images/reference/rust/image_specs/
 
@@ -10,7 +10,7 @@ ARG PROFILE=release
 ARG TARGET=x86_64-unknown-linux-musl
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt-get update && apt-get install -y musl-tools musl-dev
+RUN apt-get -y -qq update && apt-get -y -qq install --no-install-recommends musl-tools musl-dev
 RUN update-ca-certificates
 
 # Create appuser
