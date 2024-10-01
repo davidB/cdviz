@@ -5,12 +5,12 @@
 #---------------------------------------------------------------------------------------------------
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
-FROM rust:latest as build
+FROM rust:1.81.0 as build
 ARG PROFILE=release
 ARG TARGET=x86_64-unknown-linux-musl
 
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y musl-tools musl-dev
+RUN apt-get update && apt-get install -y musl-tools musl-dev
 RUN update-ca-certificates
 
 # Create appuser
