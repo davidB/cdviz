@@ -85,11 +85,11 @@ tolerations: []
 affinity: {}
 
 env:
-  HTTP_HOST:
+  CDVIZ_COLLECTOR__SOURCES__CDEVENTS_WEBHOOK__EXTRACTOR__HOST:
     value: "0.0.0.0"
-  HTTP_PORT:
+  CDVIZ_COLLECTOR__SOURCES__CDEVENTS_WEBHOOK__EXTRACTOR__PORT:
     value: "{{ .Values.service.port }}"
-  DATABASE_URL:
+  CDVIZ_COLLECTOR__SINKS__CDVIZ_DB__URL:
     valueFrom:
       secretKeyRef:
         name: "{{ .Values.secrets.name }}"

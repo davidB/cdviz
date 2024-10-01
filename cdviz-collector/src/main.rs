@@ -28,7 +28,7 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
     #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"), default_value = "cdviz-collector.toml")]
-    config: PathBuf,
+    config: Option<PathBuf>,
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
 }
@@ -73,19 +73,22 @@ fn init_log(verbose: Verbosity) -> Result<()> {
     Ok(())
 }
 
-fn read_config(config: PathBuf) -> Result<Config> {
-    if !config.exists() {
-        return Err(errors::Error::ConfigNotFound { path: config.to_string_lossy().to_string() });
+fn read_config(config_file: Option<PathBuf>) -> Result<Config> {
+    if let Some(ref config_file) = config_file {
+        if !config_file.exists() {
+            return Err(errors::Error::ConfigNotFound {
+                path: config_file.to_string_lossy().to_string(),
+            });
+        }
     }
-    if let Some(dir) = config.parent() {
-        std::env::set_current_dir(dir)?;
+    let config_file_base = include_str!("assets/cdviz-collector.base.toml");
+
+    let mut figment = Figment::from(Serialized::defaults(Config::default()))
+        .merge(Toml::string(config_file_base));
+    if let Some(config_file) = config_file {
+        figment = figment.merge(Toml::file(config_file.as_path()));
     }
-    let base_config = include_str!("assets/cdviz-collector.base.toml");
-    let config: Config = Figment::from(Serialized::defaults(Config::default()))
-        .merge(Toml::string(base_config))
-        .merge(Toml::file(config.as_path()))
-        .merge(Env::prefixed("CDVIZ_COLLECTOR_"))
-        .extract()?;
+    let config: Config = figment.merge(Env::prefixed("CDVIZ_COLLECTOR__").split("__")).extract()?;
     Ok(config)
 }
 
@@ -103,6 +106,13 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
     let config = read_config(cli.config)?;
+
+    // TODO Maybe replace by usage of figment::value::magic::RelativePathBuf or a cli argument to define the working directory
+    // if let Some(ref config_file) = cli.config {
+    //     if let Some(dir) = config_file.parent() {
+    //         std::env::set_current_dir(dir)?;
+    //     }
+    // }
 
     let (tx, _) = broadcast::channel::<Message>(100);
 
@@ -148,9 +158,9 @@ async fn main() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use rstest::*;
-
     use super::*;
+    use figment::Jail;
+    use rstest::*;
 
     impl proptest::arbitrary::Arbitrary for Message {
         type Parameters = ();
@@ -163,16 +173,30 @@ mod tests {
     }
 
     #[rstest]
-    fn read_base_config() {
-        let _config: Config = Figment::new()
-            .merge(Toml::file("./src/assets/cdviz-collector.base.toml"))
-            .extract()
-            .unwrap();
+    fn read_base_config_only() {
+        Jail::expect_with(|_jail| {
+            let config: Config = read_config(None).unwrap();
+            assert_eq!(config.sinks.get("debug").unwrap().is_enabled(), false);
+            Ok(())
+        });
+    }
+
+    #[rstest]
+    fn read_base_config_with_env_override() {
+        Jail::expect_with(|jail| {
+            jail.set_env("CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED", "true");
+            let config: Config = read_config(None).unwrap();
+            assert_eq!(config.sinks.get("debug").unwrap().is_enabled(), true);
+            Ok(())
+        });
     }
 
     #[rstest]
     fn read_samples_config(#[files("./**/cdviz-collector.toml")] path: PathBuf) {
-        assert!(path.exists());
-        let _config: Config = read_config(path).unwrap();
+        Jail::expect_with(|_jail| {
+            assert!(path.exists());
+            let _config: Config = read_config(Some(path)).unwrap();
+            Ok(())
+        });
     }
 }
