@@ -7,7 +7,7 @@ appVersion: 0.1.0 # TODO Change this to a version number on release
 
 dependencies:
   - name: postgresql
-    version: 15.5.38
+    version: 16.0.1
     # repository: https://charts.bitnami.com/bitnami
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
