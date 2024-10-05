@@ -44,9 +44,9 @@ opendal = { version = "0.50", default-features = false, features = [
   "services-fs",
   "services-s3",
 ], optional = true }
-reqwest = { version = "0.12", default-features = false }
-reqwest-middleware = { version = "0.3", features = ["json"] }
-reqwest-tracing = "0.5"
+reqwest = { version = "0.12", default-features = false, optional = true }
+reqwest-middleware = { version = "0.3", features = ["json"], optional = true }
+reqwest-tracing = { version = "0.5", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.10"
@@ -77,15 +77,21 @@ tracing-subscriber = "0.3"
 [features]
 default = [
   "sink_db",
+  "sink_http",
   "source_http",
   "source_opendal",
-  #reqwest is also used as transitive dependencies
-  "reqwest/charset",
-  "reqwest/http2",
-  "reqwest/json",
-  "reqwest/rustls-tls",
 ]
 sink_db = ["dep:sqlx"]
+sink_http = [
+    "dep:reqwest",
+    "dep:reqwest-middleware",
+    "dep:reqwest-tracing",
+    #reqwest is also used as transitive dependencies
+    "reqwest/charset",
+    "reqwest/http2",
+    "reqwest/json",
+    "reqwest/rustls-tls",
+]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = [
   "dep:bytes",

@@ -12,6 +12,7 @@ use tokio::task::JoinHandle;
 #[cfg(feature = "sink_db")]
 use db::DbSink;
 use debug::DebugSink;
+#[cfg(feature = "sink_http")]
 use http::HttpSink;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -22,6 +23,7 @@ pub(crate) enum Config {
     Db(db::Config),
     #[serde(alias = "debug")]
     Debug(debug::Config),
+    #[cfg(feature = "sink_http")]
     #[serde(alias = "http")]
     Http(http::Config),
 }
@@ -37,6 +39,7 @@ impl Config {
         match self {
             Self::Db(db::Config { enabled, .. }) => *enabled,
             Self::Debug(debug::Config { enabled, .. }) => *enabled,
+            #[cfg(feature = "sink_http")]
             Self::Http(http::Config { enabled, .. }) => *enabled,
         }
     }
@@ -50,6 +53,7 @@ impl TryFrom<Config> for SinkEnum {
             #[cfg(feature = "sink_db")]
             Config::Db(config) => DbSink::try_from(config)?.into(),
             Config::Debug(config) => DebugSink::try_from(config)?.into(),
+            #[cfg(feature = "sink_http")]
             Config::Http(config) => HttpSink::try_from(config)?.into(),
         };
         Ok(out)
@@ -62,6 +66,7 @@ enum SinkEnum {
     #[cfg(feature = "sink_db")]
     DbSink,
     DebugSink,
+    #[cfg(feature = "sink_http")]
     HttpSink,
 }
 
