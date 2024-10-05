@@ -407,3 +407,4 @@ report/
 megalinter-reports/
 Chart.lock
 .aider*
+proptest-regressions/

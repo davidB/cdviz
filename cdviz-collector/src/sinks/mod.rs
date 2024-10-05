@@ -1,6 +1,9 @@
 #[cfg(feature = "sink_db")]
 pub(crate) mod db;
 pub(crate) mod debug;
+#[cfg(feature = "sink_folder")]
+pub(crate) mod folder;
+#[cfg(feature = "sink_http")]
 pub(crate) mod http;
 
 use crate::errors::Result;
@@ -12,6 +15,8 @@ use tokio::task::JoinHandle;
 #[cfg(feature = "sink_db")]
 use db::DbSink;
 use debug::DebugSink;
+#[cfg(feature = "sink_folder")]
+use folder::FolderSink;
 #[cfg(feature = "sink_http")]
 use http::HttpSink;
 
@@ -26,6 +31,9 @@ pub(crate) enum Config {
     #[cfg(feature = "sink_http")]
     #[serde(alias = "http")]
     Http(http::Config),
+    #[cfg(feature = "sink_folder")]
+    #[serde(alias = "folder")]
+    Folder(folder::Config),
 }
 
 impl Default for Config {
@@ -37,8 +45,11 @@ impl Default for Config {
 impl Config {
     pub(crate) fn is_enabled(&self) -> bool {
         match self {
+            #[cfg(feature = "sink_db")]
             Self::Db(db::Config { enabled, .. }) => *enabled,
             Self::Debug(debug::Config { enabled, .. }) => *enabled,
+            #[cfg(feature = "sink_folder")]
+            Self::Folder(folder::Config { enabled, .. }) => *enabled,
             #[cfg(feature = "sink_http")]
             Self::Http(http::Config { enabled, .. }) => *enabled,
         }
@@ -53,6 +64,8 @@ impl TryFrom<Config> for SinkEnum {
             #[cfg(feature = "sink_db")]
             Config::Db(config) => DbSink::try_from(config)?.into(),
             Config::Debug(config) => DebugSink::try_from(config)?.into(),
+            #[cfg(feature = "sink_folder")]
+            Config::Folder(config) => FolderSink::try_from(config)?.into(),
             #[cfg(feature = "sink_http")]
             Config::Http(config) => HttpSink::try_from(config)?.into(),
         };
@@ -66,6 +79,8 @@ enum SinkEnum {
     #[cfg(feature = "sink_db")]
     DbSink,
     DebugSink,
+    #[cfg(feature = "sink_folder")]
+    FolderSink,
     #[cfg(feature = "sink_http")]
     HttpSink,
 }

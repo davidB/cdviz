@@ -72,25 +72,31 @@ figment = { version = "0.10", features = ["toml", "env", "test"] }
 proptest = "1"
 rstest = "0.23"
 rustainers = "0.12"
+tempfile = "3"
+test-strategy = "0.4"
 tracing-subscriber = "0.3"
+uuid = "1.10"
 
 [features]
+# default is "full" feature set
 default = [
   "sink_db",
+  "sink_folder",
   "sink_http",
   "source_http",
   "source_opendal",
 ]
 sink_db = ["dep:sqlx"]
+sink_folder = ["dep:opendal"]
 sink_http = [
-    "dep:reqwest",
-    "dep:reqwest-middleware",
-    "dep:reqwest-tracing",
-    #reqwest is also used as transitive dependencies
-    "reqwest/charset",
-    "reqwest/http2",
-    "reqwest/json",
-    "reqwest/rustls-tls",
+  "dep:reqwest",
+  "dep:reqwest-middleware",
+  "dep:reqwest-tracing",
+  #reqwest is also used as transitive dependencies
+  "reqwest/charset",
+  "reqwest/http2",
+  "reqwest/json",
+  "reqwest/rustls-tls",
 ]
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = [
