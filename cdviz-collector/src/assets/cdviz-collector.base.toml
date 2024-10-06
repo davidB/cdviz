@@ -2,6 +2,12 @@
 enabled = false
 type = "debug"
 
+[sinks.cdevents_local_json]
+enabled = false
+type = "folder"
+kind = "fs"
+parameters = { root = "./sink" }
+
 [sinks.cdviz_db]
 enabled = false
 type = "db"
@@ -17,7 +23,7 @@ transformers = []
 type = "opendal"
 kind = "fs"
 polling_interval = "10s"
-parameters = { root = "." }
+parameters = { root = "./source" }
 recursive = true
 path_patterns = ["**/*.json"]
 parser = "json"
