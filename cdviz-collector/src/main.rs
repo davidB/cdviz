@@ -31,7 +31,7 @@ pub(crate) struct Cli {
     #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"))]
     config: Option<PathBuf>,
     /// The directory to use as the working directory.
-    #[clap(short = 'C',long = "directory")]
+    #[clap(short = 'C', long = "directory")]
     directory: Option<PathBuf>,
 
     #[command(flatten)]

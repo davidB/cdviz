@@ -45,8 +45,8 @@ mod tests {
     use super::*;
     use assert2::let_assert;
     use cdevents_sdk::CDEvent;
-    use test_strategy::proptest;
     use std::path::PathBuf;
+    use test_strategy::proptest;
 
     fn assert_eq(cdevent: &CDEvent, file: PathBuf) {
         assert!(file.exists());
