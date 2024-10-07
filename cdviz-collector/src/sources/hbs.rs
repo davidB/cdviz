@@ -13,6 +13,8 @@ impl Processor {
         let mut hbs = Handlebars::new();
         hbs.set_dev_mode(false);
         hbs.set_strict_mode(true);
+        hbs.register_escape_fn(handlebars::no_escape);
+        handlebars_misc_helpers::register(&mut hbs);
         hbs.register_template_string("tpl", template)?;
         Ok(Self { next, hbs })
     }

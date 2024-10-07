@@ -71,7 +71,7 @@ impl Extractor for OpendalExtractor {
     }
 }
 
-#[instrument(skip(parser))]
+#[instrument(skip(op, filter, recursive, parser))]
 pub(crate) async fn run_once(
     op: &Operator,
     filter: &Filter,

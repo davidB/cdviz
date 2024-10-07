@@ -19,7 +19,42 @@ parameters = { root = "./opendal_fs" }
 enabled = true
 
 [sources.cdevents_local_csv.extractor]
+type = "opendal"
+kind = "fs"
+polling_interval = "10s"
 parameters = { root = "./opendal_fs" }
+recursive = false
+path_patterns = ["cdevents.csv"]
+parser = "csv_row"
+
+[[sources.cdevents_local_csv.transformers]]
+type = "hbs"
+template = """
+{
+    "metadata": {{  json_to_str metadata }},
+    "header": {{  json_to_str header }},
+    "body": {
+        "context": {
+            "version": "0.4.0-draft",
+            "id": "{{ body.uuid }}",
+            "source": "/event/source/123",
+            "type": "dev.cdevents.service.deployed.0.1.1",
+            "timestamp": "{{ body.timestamp }}"
+        },
+        "subject": {
+            "id": "{{ body.id }}",
+            "source": "/event/source/123",
+            "type": "service",
+            "content": {
+                "environment": {
+                    "id": "{{ body.env }}"
+                },
+                "artifactId": "{{ body.artifact_id }}"
+            }
+        }
+    }
+}
+"""
 
 [sources.cdevents_webhook.extractor]
 enabled = true
