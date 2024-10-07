@@ -27,8 +27,13 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 // TODO add options to overide config from cli arguments (like from env)
 #[derive(Debug, Clone, clap::Parser)]
 pub(crate) struct Cli {
-    #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"), default_value = "cdviz-collector.toml")]
+    /// The configuration file to use.
+    #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"))]
     config: Option<PathBuf>,
+    /// The directory to use as the working directory.
+    #[clap(short = 'C',long = "directory")]
+    directory: Option<PathBuf>,
+
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
 }
@@ -107,12 +112,9 @@ async fn main() -> Result<()> {
     init_log(cli.verbose)?;
     let config = read_config(cli.config)?;
 
-    // TODO Maybe replace by usage of figment::value::magic::RelativePathBuf or a cli argument to define the working directory
-    // if let Some(ref config_file) = cli.config {
-    //     if let Some(dir) = config_file.parent() {
-    //         std::env::set_current_dir(dir)?;
-    //     }
-    // }
+    if let Some(dir) = cli.directory {
+        std::env::set_current_dir(dir)?;
+    }
 
     let (tx, _) = broadcast::channel::<Message>(100);
 

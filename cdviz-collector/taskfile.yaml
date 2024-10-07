@@ -109,7 +109,7 @@ tasks:
 
   run:
     cmds:
-      - cargo run -- -vv --config ./examples/assets/cdviz-collector.toml
+      - CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED=true cargo run -- -vv --config ./examples/assets/cdviz-collector.toml --directory ./examples/assets
 
   ci:
     desc: set of tasks run by CI

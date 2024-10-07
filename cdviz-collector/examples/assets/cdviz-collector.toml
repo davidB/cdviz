@@ -1,12 +1,13 @@
-[sinks.debug]
-enabled = true
-
-[sinks.cdviz_db]
-enabled = true
+# [sinks.cdviz_db]
+# enabled = true
 # type = "db"
 # url = "postgresql://postgres:passwd@localhost:5432/cdviz"
 # pool_connections_min = 1
 # pool_connections_max = 10
+
+[sinks.cdevents_local_json]
+enabled = true
+parameters = { root = "./sinks.off" }
 
 [sources.cdevents_local_json]
 enabled = true
