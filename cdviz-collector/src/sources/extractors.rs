@@ -17,6 +17,7 @@ pub(crate) enum Config {
 }
 
 impl Config {
+    //TODO include some metadata into the extractor like the source name
     pub(crate) fn make_extractor(&self, next: EventSourcePipe) -> Result<Box<dyn Extractor>> {
         let out: Box<dyn Extractor> = match self {
             Config::Sleep => Box::new(SleepExtractor {}),

@@ -19,6 +19,7 @@ bytes = { version = "1.7", optional = true }
 # cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 cdevents-sdk = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
+cid = "0.11"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2"
 cloudevents-sdk = { version = "0.7", features = ["http-binding"] }
@@ -40,6 +41,7 @@ init-tracing-opentelemetry = { version = "0.22", features = [
   "tracing_subscriber_ext",
   "logfmt",
 ] }
+multihash = "0.19"
 opendal = { version = "0.50", default-features = false, features = [
   "services-fs",
   "services-s3",
@@ -50,6 +52,7 @@ reqwest-tracing = { version = "0.5", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.11"
+sha2 = "0.10"
 sqlx = { version = "0.8", features = [
   "postgres",
   "runtime-tokio",

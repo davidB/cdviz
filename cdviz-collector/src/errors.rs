@@ -56,6 +56,9 @@ pub(crate) enum Error {
     CloudEventMessage(#[from] cloudevents::message::Error),
     // #[error(transparent)]
     // ConfigTomlError(#[from] toml::de::Error),
+    #[error(transparent)]
+    MultiHash(#[from] multihash::Error),
+
     #[error("{txt}")]
     Custom { txt: String },
     // #[error(transparent)]
