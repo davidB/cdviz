@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 tasks:
-
   plan:
     desc: "update the migrations to reflect target `src/schema.sql`"
     cmds:
@@ -16,7 +15,9 @@ tasks:
 
   db-local:start-empty:
     desc: "start a container for the local db (empty: no data, no schema)"
-    cmd: docker run --name cdviz-db -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
+    cmds:
+      - task: db-local:stop
+      - docker run --name cdviz-db -e "POSTGRES_PASSWORD=$PG_LOCAL_PWD" -e "POSTGRES_USER=$PG_LOCAL_USER" -p 5432:5432 -d postgres:16.1
 
   db-local:start:
     desc: "start a container for the local db with the migrations applied"

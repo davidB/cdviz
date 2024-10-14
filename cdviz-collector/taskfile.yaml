@@ -96,12 +96,13 @@ tasks:
       PG_OFFLINE_URL: "postgres://{{.PG_OFFLINE_USER}}:{{.PG_OFFLINE_PWD}}@127.0.0.1:5432/{{.PG_OFFLINE_USER}}"
     cmds:
       - docker rm -f postgres || true
+      - sleep 3
       - docker run --name postgres
         -e POSTGRES_PASSWORD={{.PG_OFFLINE_PWD}}
         -e POSTGRES_USER={{.PG_OFFLINE_USER}}
         -v {{.USER_WORKING_DIR}}/../cdviz-db/src:/docker-entrypoint-initdb.d
         -p 5432:5432 -d postgres:16
-      - sleep 3
+      - sleep 5
       - sqlx database create --database-url {{.PG_OFFLINE_URL}}
       - cargo sqlx prepare --workspace --database-url {{.PG_OFFLINE_URL}}
       - sqlx database drop -y --database-url {{.PG_OFFLINE_URL}}

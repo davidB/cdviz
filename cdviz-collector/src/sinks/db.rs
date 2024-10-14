@@ -3,7 +3,6 @@ use crate::{errors::Result, Message};
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
-use time::OffsetDateTime;
 use tracing::Instrument;
 
 use super::Sink;
@@ -67,13 +66,7 @@ impl Sink for DbSink {
         store_event(
             &self.pool,
             // TODO build Event from raw json
-            Event {
-                timestamp: *message.cdevent.timestamp(),
-                payload: serde_json::to_value(&message.cdevent)?,
-                subject: message.cdevent.subject().content().subject().to_lowercase(),
-                predicate: message.cdevent.subject().content().predicate().to_string(),
-                version: None,
-            },
+            Event { payload: serde_json::to_value(&message.cdevent)? },
         )
         .await?;
         Ok(())
@@ -82,11 +75,7 @@ impl Sink for DbSink {
 
 #[derive(sqlx::FromRow)]
 struct Event {
-    timestamp: OffsetDateTime,
     payload: serde_json::Value,
-    subject: String,
-    predicate: String,
-    version: Option<[i32; 3]>,
 }
 
 // basic handmade span far to be compliant with
@@ -107,20 +96,10 @@ fn build_otel_span(db_operation: &str) -> tracing::Span {
 
 // store event as json in db (postgresql using sqlx)
 async fn store_event(pg_pool: &PgPool, event: Event) -> Result<()> {
-    sqlx::query!(
-        r#"
-        INSERT INTO cdevents_lake (timestamp, payload, subject, predicate, version)
-        VALUES ($1, $2, $3, $4, $5)
-        "#,
-        event.timestamp,
-        event.payload,
-        event.subject,
-        event.predicate,
-        event.version.as_ref().map(|x| x.as_slice()),
-    )
-    .execute(pg_pool)
-    .instrument(build_otel_span("INSERT INTO events"))
-    .await?;
+    sqlx::query!("CALL store_cdevent($1)", event.payload)
+        .execute(pg_pool)
+        .instrument(build_otel_span("store_cdevent"))
+        .await?;
     Ok(())
 }
 
@@ -174,10 +153,12 @@ mod tests {
         };
         let dbsink = DbSink::try_from(config).unwrap();
         //Basic initialize the db schema
-        //TODO improve the loading, initialisation of the db
-        for sql in read_to_string("../cdviz-db/src/schema.sql").unwrap().split(';') {
-            sqlx::QueryBuilder::new(sql).build().execute(&dbsink.pool).await.unwrap();
-        }
+        // A transaction is implicitly created for the all file so some instruction could be applied
+        // -- { severity: Error, code: "25001", message: "CREATE INDEX CONCURRENTLY cannot run inside a transaction block",
+        sqlx::raw_sql(read_to_string("../cdviz-db/src/schema.sql").unwrap().as_str())
+            .execute(&dbsink.pool)
+            .await
+            .unwrap();
         // container should be keep, else it is remove on drop
         (dbsink, pg_container)
     }
