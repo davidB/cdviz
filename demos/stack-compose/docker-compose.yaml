@@ -17,7 +17,7 @@ services:
     # network_mode: host
     ports:
       - "5432:5432"
-    # user: "${UID}:${GID}"
+    user: "${UID}:${GID}"
     volumes:
       # In this example, we share the folder `db-data` in our root repository, with the default PostgreSQL data path
       # It means that every time the repository is modifying the data inside
@@ -50,7 +50,7 @@ services:
       - 5499:8080
   grafana:
     image: docker.io/grafana/grafana-oss:11.2.2
-    container_name: grafana
+    # container_name: grafana
     restart: unless-stopped
     environment:
       # see https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
@@ -74,8 +74,8 @@ services:
     # network_mode: host
     ports:
       - "3000:3000"
-    # user: "${UID}:${GID}"
-    user: "0"
+    user: "${UID}:${GID}"
+    # user: "0"
     volumes:
       # - ./tmp/grafana/data/:/var/lib/grafana/:rw
       - ../../cdviz-grafana/datasources:/etc/grafana/provisioning/datasources:ro

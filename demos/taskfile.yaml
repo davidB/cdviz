@@ -1,23 +1,30 @@
-version: '3'
+version: "3"
 
 tasks:
-
   clean:
     cmds:
       - task: stack:compose:clean
 
-
   stack:compose:up:
     dir: stack-compose
     cmds:
+      # - export UID=$(id -u)
+      # - export GID=$(id -g)
+      # - echo ">> $UID -- $GID"
       # - mkdir -p tmp/grafana/data || true
-      # - mkdir -p tmp/postgres/data || true
+      - mkdir -p tmp/postgres/data || true
+      - chown -R "$UID:$GID" tmp
       - docker compose -f docker-compose.yaml up
+
+  stack:compose:down:
+    dir: stack-compose
+    cmds:
+      - docker compose -f docker-compose.yaml stop
 
   stack:compose:clean:
     dir: stack-compose
     cmds:
-      - docker compose -f docker-compose.yaml stop
+      - task: stack:compose:down
       - docker compose -f docker-compose.yaml rm
       - sudo rm -rf tmp
 
@@ -33,14 +40,15 @@ tasks:
     internal: true
     dir: ../cdviz-collector
     cmds:
-          - cargo build
+      - cargo build
 
   example_01:run:
     dir: example_01
-    deps: [ "cdviz-collector:build" ]
+    deps: ["cdviz-collector:build"]
     env:
-      RUST_LOG: "cdviz_collector::sinks=debug,info" # cdviz_collector::sources=debug
+      # RUST_LOG: "cdviz_collector::sinks=debug,info" # cdviz_collector::sources=debug
       OTEL_TRACES_SAMPLER: always_off
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://127.0.0.1:4317"
+      CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED: "false"
     cmds:
-      - ../../cdviz-collector/target/debug/cdviz-collector --config ./cdviz-collector.toml
+      - ../../cdviz-collector/target/debug/cdviz-collector -vv --config ./cdviz-collector.toml
