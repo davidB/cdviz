@@ -1,47 +1,59 @@
-[sinks.debug]
-type = "debug"
-
 [sinks.cdviz_db]
+enabled = true
 type = "db"
 url = "postgresql://cdviz:postgres-password@127.0.0.1:5432/cdviz"
 pool_connections_min = 1
 pool_connections_max = 10
 
-[sources.cdevents_json]
-type = "opendal"
-kind = "fs"
-polling_interval = "10s"
-parameters = { root = "./cdevents" }
-recursive = false
-path_patterns = ["*.json"]
-transformer = { extractor = "json" }
+[sources.cdevents_local_json]
+enabled = true
 
-[sources.cdevents_csv]
+[sources.cdevents_local_json.extractor]
 type = "opendal"
 kind = "fs"
-polling_interval = "10s"
+polling_interval = "60s"
+parameters = { root = "./cdevents" }
+recursive = true
+path_patterns = ["*.json"]
+parser = "json"
+
+[sources.cdevents_local_csv]
+enabled = true
+
+[sources.cdevents_local_csv.extractor]
+type = "opendal"
+kind = "fs"
+polling_interval = "20s"
 parameters = { root = "./cdevents" }
 recursive = false
-path_patterns = ["cdevents.csv"]
-transformer = { extractor = "csv_row", transform = { format = "hbs", content = """
+path_patterns = ["*.csv"]
+parser = "csv_row"
+
+[[sources.cdevents_local_csv.transformers]]
+type = "hbs"
+template = """
 {
-  "context": {
-    "version": "0.4.0-draft",
-    "id": "{{ content.uuid }}",
-    "source": "/event/source/123",
-    "type": "dev.cdevents.service.deployed.0.1.1",
-    "timestamp": "{{ content.timestamp }}"
-  },
-  "subject": {
-    "id": "{{ content.id }}",
-    "source": "/event/source/123",
-    "type": "service",
-    "content": {
-      "environment": {
-        "id": "{{ content.env }}"
-      },
-      "artifactId": "{{ content.artifact_id }}"
+    "metadata": {{  json_to_str metadata }},
+    "header": {{  json_to_str header }},
+    "body": {
+        "context": {
+            "version": "0.4.0-draft",
+            "id": "0",
+            "source": "/event/source/123",
+            "type": "dev.cdevents.service.deployed.0.1.1",
+            "timestamp": "{{ body.timestamp }}"
+        },
+        "subject": {
+            "id": "{{ body.id }}",
+            "source": "/event/source/123",
+            "type": "service",
+            "content": {
+                "environment": {
+                    "id": "{{ body.env }}"
+                },
+                "artifactId": "{{ body.artifact_id }}"
+            }
+        }
     }
-  }
 }
-""" } }
+"""

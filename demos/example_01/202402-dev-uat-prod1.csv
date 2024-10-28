@@ -1,0 +1,5 @@
+timestamp,id,env,artifact_id
+2024-02-01T11:00:00.926Z,app-a,group1-dev/eu-1/ns-a,pkg:oci/app-a@0.1.0
+2024-02-01T11:30:00.926Z,app-a,group1-uat/eu-1/ns-a,pkg:oci/app-a@0.1.0
+2024-02-02T13:10:00.926Z,app-a,group1-prod/eu-2/ns-a,pkg:oci/app-a@0.1.0
+2024-02-03T13:10:10.926Z,app-a,group1-prod/us-2/ns-a,pkg:oci/app-a@0.1.0
