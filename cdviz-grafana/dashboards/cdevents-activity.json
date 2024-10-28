@@ -24,10 +24,11 @@
   "panels": [
     {
       "datasource": {
+        "default": true,
         "type": "grafana-postgresql-datasource",
         "uid": "cdviz-db"
       },
-      "description": "Count by Subject & Predicate",
+      "description": "Count by Subject & Predicate over the time window",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -66,8 +67,8 @@
           "values": true
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "asc"
         }
       },
       "targets": [
@@ -79,7 +80,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT COUNT(*) as count, subject, predicate\nFROM cdevents_lake\nWHERE $__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)\nGROUP BY subject, predicate\nORDER BY subject, predicate\nLIMIT $limit",
+          "rawSql": "SELECT COUNT(*) as count, subject, predicate\nFROM cdevents_lake\nWHERE $__timeFilter(imported_at)\nGROUP BY subject, predicate\nORDER BY subject, predicate",
           "refId": "A",
           "sql": {
             "columns": [
@@ -119,11 +120,13 @@
           "table": "cdevents_lake"
         }
       ],
+      "title": "How many events?",
       "transparent": true,
       "type": "piechart"
     },
     {
       "datasource": {
+        "default": true,
         "type": "grafana-postgresql-datasource",
         "uid": "cdviz-db"
       },
@@ -208,7 +211,7 @@
         ]
       },
       "gridPos": {
-        "h": 13,
+        "h": 22,
         "w": 24,
         "x": 0,
         "y": 6
@@ -231,7 +234,7 @@
           }
         ]
       },
-      "pluginVersion": "10.2.6",
+      "pluginVersion": "11.2.2",
       "targets": [
         {
           "datasource": {
@@ -241,7 +244,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n    \"imported_at\",\n    \"timestamp\",\n    \"subject\",\n    \"predicate\",\n    \"payload\"->'subject' as \"payload_subject\",\n    \"payload\"->'context' as \"payload_context\"\nFROM cdevents_lake\nWHERE $__timeFilter(imported_at) AND subject IN ($subjects) AND predicate IN ($predicates)\nORDER BY imported_at DESC\nLIMIT $limit",
+          "rawSql": "SELECT\n  \"imported_at\",\n  \"timestamp\",\n  \"subject\",\n  \"predicate\",\n  \"payload\" -> 'subject' as \"payload_subject\",\n  \"payload\" -> 'context' as \"payload_context\"\nFROM\n  cdevents_lake\nWHERE\n  $__timeFilter(imported_at)\n  AND ('${subjects:raw}' = '' OR subject IN (${subjects:sqlstring}))\n  AND ('${predicates:raw}' = '' OR predicate IN (${predicates:sqlstring}))\nORDER BY\n  imported_at DESC\nLIMIT\n  $limit",
           "refId": "A",
           "sql": {
             "columns": [
@@ -272,6 +275,7 @@
   "templating": {
     "list": [
       {
+        "allValue": "",
         "current": {
           "selected": true,
           "text": ["All"],
@@ -289,13 +293,14 @@
         "name": "subjects",
         "options": [],
         "query": "SELECT DISTINCT \"subject\" FROM \"cdevents_lake\" WHERE \"subject\" LIKE '$__searchFilter' AND $__timeFilter(imported_at)",
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 5,
         "type": "query"
       },
       {
+        "allValue": "",
         "current": {
           "selected": true,
           "text": ["All"],
@@ -313,7 +318,7 @@
         "name": "predicates",
         "options": [],
         "query": "SELECT DISTINCT \"predicate\" FROM \"cdevents_lake\" WHERE \"predicate\" LIKE '$__searchFilter' AND subject IN ($subjects) AND $__timeFilter(imported_at)",
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 5,
@@ -321,7 +326,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "50",
           "value": "50"
         },
@@ -354,6 +359,7 @@
           }
         ],
         "query": "50,100,500,1000",
+        "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -374,6 +380,6 @@
   "timezone": "",
   "title": "cdevents activity",
   "uid": "a6eeda5f-2550-438c-9477-8ed28ab50ce6",
-  "version": 4,
+  "version": 1,
   "weekStart": ""
 }

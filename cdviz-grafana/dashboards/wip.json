@@ -1,0 +1,197 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-testdata-datasource",
+        "uid": "ae1ny3gvzi39cd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "fillOpacity": 33,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.2.2",
+      "targets": [
+        {
+          "csvContent": "timestamp,id,env,artifact_id\n2024-05-01T11:00:00.926Z,app-b,group1-dev/eu-1/ns-b,pkg:oci/app-b@0.1.0-2-ge453fae\n2024-05-01T11:30:00.926Z,app-b,group1-prod/eu-2/ns-b,pkg:oci/app-b@0.1.0-2-ge453fae",
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "ae1ny3gvzi39cd"
+          },
+          "refId": "A",
+          "scenarioId": "csv_content"
+        }
+      ],
+      "title": "Panel Title",
+      "transformations": [
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "env",
+            "emptyValue": "null",
+            "rowField": "timestamp",
+            "valueField": "artifact_id"
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "destinationType": "time",
+                "targetField": "timestamp\\env"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "default": false,
+        "type": "grafana-testdata-datasource",
+        "uid": "grafana-testdata-datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "afterRender": "// TODO Add [brush](https://d3js.org/d3-brush#d3-brush) to select a region, like with grafana panel\n// TODO Add configuration (from DB ?) to define: order of environment, collor & shape of environment / service / artifact /...\nimport(\"https://esm.sh/d3@7.9.0\").then((d3) => {\n  const data = context.data[0];\n  const marginTop = 20;\n  const marginRight = 20;\n  const marginBottom = 30;\n  // TODO use the width on label on Y axis\n  const marginLeft = 100;\n\n  // Create the SVG container.\n  // try to fit the container to the size of the panel\n  const container = context.element;\n  const rect = container.parentNode.getBoundingClientRect();\n  const width = rect.width; //640;\n  const height = rect.height; //400;\n  const svg = d3\n    .create(\"svg\")\n    //.attr(\"width\", width)\n    //.attr(\"height\", height)\n    .attr(\"width\", \"93%\")\n    //.attr(\"font-family\", \"sans-serif\")\n    //.attr(\"font-size\", 10)\n    .style(\"display\", \"block\");\n  //.style(\"max-width\", \"100%\")\n  //.style(\"height\", \"auto\")\n  svg\n    .attr(\"viewBox\", [0, 0, width, height])\n    .attr(\"preserveAspectRatio\", \"none\");\n  //.append(\"g\")\n  //.attr(\"transform\", \"translate(\" + marginLeft + \",\" + marginTop + \")\")\n\n  const environments = [...new Set(data.map((d) => d.env))];\n  environments.sort();\n  //const timewindow = context.data.map((d) => d.timestamp);\n\n  // Declare the x (horizontal position) scale.\n  // TODO display timeusing grafana format\n  const x = d3\n    .scaleUtc()\n    .domain([context.grafana.timeRange.from, context.grafana.timeRange.to])\n    .range([marginLeft, width - marginRight]);\n\n  // Declare the y (vertical position) scale.\n  // const y = d3.scaleLinear()\n  //     .domain([0, 100])\n  //     .range([height - marginBottom, marginTop]);\n  const y = d3\n    .scaleBand()\n    .domain(environments)\n    .range([marginTop, height - marginBottom])\n    .padding(0.1);\n  //.round(false)\n  // Create the categorical scales.\n  // see https://observablehq.com/@d3/color-schemes\n  const color = d3.scaleOrdinal(\n    data.map((d) => d.id),\n    d3.schemeCategory10\n  );\n\n  // Add the x-axis.\n  svg\n    .append(\"g\")\n    .attr(\"transform\", `translate(0,${height - marginBottom})`)\n    .call(d3.axisBottom(x));\n\n  // Add the y-axis.\n  svg\n    .append(\"g\")\n    .attr(\"transform\", `translate(${marginLeft},0)`)\n    .call(d3.axisLeft(y))\n    .call((g) => g.select(\".domain\").remove());\n\n  // Add tooltip on over\n  const getTooltipContent = (d) => {\n    return `<b>${d.id}</b>\n        <br/>env: ${d.env}\n        <br/>artifact: ${d.artifact_id}\n        <br/>timestamp: ${d3.isoFormat(new Date(d.timestamp))}\n        `;\n  };\n\n  const tooltip = d3\n    .select(document.createElement(\"div\"))\n    .style(\"position\", \"absolute\")\n    .style(\"pointer-events\", \"none\")\n    .style(\"top\", 0)\n    //.style(\"left\", \"100px\")\n    .style(\"opacity\", 0)\n    .style(\"background\", \"white\")\n    .style(\"color\", \"black\")\n    .style(\"border-radius\", \"5px\")\n    .style(\"box-shadow\", \"0 0 10px rgba(0,0,0,.25)\")\n    .style(\"padding\", \"10px\")\n    .style(\"line-height\", \"1.3\")\n    .style(\"font\", \"11px sans-serif\");\n  const mouseover = (event, d) => {\n    //d3.select(this).select(\"circle\").attr(\"fill\", color(d.id).darker())\n    tooltip.style(\"opacity\", 1).html(getTooltipContent(d));\n  };\n\n  const mouseleave = (event, d) => {\n    //d3.select(this).select(\"circle\").attr(\"fill\", color(d.id))\n    tooltip.style(\"opacity\", 0);\n  };\n  const mousemove = (event, d) => {\n    const [x, y] = d3.pointer(event);\n    tooltip.style(\"left\", x + \"px\").style(\"top\", y + \"px\");\n  };\n\n  // TODO Add label ?\n  // Add datapoint into a group\n  svg\n    .append(\"g\")\n    .selectAll(\"circle\")\n    .data(data)\n    // .join(\n    //     enter => enter.append(\"circle\")\n    //         .attr(\"cx\", d => x(d.timestamp))\n    //         .attr(\"cy\", d => y(d.env))\n    //         .attr(\"r\", 3)\n    //         .attr(\"fill\", d => color(d.id))\n    //         ,\n    //     update => update,\n    //     exit => exit.remove()\n    // )\n    .join(\"circle\")\n    .attr(\"cx\", (d) => x(d.timestamp))\n    .attr(\"cy\", (d) => y(d.env) + y.bandwidth() / 2)\n    .attr(\"r\", 3)\n    .attr(\"fill\", (d) => color(d.id))\n    //.on(\"mousemove\", mousemove)\n    .on(\"mouseleave\", mouseleave)\n    .on(\"mouseover\", mouseover);\n\n  svg.on(\"mousemove\", mousemove);\n  container.replaceChildren(svg.node());\n  container.appendChild(tooltip.node());\n});\n",
+        "content": "",
+        "contentPartials": [],
+        "defaultContent": "The query didn't return any results.",
+        "editor": {
+          "format": "none",
+          "language": "html"
+        },
+        "editors": ["afterRender"],
+        "externalStyles": [],
+        "helpers": "",
+        "renderMode": "data",
+        "styles": "",
+        "wrap": false
+      },
+      "pluginVersion": "5.4.0",
+      "targets": [
+        {
+          "csvContent": "timestamp,id,env,artifact_id\n2024-01-01T11:00:00.926Z,app-a,group1-dev/eu-1/ns-a,pkg:oci/app-a@0.0.1\n2024-01-01T11:30:00.926Z,app-a,group1-uat/eu-1/ns-a,pkg:oci/app-a@0.0.1\n2024-01-02T13:10:00.926Z,app-a,group1-prod/eu-2/ns-a,pkg:oci/app-a@0.0.1\n2024-01-02T13:10:10.926Z,app-a,group1-prod/us-2/ns-a,pkg:oci/app-a@0.0.1\n",
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "grafana-testdata-datasource"
+          },
+          "refId": "A",
+          "scenarioId": "csv_content"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "marcusolsson-dynamictext-panel"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2023-12-31T23:00:00.000Z",
+    "to": "2024-01-31T23:00:00.000Z"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "experimentation",
+  "uid": "ee1q9cq5yqtxce",
+  "version": 3,
+  "weekStart": ""
+}
