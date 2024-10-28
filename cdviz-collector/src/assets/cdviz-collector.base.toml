@@ -17,7 +17,6 @@ pool_connections_max = 10
 
 [sources.cdevents_local_json]
 enabled = false
-transformers = []
 
 [sources.cdevents_local_json.extractor]
 type = "opendal"
@@ -28,8 +27,20 @@ recursive = true
 path_patterns = ["**/*.json"]
 parser = "json"
 
-[sources.cdevents_webhook.extractor]
+[sources.cdevents_webhook]
 enabled = false
+
+[sources.cdevents_webhook.extractor]
 type = "http"
 host = "0.0.0.0"
 port = 8080
+
+[transformers.passthrough]
+type = "passthrough"
+
+[transformers.log]
+type = "log"
+target = "transformers::log"
+
+[transformers.discard_all]
+type = "discard_all"

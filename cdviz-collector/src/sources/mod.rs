@@ -7,7 +7,7 @@ mod opendal;
 mod send_cdevents;
 pub(crate) mod transformers;
 
-use crate::errors::Result;
+use crate::errors::{Error, Result};
 use crate::pipes::Pipe;
 use crate::{Message, Sender};
 use async_trait::async_trait;
@@ -34,12 +34,32 @@ pub(crate) struct Config {
     #[serde(default)]
     extractor: extractors::Config,
     #[serde(default)]
+    transformer_refs: Vec<String>,
+    #[serde(default)]
     transformers: Vec<transformers::Config>,
 }
 
 impl Config {
     pub fn is_enabled(&self) -> bool {
         self.enabled
+    }
+
+    pub fn resolve_transformers(
+        &mut self,
+        configs: &HashMap<String, transformers::Config>,
+    ) -> Result<()> {
+        let mut transformers = self
+            .transformer_refs
+            .iter()
+            .map(|name| {
+                configs
+                    .get(name)
+                    .cloned()
+                    .ok_or_else(|| Error::ConfigTransformerNotFound(name.to_string()))
+            })
+            .collect::<Result<Vec<_>>>()?;
+        self.transformers.append(&mut transformers);
+        Ok(())
     }
 }
 

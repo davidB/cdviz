@@ -1,20 +1,16 @@
+mod config;
 mod errors;
 mod pipes;
 mod sinks;
 mod sources;
 
-use std::{collections::HashMap, path::PathBuf};
+use std::path::PathBuf;
 
 use cdevents_sdk::CDEvent;
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
 use errors::{Error, Result};
-use figment::{
-    providers::{Env, Format, Serialized, Toml},
-    Figment,
-};
 use futures::future::TryJoinAll;
-use serde::{Deserialize, Serialize};
 // use time::OffsetDateTime;
 use tokio::sync::broadcast;
 
@@ -36,14 +32,6 @@ pub(crate) struct Cli {
 
     #[command(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, Default)]
-pub(crate) struct Config {
-    sources: HashMap<String, sources::Config>,
-    sinks: HashMap<String, sinks::Config>,
-    // extractors: HashMap<String, sources::extractors::Config>,
-    // transformers: HashMap<String, sources::transformers::Config>,
 }
 
 type Sender<T> = tokio::sync::broadcast::Sender<T>;
@@ -78,25 +66,6 @@ fn init_log(verbose: Verbosity) -> Result<()> {
     Ok(())
 }
 
-fn read_config(config_file: Option<PathBuf>) -> Result<Config> {
-    if let Some(ref config_file) = config_file {
-        if !config_file.exists() {
-            return Err(errors::Error::ConfigNotFound {
-                path: config_file.to_string_lossy().to_string(),
-            });
-        }
-    }
-    let config_file_base = include_str!("assets/cdviz-collector.base.toml");
-
-    let mut figment = Figment::from(Serialized::defaults(Config::default()))
-        .merge(Toml::string(config_file_base));
-    if let Some(config_file) = config_file {
-        figment = figment.merge(Toml::file(config_file.as_path()));
-    }
-    let config: Config = figment.merge(Env::prefixed("CDVIZ_COLLECTOR__").split("__")).extract()?;
-    Ok(config)
-}
-
 //TODO add garcefull shutdown
 //TODO use logfmt
 //TODO use verbosity to configure tracing & log, but allow override and finer control with RUST_LOG & CDVIZ_COLLECTOR_LOG (higher priority)
@@ -110,7 +79,7 @@ fn read_config(config_file: Option<PathBuf>) -> Result<Config> {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     init_log(cli.verbose)?;
-    let config = read_config(cli.config)?;
+    let config = config::Config::from_file(cli.config)?;
 
     if let Some(dir) = cli.directory {
         std::env::set_current_dir(dir)?;
@@ -161,8 +130,6 @@ async fn main() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use figment::Jail;
-    use rstest::*;
 
     impl proptest::arbitrary::Arbitrary for Message {
         type Parameters = ();
@@ -172,33 +139,5 @@ mod tests {
             use proptest::prelude::*;
             (any::<CDEvent>()).prop_map(Message::from).boxed()
         }
-    }
-
-    #[rstest]
-    fn read_base_config_only() {
-        Jail::expect_with(|_jail| {
-            let config: Config = read_config(None).unwrap();
-            assert!(!config.sinks.get("debug").unwrap().is_enabled());
-            Ok(())
-        });
-    }
-
-    #[rstest]
-    fn read_base_config_with_env_override() {
-        Jail::expect_with(|jail| {
-            jail.set_env("CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED", "true");
-            let config: Config = read_config(None).unwrap();
-            assert!(config.sinks.get("debug").unwrap().is_enabled());
-            Ok(())
-        });
-    }
-
-    #[rstest]
-    fn read_samples_config(#[files("./**/cdviz-collector.toml")] path: PathBuf) {
-        Jail::expect_with(|_jail| {
-            assert!(path.exists());
-            let _config: Config = read_config(Some(path)).unwrap();
-            Ok(())
-        });
     }
 }

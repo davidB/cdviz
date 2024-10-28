@@ -17,6 +17,7 @@ parameters = { root = "./opendal_fs" }
 
 [sources.cdevents_local_csv]
 enabled = true
+transformer_refs = ["service_deployed"]
 
 [sources.cdevents_local_csv.extractor]
 type = "opendal"
@@ -27,7 +28,13 @@ recursive = false
 path_patterns = ["cdevents.csv"]
 parser = "csv_row"
 
-[[sources.cdevents_local_csv.transformers]]
+[sources.cdevents_webhook]
+enabled = true
+# type = "http"
+# host = "0.0.0.0"
+# port = 8080
+
+[transformers.service_deployed]
 type = "hbs"
 template = """
 {
@@ -55,9 +62,3 @@ template = """
     }
 }
 """
-
-[sources.cdevents_webhook.extractor]
-enabled = true
-# type = "http"
-# host = "0.0.0.0"
-# port = 8080

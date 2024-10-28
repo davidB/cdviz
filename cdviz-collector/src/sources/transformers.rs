@@ -10,7 +10,7 @@ pub(crate) enum Config {
     Passthrough,
     #[serde(alias = "log")]
     Log(log::Config),
-    #[serde(alias = "discrad_all")]
+    #[serde(alias = "discard_all")]
     DiscardAll,
     #[serde(alias = "hbs")]
     Hbs { template: String },
