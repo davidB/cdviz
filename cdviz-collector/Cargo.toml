@@ -14,7 +14,7 @@ publish = false
 [dependencies]
 async-trait = "0.1"
 axum = { version = "0.7", optional = true }
-axum-tracing-opentelemetry = { version = "0.21", optional = true }
+axum-tracing-opentelemetry = { version = "0.23", optional = true }
 bytes = { version = "1.7", optional = true }
 # cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 cdevents-sdk = "0.1"
