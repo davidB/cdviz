@@ -14,7 +14,7 @@ publish = false
 [dependencies]
 async-trait = "0.1"
 axum = { version = "0.7", optional = true }
-axum-tracing-opentelemetry = { version = "0.21", optional = true }
+axum-tracing-opentelemetry = { version = "0.23", optional = true }
 bytes = { version = "1.7", optional = true }
 # cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 cdevents-sdk = "0.1"
@@ -36,7 +36,7 @@ handlebars_misc_helpers = { version = "0.17", optional = true, default-features 
   "uuid",
 ] }
 humantime-serde = "1.1"
-init-tracing-opentelemetry = { version = "0.22", features = [
+init-tracing-opentelemetry = { version = "0.23", features = [
   "otlp",
   "tracing_subscriber_ext",
   "logfmt",
@@ -65,7 +65,7 @@ thiserror = "1"
 time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
-tracing-opentelemetry-instrumentation-sdk = { version = "0.21" }
+tracing-opentelemetry-instrumentation-sdk = { version = "0.23" }
 
 [dev-dependencies]
 assert2 = "0.3"
