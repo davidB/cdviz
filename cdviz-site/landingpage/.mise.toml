@@ -3,6 +3,6 @@
 
 [tasks]
 install = "bun install"
-dev = "bun run dev"
-build = "bun run build"
-preview = "bun run preview"
+dev = "bun run vite dev"
+build = "bun run vite build"
+preview = "bun run vitepreview"

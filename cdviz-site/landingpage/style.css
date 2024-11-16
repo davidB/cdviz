@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* @font-face {
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("./assets/fonts/roboto/Roboto-webfont.woff") format("woff");
+  } */
+
+  @font-face {
+    font-family: "Droid Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("./assets/fonts/droid-sans/DroidSans-webfont.woff") format("woff");
+  }
+
+  :root {
+    --text: #0e141a;
+    --background: #c9d2de;
+    --primary: #f29107;
+    --secondary: #a294c2;
+    --accent: #755190;
+  }
+  .dark {
+    --text: #e4ebf1;
+    --background: #212a36;
+    --primary: #f8960d;
+    --secondary: #4b3d6b;
+    --accent: #936fae;
+  }
+}
