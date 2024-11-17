@@ -2,21 +2,21 @@ apiVersion: 1
 
 # mainly to use with demos/docker-compose
 providers:
-- name: 'cdviz-db-dashboards'
-  # <int> org id. will default to orgId 1 if not specified
-  orgId: 1
-  # <string, required> name of the dashboard folder. Required
-  folder: 'cdviz'
-  # <string> folder UID. will be automatically generated if not specified
-  folderUid: ''
-  # <string, required> provider type. Required
-  type: file
-  # <bool> disable dashboard deletion
-  disableDeletion: false
-  # <bool> enable dashboard editing
-  editable: true
-  # <int> how often Grafana will scan for changed dashboards
-  updateIntervalSeconds: 30
-  options:
-    # <string, required> path to dashboard files on disk. Required
-    path: /var/provisioning/dashboards
+  - name: "cdviz-db-dashboards"
+    # <int> org id. will default to orgId 1 if not specified
+    orgId: 1
+    # <string, required> name of the dashboard folder. Required
+    folder: "cdviz"
+    # <string> folder UID. will be automatically generated if not specified
+    folderUid: ""
+    # <string, required> provider type. Required
+    type: file
+    # <bool> disable dashboard deletion
+    disableDeletion: false
+    # <bool> enable dashboard editing
+    editable: true
+    # <int> how often Grafana will scan for changed dashboards
+    updateIntervalSeconds: 30
+    options:
+      # <string, required> path to dashboard files on disk. Required
+      path: /var/provisioning/dashboards
