@@ -1,7 +1,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -29,16 +29,14 @@ export default {
         // primary: "#f39208", //"#ff6600",
         // secondary: "#685ff2",
         // accent: "#3d12d9",
-        'text': 'var(--text)',
-        'background': 'var(--background)',
-        'primary': 'var(--primary)',
-        'secondary': 'var(--secondary)',
-        'accent': 'var(--accent)',
+        text: "var(--text)",
+        background: "var(--background)",
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
+        accent: "var(--accent)",
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+  plugins: [require("@tailwindcss/forms")],
   darkMode: "selector",
 };
