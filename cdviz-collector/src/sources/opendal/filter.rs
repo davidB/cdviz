@@ -45,7 +45,7 @@ fn is_match<P>(pattern: &Option<GlobSet>, path: P) -> bool
 where
     P: AsRef<std::path::Path>,
 {
-    pattern.as_ref().map(|p| p.is_match(path)).unwrap_or(true)
+    pattern.as_ref().map_or(true, |globset| globset.is_match(path))
 }
 
 pub(crate) fn globset_from(patterns: &[String]) -> Result<Option<GlobSet>> {

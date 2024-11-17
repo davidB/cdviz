@@ -1,7 +1,9 @@
 # Clippy configuration
 # https://doc.rust-lang.org/nightly/clippy/lint_configuration.html
 
+allow-expect-in-tests = true
 allow-private-module-inception = true
+allow-unwrap-in-tests = true
 avoid-breaking-exported-api = false
 disallowed-names = []
 disallowed-macros = [

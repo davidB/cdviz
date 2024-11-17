@@ -21,6 +21,7 @@ pub(crate) enum Config {
 }
 
 impl Config {
+    #[allow(clippy::unnecessary_wraps)]
     pub(crate) fn make_parser(&self, next: EventSourcePipe) -> Result<ParserEnum> {
         let out = match self {
             Config::Json => JsonParser::new(next).into(),

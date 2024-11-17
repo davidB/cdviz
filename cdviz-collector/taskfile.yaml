@@ -64,7 +64,7 @@ tasks:
     cmds:
       - cargo fmt --all -- --check
       - cargo sort --grouped --check
-      - cargo clippy --workspace --all-features --all-targets -- --deny warnings --allow deprecated --allow unknown-lints
+      - cargo clippy --workspace --all-features --all-targets
 
   lint:dependencies:
     deps: [install:cargo-machete]

@@ -81,7 +81,7 @@ tracing-subscriber = "0.3"
 uuid = "1.11"
 
 [features]
-# default is "full" feature set
+## default is "full" feature set
 default = [
   "sink_db",
   "sink_folder",
@@ -89,18 +89,20 @@ default = [
   "source_http",
   "source_opendal",
 ]
+#! ### Sinks
 sink_db = ["dep:sqlx"]
 sink_folder = ["dep:opendal"]
 sink_http = [
   "dep:reqwest",
   "dep:reqwest-middleware",
   "dep:reqwest-tracing",
-  #reqwest is also used as transitive dependencies
+  # reqwest is also used as transitive dependencies
   "reqwest/charset",
   "reqwest/http2",
   "reqwest/json",
   "reqwest/rustls-tls",
 ]
+#! ### Sources
 source_http = ["dep:axum", "dep:axum-tracing-opentelemetry"]
 source_opendal = [
   "dep:bytes",
@@ -125,3 +127,29 @@ ignored = [
   "handlebars_misc_helpers",
   "humantime_serde",
 ] # auto-registered and used at runtime
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "allow" # not published as crate
+deprecated = "warn"
+warnings = "deny"
+
+[lints.clippy]
+perf = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+cargo = { level = "allow", priority = -1 }   # not published as crate
+undocumented_unsafe_blocks = "deny"
+dbg_macro = "warn"
+decimal_literal_representation = "warn"
+expect_used = "warn"
+if_then_some_else_none = "warn"
+indexing_slicing = "allow"
+large_include_file = "warn"
+min_ident_chars = "warn"
+print_stderr = "warn"
+print_stdout = "warn"
+rc_buffer = "warn"
+rc_mutex = "warn"
+unnecessary_safety_doc = "warn"
+unwrap_used = "warn"
+module_name_repetitions = "allow"

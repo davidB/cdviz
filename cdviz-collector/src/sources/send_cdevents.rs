@@ -37,6 +37,7 @@ impl Pipe for Processor {
     }
 }
 
+#[allow(clippy::indexing_slicing)]
 fn set_id_zero_to_cid(body: &mut serde_json::Value) -> Result<()> {
     if body["context"]["id"] == json!("0") {
         // Do not use multihash-codetable because one of it's transitive dependency raise
@@ -85,6 +86,6 @@ mod tests {
         assert_eq!(
             body["context"]["id"],
             json!("bafkreid4ehbvqs3ae6l3htd35xhxbhbfehfkrq3gyf242s6nfcsnz2ueve")
-        )
+        );
     }
 }

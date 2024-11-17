@@ -89,7 +89,7 @@ pub(crate) async fn run_once(
     while let Some(entry) = lister.try_next().await? {
         if filter.accept(&entry) {
             if let Err(err) = parser.parse(op, &entry).await {
-                tracing::warn!(?err, path = entry.path(), "fail to process, skip")
+                tracing::warn!(?err, path = entry.path(), "fail to process, skip");
             }
         }
     }

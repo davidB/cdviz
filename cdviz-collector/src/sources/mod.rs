@@ -63,13 +63,13 @@ impl Config {
     }
 }
 
-pub(crate) fn start(_name: String, config: Config, tx: Sender<Message>) -> JoinHandle<Result<()>> {
+pub(crate) fn start(_name: &str, config: Config, tx: Sender<Message>) -> JoinHandle<Result<()>> {
     tokio::spawn(async move {
         let mut pipe: EventSourcePipe = Box::new(send_cdevents::Processor::new(tx));
         let mut tconfigs = config.transformers.clone();
         tconfigs.reverse();
         for tconfig in tconfigs {
-            pipe = tconfig.make_transformer(pipe)?
+            pipe = tconfig.make_transformer(pipe)?;
         }
         let mut extractor = config.extractor.make_extractor(pipe)?;
         extractor.run().await?;

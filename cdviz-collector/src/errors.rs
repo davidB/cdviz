@@ -88,7 +88,7 @@ impl From<&str> for Error {
 
 impl FromStr for Error {
     type Err = Infallible;
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        Ok(to_err(s))
+    fn from_str(txt: &str) -> std::result::Result<Self, Self::Err> {
+        Ok(to_err(txt))
     }
 }

@@ -116,9 +116,11 @@ mod tests {
     struct TestContext {
         pub sink: DbSink,
         // keep db container to drop it after the test
-        _db_guard: Container<Postgres>,
+        #[allow(dead_code)]
+        db_guard: Container<Postgres>,
         // keep tracing subscriber
-        _tracing_guard: tracing::subscriber::DefaultGuard,
+        #[allow(dead_code)]
+        tracing_guard: tracing::subscriber::DefaultGuard,
     }
 
     // #[fixture]
@@ -170,10 +172,10 @@ mod tests {
         let subscriber = tracing_subscriber::FmtSubscriber::builder()
             .with_max_level(tracing::Level::WARN)
             .finish();
-        let _tracing_guard = tracing::subscriber::set_default(subscriber);
+        let tracing_guard = tracing::subscriber::set_default(subscriber);
 
-        let (sink, _db_guard) = async_pg.await;
-        TestContext { sink, _db_guard, _tracing_guard }
+        let (sink, db_guard) = async_pg.await;
+        TestContext { sink, db_guard, tracing_guard }
     }
 
     #[rstest()]

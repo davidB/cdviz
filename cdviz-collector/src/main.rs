@@ -53,12 +53,12 @@ impl From<CDEvent> for Message {
     }
 }
 
-fn init_log(verbose: Verbosity) -> Result<()> {
+fn init_log(verbose: &Verbosity) -> Result<()> {
     std::env::set_var(
         "RUST_LOG",
         std::env::var("RUST_LOG")
             .ok()
-            .or_else(|| verbose.log_level().map(|l| l.to_string()))
+            .or_else(|| verbose.log_level().map(|level| level.to_string()))
             .unwrap_or_else(|| "off".to_string()),
     );
     // very opinionated init of tracing, look as is source to make your own
@@ -78,7 +78,7 @@ fn init_log(verbose: Verbosity) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
-    init_log(cli.verbose)?;
+    init_log(&cli.verbose)?;
     let config = config::Config::from_file(cli.config)?;
 
     if let Some(dir) = cli.directory {
@@ -105,7 +105,7 @@ async fn main() -> Result<()> {
         .into_iter()
         .filter(|(_name, config)| config.is_enabled())
         .inspect(|(name, _config)| tracing::info!(kind = "source", name, "starting"))
-        .map(|(name, config)| sources::start(name, config, tx.clone()))
+        .map(|(name, config)| sources::start(&name, config, tx.clone()))
         .collect::<Vec<_>>();
 
     if sources.is_empty() {

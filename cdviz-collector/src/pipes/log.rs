@@ -20,6 +20,7 @@ impl<I, N> Processor<I, N> {
         Self { target, next, input_type: PhantomData }
     }
 
+    #[allow(clippy::unnecessary_wraps)]
     pub(crate) fn try_from(config: &Config, next: N) -> Result<Self> {
         Ok(Self::new(config.target.clone(), next))
     }

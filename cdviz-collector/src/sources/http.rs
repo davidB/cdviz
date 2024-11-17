@@ -23,11 +23,9 @@ use std::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     /// Listening host of http server
-    /// #[clap(long, env("HTTP_HOST"), default_value = "0.0.0.0")]
     pub(crate) host: IpAddr,
 
     /// Listening port of http server
-    /// #[clap(long, env("HTTP_PORT"), default_value = "8080")]
     pub(crate) port: u16,
 }
 
@@ -37,6 +35,7 @@ pub(crate) struct HttpExtractor {
 }
 
 impl HttpExtractor {
+    #[allow(clippy::unnecessary_wraps)]
     pub fn try_from(value: &Config, next: EventSourcePipe) -> Result<Self> {
         Ok(HttpExtractor { config: value.clone(), next: Arc::new(Mutex::new(next)) })
     }
@@ -94,7 +93,7 @@ async fn events_collect(
 ) -> Result<http::StatusCode> {
     tracing::trace!("received {:?}", &body);
     let event = EventSource { body, ..Default::default() };
-    let mut next = app_state.next.lock().unwrap();
+    let mut next = app_state.next.lock().map_err(|err| Error::from(err.to_string()))?;
     next.as_mut().send(event)?;
     Ok(http::StatusCode::CREATED)
 }
@@ -106,7 +105,7 @@ impl IntoResponse for Error {
         //     Error::Db(e) => (http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
         //     _ => (http::StatusCode::INTERNAL_SERVER_ERROR, "".to_string()),
         // };
-        let (status, error_message) = (http::StatusCode::INTERNAL_SERVER_ERROR, "".to_string());
+        let (status, error_message) = (http::StatusCode::INTERNAL_SERVER_ERROR, String::new());
         tracing::warn!(?error_message);
         let body = Json(json!({
             "error": error_message,
