@@ -14,8 +14,8 @@ publish = false
 [dependencies]
 async-trait = "0.1"
 axum = { version = "0.7", optional = true }
-axum-tracing-opentelemetry = { version = "0.23", optional = true }
-bytes = { version = "1.7", optional = true }
+axum-tracing-opentelemetry = { version = "0.24", optional = true }
+bytes = { version = "1.8", optional = true }
 # cdevents-sdk = { git = "https://github.com/cdevents/sdk-rust" }
 cdevents-sdk = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
@@ -36,7 +36,7 @@ handlebars_misc_helpers = { version = "0.17", optional = true, default-features 
   "uuid",
 ] }
 humantime-serde = "1.1"
-init-tracing-opentelemetry = { version = "0.23", features = [
+init-tracing-opentelemetry = { version = "0.24", features = [
   "otlp",
   "tracing_subscriber_ext",
   "logfmt",
@@ -47,7 +47,7 @@ opendal = { version = "0.50", default-features = false, features = [
   "services-s3",
 ], optional = true }
 reqwest = { version = "0.12", default-features = false, optional = true }
-reqwest-middleware = { version = "0.3", features = ["json"], optional = true }
+reqwest-middleware = { version = "0.4", features = ["json"], optional = true }
 reqwest-tracing = { version = "0.5", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -65,7 +65,7 @@ thiserror = "1"
 time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
-tracing-opentelemetry-instrumentation-sdk = { version = "0.23" }
+tracing-opentelemetry-instrumentation-sdk = { version = "0.24" }
 
 [dev-dependencies]
 assert2 = "0.3"
@@ -78,7 +78,7 @@ rustainers = "0.12"
 tempfile = "3"
 test-strategy = "0.4"
 tracing-subscriber = "0.3"
-uuid = "1.10"
+uuid = "1.11"
 
 [features]
 # default is "full" feature set
