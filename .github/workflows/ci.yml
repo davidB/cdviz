@@ -40,6 +40,9 @@ jobs:
         with:
           files: |
             ${{ matrix.folder }}/**
+      - name: log
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "::notice ::no changed files on ${{ matrix.folder }} - skipping"
       - uses: mozilla-actions/sccache-action@v0.0.6
         if: steps.changed-files.outputs.any_changed == 'true'
       - uses: jdx/mise-action@v2
