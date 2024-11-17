@@ -61,7 +61,7 @@ sqlx = { version = "0.8", features = [
   "time",
   "json",
 ], default-features = false, optional = true }
-thiserror = "1"
+thiserror = "2"
 time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
