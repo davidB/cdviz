@@ -1,70 +1,55 @@
-use std::{convert::Infallible, str::FromStr};
-
-use thiserror::Error;
-
 use crate::Message;
 
 pub(crate) type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Error, Debug)]
+// Nightly requires enabling this feature:
+// #![feature(error_generic_member_access)]
+#[derive(Debug, derive_more::Error, derive_more::Display, derive_more::From)]
+#[non_exhaustive]
 pub(crate) enum Error {
-    #[error("config file not found: {path}")]
-    ConfigNotFound { path: String },
-    #[error("config of transformer not found: {0}")]
-    ConfigTransformerNotFound(String),
-    #[error("no source found (configured or started)")]
+    #[from(ignore)]
+    #[display("config file not found: {path}")]
+    ConfigNotFound {
+        path: String,
+    },
+    #[from(ignore)]
+    #[display("config of transformer not found: {}", _0)]
+    ConfigTransformerNotFound(#[error(ignore)] String),
+    #[display("no source found (configured or started)")]
     NoSource,
-    #[error("no sink found (configured or started)")]
+    #[display("no sink found (configured or started)")]
     NoSink,
     // #[error(transparent)]
-    // WatchDirectory(#[from] notify::Error),
+    // WatchDirectory(#[error(backtrace, source)] notify::Error),
     #[cfg(feature = "sink_db")]
-    #[error(transparent)]
-    Db(#[from] sqlx::Error),
-    #[error(transparent)]
-    InitTracing(#[from] init_tracing_opentelemetry::Error),
-    #[error(transparent)]
-    Http(#[from] reqwest_middleware::Error),
-    #[error(transparent)]
-    HttpReqwest(#[from] reqwest::Error),
-    #[error(transparent)]
-    Json(#[from] serde_json::Error),
+    Db(sqlx::Error),
+    InitTracing(init_tracing_opentelemetry::Error),
+    Http(reqwest_middleware::Error),
+    HttpReqwest(reqwest::Error),
+    Json(serde_json::Error),
     #[cfg(feature = "source_opendal")]
-    #[error(transparent)]
-    Opendal(#[from] opendal::Error),
+    Opendal(opendal::Error),
     #[cfg(feature = "source_opendal")]
-    #[error(transparent)]
-    GlobPattern(#[from] globset::Error),
+    GlobPattern(globset::Error),
     #[cfg(feature = "source_opendal")]
-    #[error(transparent)]
-    HandlebarsRender(#[from] handlebars::RenderError),
+    HandlebarsRender(handlebars::RenderError),
     #[cfg(feature = "source_opendal")]
-    #[error(transparent)]
-    HandlebarsTemplate(#[from] handlebars::TemplateError),
+    HandlebarsTemplate(handlebars::TemplateError),
     #[cfg(feature = "source_opendal")]
-    #[error(transparent)]
-    Csv(#[from] csv::Error),
-    #[error(transparent)]
-    BusSend(#[from] tokio::sync::broadcast::error::SendError<Message>),
-    #[error(transparent)]
-    BusRecv(#[from] tokio::sync::broadcast::error::RecvError),
-    #[error(transparent)]
-    Io(#[from] std::io::Error),
-    #[error(transparent)]
-    ConfigReader(#[from] figment::Error),
-    #[error(transparent)]
-    CloudEventBuilder(#[from] cloudevents::event::EventBuilderError),
-    #[error(transparent)]
-    CloudEventMessage(#[from] cloudevents::message::Error),
-    // #[error(transparent)]
-    // ConfigTomlError(#[from] toml::de::Error),
-    #[error(transparent)]
-    MultiHash(#[from] multihash::Error),
-
-    #[error("{txt}")]
-    Custom { txt: String },
-    // #[error(transparent)]
-    // Other(#[from] anyhow::Error),
+    Csv(csv::Error),
+    BusSend(tokio::sync::broadcast::error::SendError<Message>),
+    BusRecv(tokio::sync::broadcast::error::RecvError),
+    Io(std::io::Error),
+    ConfigReader(figment::Error),
+    CloudEventBuilder(cloudevents::event::EventBuilderError),
+    CloudEventMessage(cloudevents::message::Error),
+    // ConfigTomlError(toml::de::Error),
+    MultiHash(multihash::Error),
+    #[display("{txt}")]
+    Custom {
+        txt: String,
+    },
+    // Other(#[error(backtrace, source)] anyhow::Error),
 }
 
 pub(crate) fn to_err<T>(txt: T) -> Error
@@ -74,11 +59,11 @@ where
     Error::Custom { txt: txt.into() }
 }
 
-impl From<String> for Error {
-    fn from(value: String) -> Self {
-        to_err(value)
-    }
-}
+// impl From<String> for Error {
+//     fn from(value: String) -> Self {
+//         to_err(value)
+//     }
+// }
 
 impl From<&str> for Error {
     fn from(value: &str) -> Self {
@@ -86,9 +71,30 @@ impl From<&str> for Error {
     }
 }
 
-impl FromStr for Error {
-    type Err = Infallible;
+impl std::str::FromStr for Error {
+    type Err = std::convert::Infallible;
     fn from_str(txt: &str) -> std::result::Result<Self, Self::Err> {
         Ok(to_err(txt))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use assert2::let_assert;
+
+    use super::*;
+
+    #[test]
+    fn string_to_error() {
+        let_assert!(Ok(Error::Custom { txt }) = Error::from_str("test0"));
+        assert!(txt == "test0");
+
+        let_assert!(Error::Custom { txt } = Error::from("test1"));
+        assert!(txt == "test1");
+
+        let_assert!(Error::Custom { txt } = Error::from("test2".to_string()));
+        assert!(txt == "test2");
     }
 }

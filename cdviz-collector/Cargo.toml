@@ -24,6 +24,7 @@ clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "2.2"
 cloudevents-sdk = { version = "0.7", features = ["http-binding"] }
 csv = { version = "1", optional = true }
+derive_more = { version = "1", features = ["display", "from", "error"] }
 enum_dispatch = "0.3"
 figment = { version = "0.10", features = ["toml", "env"] }
 futures = "0.3"
@@ -61,7 +62,6 @@ sqlx = { version = "0.8", features = [
   "time",
   "json",
 ], default-features = false, optional = true }
-thiserror = "1"
 time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
