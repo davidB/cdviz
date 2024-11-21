@@ -45,19 +45,38 @@ jobs:
           mise run install
           mise run build
         working-directory: ./cdviz-site/landingpage
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
+      # - uses: actions/configure-pages@v4
+      # - uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: ./cdviz-site/landingpage/dist
+      - name: Deploy
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          path: ./cdviz-site/landingpage/dist
+          # packageManager: bun
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ./cdviz-site/landingpage
+          command: pages deploy ./dist --project-name=cdviz
+          # Optional: Enable this if you want to have GitHub Deployments triggered
+          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: print deployment-url
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: echo $DEPLOYMENT_URL
+      - name: print pages-deployment-alias-url
+        env:
+          DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: echo $DEPLOYMENT_ALIAS_URL
 
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  # # Deployment job
+  # deploy:
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v4
