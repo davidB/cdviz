@@ -29,10 +29,12 @@
   }
 
   h1 {
-    @apply text-4xl font-bold leading-[3.2rem] md:text-5xl md:leading-[4rem];
+    @apply text-4xl font-bold leading-[3.2rem];
+    @apply md:text-5xl md:leading-[4rem];
   }
   h2 {
-    @apply mb-lg text-center text-2xl font-bold md:text-4xl;
+    @apply mb-lg text-center text-2xl font-bold;
+    @apply md:text-4xl;
   }
 
   h3 {
@@ -43,11 +45,14 @@
 /* TODO replace @apply by theme(...) maybe using AI */
 @layer components {
   .btn {
-    @apply rounded-lg bg-secondary px-4 py-2 text-text;
+    @apply rounded-lg bg-secondary px-4 py-2 text-text transition-colors duration-200;
+    @apply block transition-transform duration-200 hover:scale-110 hover:cursor-pointer;
+    @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
+    @apply active:bg-secondary/80;
   }
-
   .btn-primary {
     @apply bg-primary text-background;
+    @apply focus:ring-primary;
   }
 
   .isDisabled {
@@ -65,8 +70,6 @@
   }
 
   .check-circle {
-    /* Using the content property to 
-         set the background image */
     background-image: url("assets/icons/check-circle.svg");
     background-position: 0em 0.2em;
     background-repeat: no-repeat;
