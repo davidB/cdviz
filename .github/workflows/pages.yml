@@ -41,7 +41,9 @@ jobs:
       - uses: jdx/mise-action@v2
         with:
           working_directory: ./cdviz-site/landingpage
-      - run: mise run build
+      - run: |
+          mise run install
+          mise run build
         working-directory: ./cdviz-site/landingpage
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3
