@@ -10,6 +10,10 @@
     />
     <meta name="description" content="Monitor your SDLC / CD pipelines" />
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=task_alt"
+    />
     <!--
     <link
       rel="icon"
@@ -38,10 +42,26 @@
       content=""
     />
     <meta name="twitter:image" content="/og-cover.png" /> -->
+    <!--
+      Audience Homepage (hub for other page, help users to explore and navigate):
+      - users: DevOps, SRE, DevSecOps, Platform Engineer, Software Engineer
+      Audience Landing Page (generate leads + increase conversion):
+      - leads: (see users)
+      - sponsors: (see users)
+      - partners
+      - investors
+    -->
   </head>
 
   <body class="dark mx-auto max-w-6xl bg-background font-body text-text">
-    <header class="bg-transparent shadow-lg backdrop-blur">
+    <div
+      id="rubberband"
+      class="fixed right-0 top-20 z-50 border-spacing-5 rotate-12 rounded-xl bg-red-700 px-10 text-center text-xl font-bold uppercase text-red-100 opacity-90 ring-4 ring-red-700 ring-offset-2"
+    >
+      work in progress
+    </div>
+
+    <header class="sticky top-0 z-10 bg-transparent shadow-lg backdrop-blur">
       <div
         class="flex flex-row flex-wrap items-center justify-between space-x-4 p-4"
       >
@@ -56,13 +76,10 @@
           /></a>
         </div>
         <nav class="flex flex-row flex-wrap space-x-4 md:space-x-8">
-          <a class="opacity-50 hover:opacity-100" href="#pricing">Pricing</a>
-          <a
-            class="opacity-50 hover:opacity-100"
-            href="mailto:contact@cdviz.dev"
-            >Contact</a
+          <a class="isDisabled opacity-50 hover:opacity-100" href="/docs"
+            >Documentation</a
           >
-          <a class="opacity-50 hover:opacity-100" href="/docs">Documentation</a>
+          <a class="opacity-50 hover:opacity-100" href="#pricing">Pricing</a>
           <a
             class="opacity-50 hover:opacity-100"
             href="https://github.com/davidB/cdviz"
@@ -80,29 +97,41 @@
         </nav>
       </div>
     </header>
-    <main class="px-2">
-      <section id="hero" class="md:my-8 md:grid md:grid-cols-2 md:gap-4">
-        <div class="overflow-hidden rounded-md p-2">
-          <div id="hero-title" class="text-4xl font-bold">Title</div>
-          <div id="hero-subtitle" class="my-8 text-2xl">
-            My subtitle kjklhlh jkhjkhjkkj jkgkggjk jkgjkgklglkgk jkgkgklgjklg
-            kjgklgkjgklg lgghlkkhkh
+    <main class="px-sm">
+      <section id="hero" class="my-lg md:grid md:grid-cols-2 md:gap-md">
+        <div
+          id="hero-image"
+          class="order-last items-center overflow-hidden rounded-xl md:relative"
+        >
+          <!-- Help people visualize what we're offering: snaphot/screenshot of the product -->
+          <!-- TODO: replace with a screenshot of the product -->
+          <img
+            id="hero-image-img"
+            height="8"
+            width="8"
+            class="left-0 top-0 h-64 w-full rounded-xl object-cover md:absolute md:h-full"
+            src=""
+            alt="illustrations"
+          />
+        </div>
+        <div class="overflow-hidden rounded-xl p-2">
+          <h1 id="hero-title">
+            <!-- Explain the value we provide -->
+            Observability on your CI/CD pipelines
+            <span class="font-outline italic">& SDLC</span>
+          </h1>
+          <div id="hero-subtitle" class="my-lg leading-loose">
+            <!-- Explain how we'll create the value -->
+            <!-- TODO? maybe add a rotation between different subtitles -->
+            A collection of components to collect, store and view information
+            about which version of services are deployed in each environment,
+            what test ran,...
           </div>
-          <div id="hero-actions" class="my-8 flex flex-row gap-4">
-            <a
-              href="/docs"
-              class="rounded-lg bg-secondary px-4 py-2 text-text shadow-lg"
-            >
-              Get Started
-            </a>
-            <a
-              href="/docs"
-              class="rounded-lg bg-primary px-4 py-2 text-background shadow-lg"
-            >
-              Learn More
-            </a>
+          <div id="hero-actions" class="my-lg flex flex-row gap-md">
+            <!-- CTA: what should viewer do next : Get Started, Learn More, Book a call, Subscribe to Waitlist, ...-->
+            <a href="/docs" class="btn btn-primary isDisabled">Learn More</a>
           </div>
-          <div id="hero-scroll" class="mt-auto py-2 opacity-50">
+          <!-- <div id="hero-scroll" class="mt-auto py-2 opacity-50">
             <svg
               class="inline-block h-6 w-6"
               xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -112,35 +141,298 @@
               <use xlink:href="./assets/logos/sprites.svg#mouse-scroll"></use>
             </svg>
             <span class="text-sm">Scroll to see more sections</span>
+          </div> -->
+          <div id="hero-social-proof" class="mt-auto py-2 opacity-50">
+            <!-- 
+            TODO Make it believable quick social proof (optional): logos of companies using CDviz, a metrics like number of deployments,...
+            Ideas: cdevents logo
+            -->
+            <!-- use filter from https://isotropic.co/tool/hex-color-to-css-filter/ more info at https://www.adelindanaila.dev/blog/how-to-change-color-svg-using-img-tag/-->
+            <img
+              height="8"
+              width="8"
+              class="w-24"
+              style="filter: invert(1) hue-rotate(180deg)"
+              src="./assets/logos/cdevents_black.svg"
+              alt="illustrations"
+            />
+            <span class="text-sm">Compatible</span>
           </div>
         </div>
-        <div
-          id="hero-image"
-          class="items-center overflow-hidden rounded-md md:relative"
-        >
-          <img
-            id="hero-image-img"
-            height="8"
-            width="8"
-            class="left-0 top-0 h-64 w-full rounded-md object-cover md:absolute md:h-full"
-            src=""
-            alt="illustrations"
-          />
+      </section>
+      <section class="my-xl md:my-2xl">
+        <!-- benefits -->
+        <a id="why"></a>
+        <h2>Why CDviz?</h2>
+        <div class="flex flex-col items-stretch gap-sm md:flex-row">
+          <!-- <p>
+            You want to know what is happening in your pipeline, and how it
+            affects your software factory, your customers, and your business.
+          </p> -->
+
+          <p class="bg-primary/5 w-full rounded-xl p-sm leading-normal md:p-md">
+            You want to annotate your dashboards with events from your software
+            pipeline (where and when a software version was deployed).
+          </p>
+          <!-- <p>
+            You want to see the evolution of your pipelines over time, and
+            understand what is going on.
+          </p> -->
+          <p class="bg-primary/5 w-full rounded-xl p-sm leading-normal md:p-md">
+            You want to enhance your "software factory / platform" with a
+            dashboard, and a set of metrics.
+          </p>
+          <p class="bg-primary/5 w-full rounded-xl p-sm leading-normal md:p-md">
+            You want an event driven software factory (reduce cost & increase
+            flexibility) without losing the benefits of a centralized dashboard.
+          </p>
         </div>
       </section>
-      <section><a id="why"></a></section>
-      <section>
-        <a id="features"></a
-        ><!-- bento-->
+
+      <!-- <section class="my-xl md:my-2xl">
+        <a id="features"></a>
+      </section> -->
+      <section class="my-xl md:my-2xl">
+        <a id="how"></a>
+        <div class="bg-secondary/20 rounded-xl p-md">
+          <h3 class="mb-md text-xl font-bold">How Does it Work?</h3>
+          <div class="grid gap-md md:grid-cols-2 md:grid-rows-2">
+            <div class="flex flex-row flex-nowrap justify-start gap-xs">
+              <p class="text-2xl font-extrabold text-accent">1</p>
+              <p class="text-sm leading-relaxed">
+                Pull or received events from sources and sends cdevents to
+                various destinations.
+              </p>
+              <!-- <div
+                class="m-10 flex flex-row flex-wrap items-center justify-center gap-2 align-bottom"
+              > -->
+              <!-- add logo of sources & sinks (integration section) -->
+              <!--
+                <img
+                  src="./assets/logos/cdevents_horizontal-color.svg"
+                  alt="cdevents"
+                  class="h-lg w-lg rounded-sm bg-slate-300"
+                />
+                <img
+                  src="./assets/logos/aws-s3.svg"
+                  alt="AWS S3"
+                  class="h-lg w-lg"
+                />
+                <img
+                  src="./assets/logos/folder.svg"
+                  alt="folder"
+                  class="h-lg w-lg"
+                />
+                <img
+                  src="./assets/logos/postgresql.svg"
+                  alt="postgresql"
+                  class="h-lg w-lg"
+                />
+              </div> -->
+            </div>
+            <div class="flex flex-row flex-nowrap justify-start gap-xs">
+              <p class="text-2xl font-extrabold text-accent">2</p>
+              <p class="text-sm leading-relaxed">Store cdevents.</p>
+            </div>
+            <div class="flex flex-row flex-nowrap justify-start gap-xs">
+              <p class="text-2xl font-extrabold text-accent">3</p>
+              <p class="text-sm leading-relaxed">
+                Observe the activity of your software factory with dashboard,
+                alerts,... And build your own analytics.
+              </p>
+            </div>
+            <div class="flex flex-row flex-nowrap justify-start gap-xs">
+              <p class="text-2xl font-extrabold text-accent">4</p>
+              <p class="text-sm leading-relaxed">
+                Trigger reaction on cdevents.
+              </p>
+            </div>
+          </div>
+          <div class="my-md">
+            <img
+              src="./assets/architectures/Drawing 2023-12-27 16.04.47-cdviz-architecture.excalidraw.svg"
+              class="rounded-xl object-cover"
+            />
+          </div>
+        </div>
       </section>
-      <section><a id="how"></a></section>
-      <section><a id="pricing"></a></section>
-      <section><a id="testimonials"></a></section>
-      <section><a id="faq"></a></section>
-      <section><a id="featured-posts"></a></section>
-      <section><a id="end"></a></section>
+      <section class="my-xl md:my-2xl">
+        <a id="pricing"></a>
+        <h2>Plans & Pricing</h2>
+        <p class="my-lg text-center">
+          We love Open Source, and we love to collaborate with others.<br />
+          Core components are Open Source:
+          <span class="font-semibold">Apache 2.0 license.</span>
+        </p>
+        <div class="grid gap-xl md:grid-cols-3">
+          <div
+            class="bg-primary/20 flex flex-col justify-between rounded-xl p-8 pt-4 text-center"
+          >
+            <div>
+              <h3 class="m-2">Community</h3>
+
+              <ul class="my-md ml-2 text-left">
+                <li class="check-circle mb-4 pl-8">
+                  Free to use (commercial & non-commercial)
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Free to contribute (code, docs, ideas,...)
+                </li>
+                <li class="check-circle mb-4 pl-8">Free to sponsor</li>
+                <li class="check-circle mb-4 pl-8">
+                  Pay with your time & resources
+                </li>
+              </ul>
+            </div>
+            <div class="mt-">
+              <a
+                href="https://github.com/sponsors/davidB"
+                aria-label="go to sponsor page"
+                class="btn btn-primary"
+                >Be a sponsor</a
+              >
+            </div>
+          </div>
+          <div
+            class="bg-secondary/10 flex flex-col justify-between rounded-xl p-8 pt-4 text-center"
+          >
+            <div>
+              <h3 class="m-2">Commercial</h3>
+              <!-- <p>We can offer consulting to help you with your cdevents needs.</p> -->
+              <ul class="my-md ml-2 text-left">
+                <li class="check-circle mb-4 pl-8">
+                  More sources & sinks for collector
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Support to configure and deploy
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Create a custom source or sink
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Create a custom dashboard or alert
+                </li>
+                <li class="check-circle mb-4 pl-8">Adapt to your needs</li>
+              </ul>
+            </div>
+            <a
+              href="mailto:contact@cdviz.dev?subject=Consulting%20inquiry"
+              aria-label="send us an email"
+              class="btn"
+              >Contact Us</a
+            >
+          </div>
+          <div
+            class="bg-secondary/10 flex flex-col justify-between rounded-xl p-8 pt-4 text-center relative"
+          >
+            <div class="absolute z-10 right-2 top-1 rotate-6 rounded-md px-2 py-0.5 text-center align-middle text-accent ring-accent ring-1 bg-accent/10 ring-offset-accent/20 ring-offset-1">preview</div>
+            <div class="isDisabled">
+              <h3 class="m-2">SaaS</h3>
+              <!-- <p>
+              We can offer a SaaS solution to collect and store cdevents, and
+              provide a dashboard to visualize them.
+            </p> -->
+              <ul class="my-md ml-2 text-left">
+                <li class="check-circle mb-4 pl-8">
+                  More sources & sinks for collector
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Collector operated by us (or our infrastucture)
+                </li>
+                <li class="check-circle mb-4 pl-8">
+                  Database operated by you or our partners
+                </li>
+                <li class="check-circle mb-4 pl-8">Dashboard operated by ???</li>
+              </ul>
+            </div>
+            <a
+              href="mailto:contact@cdviz.dev?subject=SaaS%20plan%20inquiry"
+              aria-label="send us an email"
+              class="btn"
+              >Contact Us</a
+            >
+            <!--a href="" aria-label="subscribe to Waitlist">Subscribe to waitlist</a-->
+          </div>
+        </div>
+      </section>
+      <section class="my-xl md:my-2xl">
+        <!-- More social proof -->
+        <a id="testimonials"></a>
+        <!-- <div>No testimonials yet, but we love to hear from you!</div> -->
+      </section>
+      <section class="my-xl md:my-2xl">
+        <!-- Handle Objections -->
+        <a id="faq"></a>
+        <h2>Frequently Asked Questions</h2>
+        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+          <summary class="font-bold">Is it free to use?</summary>
+          <p class="pt-md leading-snug">
+            Yes, you can use the Open Source components for free.</br>
+              No, self-hosting is not free, as you have spend time and money on
+              configuration, maintenance, and support of your own
+              infrastructure.
+            <br/>
+            No, some components could not be available for free.
+          </p>
+          
+        </details>
+        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+          <summary class="font-bold">What is the plan for Saas?</summary>
+            <p class="pt-md leading-snug">
+              We are currently working on a SaaS plan. We don't know yet what
+              will provide in term of features and pricing (plan). We are open
+              to discussions and to partnerships.
+            <br/>
+              If you are interested in a SaaS plan, please
+              <a href="mailto:contact@cdviz.io">contact us</a>.
+            </p>
+        </details>
+        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+          <summary class="font-bold">
+            What is the relationship between CDviz and cdevents?
+          </summary>
+            <p class="pt-md leading-snug">
+              CDviz is a set of components to provide a view of which version of
+              services are deployed and which environment, what test ran,...
+              CDviz components are built on top of cdevents. CDviz'team is part
+              of the cdevents community.
+            </p>
+        </details>
+        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+          <summary class="font-bold">
+            Why do dashboard tools, like Grafana, have access (read-only) to the
+            DB (PostgreSQL), and NOT go through an API (micro)service?
+          </summary>
+          <p class="pt-md leading-snug">
+            <ul class="list-disc pl-4">
+              <li>The data is your value, not the service.</li>
+              <li>
+                Allow dashboards to use the full query power of SQL to query
+                data, and to plug any analytics tools, no incomplete, frustrated
+                custom query language.
+              </li>
+              <li>
+                Allow Data Ops to split the DB with read-only replicas if
+                needed,...
+              </li>
+            </ul>
+          </p>
+        </details>
+      </section>
+      <!-- <a id="featured-posts"></a>
+      <section>
+        TODO add featured posts
+        TODO embed a video demo of cdviz-collector
+      </section> -->
+      <section class="my-xl md:my-2xl">
+        <!-- End & Last CTA -->
+        <a id="end"></a>
+        <div class="text-center italic text-lg">Thank you for reading!</div>
+      </section>
     </main>
-    <!-- <footer></footer> -->
+    <footer>
+      <!-- What else is on the website -->
+    </footer>
     <script type="module" src="./main.js"></script>
   </body>
 </html>

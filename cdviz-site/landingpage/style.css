@@ -8,22 +8,75 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url("./assets/fonts/droid-sans/DroidSans-webfont.woff2") format("woff2"),
-        url("./assets/fonts/droid-sans/DroidSans-webfont.woff") format("woff");
+    src:
+      url("./assets/fonts/droid-sans/DroidSans-webfont.woff2") format("woff2"),
+      url("./assets/fonts/droid-sans/DroidSans-webfont.woff") format("woff");
   }
 
   :root {
-    --text: #0e141a;
-    --background: #c9d2de;
-    --primary: #f29107;
-    --secondary: #a294c2;
-    --accent: #755190;
+    --text: 208 32% 8%;
+    --background: 214 24% 83%;
+    --primary: 35 94% 49%;
+    --secondary: 258 27% 67%;
+    --accent: 270 28% 44%;
   }
   .dark {
-    --text: #e4ebf1;
-    --background: #212a36;
-    --primary: #f8960d;
-    --secondary: #4b3d6b;
-    --accent: #936fae;
+    --text: 208 32% 92%;
+    --background: 214 24% 17%;
+    --primary: 35 94% 51%;
+    --secondary: 258 27% 33%;
+    --accent: 270 28% 56%;
+  }
+
+  h1 {
+    @apply text-4xl font-bold leading-[3.2rem] md:text-5xl md:leading-[4rem];
+  }
+  h2 {
+    @apply mb-lg text-center text-2xl font-bold md:text-4xl;
+  }
+
+  h3 {
+    @apply mb-md text-lg font-bold;
+  }
+}
+
+/* TODO replace @apply by theme(...) maybe using AI */
+@layer components {
+  .btn {
+    @apply rounded-lg bg-secondary px-4 py-2 text-text;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-background;
+  }
+
+  .isDisabled {
+    color: currentColor;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+    pointer-events: none;
+  }
+
+  .font-outline {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: hsl(var(--text));
+    color: transparent;
+  }
+
+  .check-circle {
+    /* Using the content property to 
+         set the background image */
+    background-image: url("assets/icons/check-circle.svg");
+    background-position: 0em 0.2em;
+    background-repeat: no-repeat;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings:
+      "FILL" 0,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 24;
   }
 }
