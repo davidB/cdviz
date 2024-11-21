@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Droid Sans", system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src:
+      url("./assets/fonts/droid-sans/DroidSans-webfont.woff2") format("woff2"),
+      url("./assets/fonts/droid-sans/DroidSans-webfont.woff") format("woff");
+  }
+
+  :root {
+    --text: 208 32% 8%;
+    --background: 214 24% 83%;
+    --primary: 35 94% 49%;
+    --secondary: 258 27% 67%;
+    --accent: 270 28% 44%;
+  }
+  .dark {
+    --text: 208 32% 92%;
+    --background: 214 24% 17%;
+    --primary: 35 94% 51%;
+    --secondary: 258 27% 33%;
+    --accent: 270 28% 56%;
+  }
+
+  h1 {
+    @apply text-4xl font-bold leading-[3.2rem];
+    @apply md:text-5xl md:leading-[4rem];
+  }
+  h2 {
+    @apply mb-lg text-center text-2xl font-bold;
+    @apply md:text-4xl;
+  }
+
+  h3 {
+    @apply mb-md text-lg font-bold;
+  }
+}
+
+/* TODO replace @apply by theme(...) maybe using AI */
+@layer components {
+  .btn {
+    @apply rounded-lg bg-secondary px-4 py-2 text-text transition-colors duration-200;
+    @apply block transition-transform duration-200 hover:scale-110 hover:cursor-pointer;
+    @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
+    @apply active:bg-secondary/80;
+  }
+  .btn-primary {
+    @apply bg-primary text-background;
+    @apply focus:ring-primary;
+  }
+
+  .isDisabled {
+    color: currentColor;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+    pointer-events: none;
+  }
+
+  .font-outline {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: hsl(var(--text));
+    color: transparent;
+  }
+
+  .check-circle {
+    background-image: url("assets/icons/check-circle.svg");
+    background-position: 0em 0.2em;
+    background-repeat: no-repeat;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings:
+      "FILL" 0,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 24;
+  }
+}

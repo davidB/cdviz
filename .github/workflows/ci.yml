@@ -34,15 +34,29 @@ jobs:
       RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
+      - name: check changed files
+        uses: tj-actions/changed-files@v45
+        id: changed-files
+        with:
+          files: |
+            ${{ matrix.folder }}/**
+      - name: log
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "::notice ::no changed files on ${{ matrix.folder }} - skipping"
       - uses: mozilla-actions/sccache-action@v0.0.6
+        if: steps.changed-files.outputs.any_changed == 'true'
       - uses: jdx/mise-action@v2
+        if: steps.changed-files.outputs.any_changed == 'true'
         with:
           experimental: true
       - run: mise install
+        if: steps.changed-files.outputs.any_changed == 'true'
         shell: bash
         working-directory: ${{ matrix.folder }}
       - run: task ci
+        if: steps.changed-files.outputs.any_changed == 'true'
         shell: bash
         working-directory: ${{ matrix.folder }}
       - run: ${SCCACHE_PATH} --show-stats
+        if: steps.changed-files.outputs.any_changed == 'true'
         shell: bash

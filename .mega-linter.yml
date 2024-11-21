@@ -8,7 +8,9 @@ DISABLE:
   - COPYPASTE # Comment to enable checks of excessive copy-pastes
   - SPELL # Comment to enable checks of spelling mistakes
 DISABLE_LINTERS:
+  - CSS_STYLELINT # not tailwindcss compatible
   - DOCKERFILE_DOCKERFILELINT
+  - HTML_HTMLHINT # not tailwindcss compatible
   - MARKDOWN_MARKDOWN_LINK_CHECK
   - REPOSITORY_CHECKOV # unstable randomly failed (false negative) on generated k8s manifest
   - REPOSITORY_DEVSKIM # issue with "git config --global --add safe.directory ..."
@@ -23,7 +25,7 @@ DISABLE_LINTERS:
 SHOW_ELAPSED_TIME: true
 FILEIO_REPORTER: false
 # DISABLE_ERRORS: true # Uncomment if you want MegaLinter to detect errors but not block CI to pass
-FILTER_REGEX_EXCLUDE: "(megalinter-reports)|(.vscode)|(cdevents-spec.*)|(.gitmodules)|(.sqlx)|(\\.lock)|(\\.ndjson)|(\\.pdf)|(\\.csv)|(\\.zip)|(\\.tar)|(\\.ipynb)|(license.*)|(LICENSE.*)"
+FILTER_REGEX_EXCLUDE: "(megalinter-reports)|(.vscode)|(cdevents-spec.*)|(.gitmodules)|(.sqlx)|(\\.lock)|(\\.ndjson)|(\\.pdf)|(\\.csv)|(\\.zip)|(\\.tar)|(\\.ipynb)|(.*license.*)|(.*LICENSE.*)|(cdviz-grafana/dashboards/.*json)"
 SPELL_FILTER_REGEX_INCLUDE: '\\.md$'
 PRINT_ALPACA: false
 REPOSITORY_SECRETLINT_ARGUMENTS:
