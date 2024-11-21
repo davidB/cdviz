@@ -10,7 +10,7 @@ A set of components to provide a view of which version of services are deployed 
 
 ## Architecture Overview
 
-![cdviz architecture](docs/images/Drawing%202023-12-27%2016.04.47-cdviz-architecture.excalidraw.svg)
+![cdviz architecture](cdviz-site/assets/architectures/Drawing%202023-12-27%2016.04.47-cdviz-architecture.excalidraw.svg)
 
 ### cdviz-collector
 
@@ -67,7 +67,7 @@ flowchart LR
 ### Q&A
 
 <details>
-<summary>Why do dashboard tools, like Grafana, have access (read-only) to the DB (PostgreSQL), and go through an API (micro)service (like `cdviz-collector`)?</summary>
+<summary>Why do dashboard tools, like Grafana, have access (read-only) to the DB (PostgreSQL), and NOT go through an API (micro)service?</summary>
 
 - access to the data is the value, not the service
 - allow dashboards to use the full query power of SQL to query data, and to plug any analytics tools
