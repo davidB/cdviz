@@ -43,7 +43,7 @@ jobs:
           working_directory: ./cdviz-site/landingpage
       - run: mise run build
         working-directory: ./cdviz-site/landingpage
-      - uses: actions/configure-pages@v4
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./cdviz-site/landingpage/dist
