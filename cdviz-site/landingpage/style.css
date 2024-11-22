@@ -14,14 +14,14 @@
   }
 
   :root {
-    --text: 208 32% 8%;
-    --background: 214 24% 83%;
+    --text: 208 32% 3%;
+    --background: 214 24% 93%;
     --primary: 35 94% 49%;
     --secondary: 258 27% 67%;
     --accent: 270 28% 44%;
   }
   .dark {
-    --text: 208 32% 92%;
+    --text: 208 32% 97%;
     --background: 214 24% 17%;
     --primary: 35 94% 51%;
     --secondary: 258 27% 33%;
