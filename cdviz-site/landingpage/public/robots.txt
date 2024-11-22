@@ -1,0 +1,6 @@
+# see https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt
+
+User-agent: *
+Allow: /
+
+# Sitemap: https://cdviz.dev/sitemap.xml
