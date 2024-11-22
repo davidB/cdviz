@@ -51,6 +51,21 @@
       - partners
       - investors
     -->
+      <script>
+        function initColorScheme() {
+          // It's best to inline this in `head` to reduce (doesn't avoid completly) FOUC (flash of unstyled content) when changing pages or themes
+          if (
+            localStorage.getItem("color-scheme") === "dark" ||
+            (!("color-scheme" in localStorage) &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches)
+          ) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        }
+        initColorScheme();
+      </script>
   </head>
 
   <body class="mx-auto max-w-6xl bg-background font-body text-text">
