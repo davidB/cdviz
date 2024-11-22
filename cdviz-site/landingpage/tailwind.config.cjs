@@ -1,4 +1,5 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
+const { addDynamicIconSelectors } = require("@iconify/tailwind");
 // const colors = require("tailwindcss/colors");
 
 /** @type {import('tailwindcss').Config} */
@@ -57,6 +58,11 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // https://iconify.design/docs/usage/css/tailwind/#installation
+    // Iconify plugin, requires writing list of icon sets to load
+    // addIconSelectors(["simple-icons" /*, 'logos'*/]),
+    addDynamicIconSelectors(),
+  ],
   darkMode: "class", // "media" or "selector",
 };

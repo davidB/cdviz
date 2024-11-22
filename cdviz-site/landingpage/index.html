@@ -100,14 +100,7 @@
             href="https://github.com/davidB/cdviz"
             alt="cdviz on GitHub"
           >
-            <svg
-              class="inline-block h-5 w-5"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              fill="currentColor"
-              preserveAspectRatio="xMidYMid"
-            >
-              <use xlink:href="./assets/logos/sprites.svg#github"></use>
-            </svg>
+            <span class="icon-[simple-icons--github] h-5 w-5"></span>
           </a>
         </nav>
       </div>
@@ -146,31 +139,12 @@
             <!-- CTA: what should viewer do next : Get Started, Learn More, Book a call, Subscribe to Waitlist, ...-->
             <a href="/docs" class="btn btn-primary isDisabled">Learn More</a>
           </div>
-          <!-- <div id="hero-scroll" class="mt-auto py-2 opacity-50">
-            <svg
-              class="inline-block h-6 w-6"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              stroke="currentColor"
-              fill="transparent"
-            >
-              <use xlink:href="./assets/logos/sprites.svg#mouse-scroll"></use>
-            </svg>
-            <span class="text-sm">Scroll to see more sections</span>
-          </div> -->
           <div id="hero-social-proof" class="mt-auto py-2 opacity-50">
             <!--
             TODO Make it believable quick social proof (optional): logos of companies using CDviz, a metrics like number of deployments,...
             Ideas: cdevents logo
             -->
-            <!-- use filter from https://isotropic.co/tool/hex-color-to-css-filter/ more info at https://www.adelindanaila.dev/blog/how-to-change-color-svg-using-img-tag/-->
-            <img
-              height="8"
-              width="8"
-              class="w-24"
-              style="filter: invert(1) hue-rotate(180deg)"
-              src="./assets/logos/cdevents_black.svg"
-              alt="illustrations"
-            />
+            <span class="svg-mask svg-cdevents w-32 h-16"></span><br/>
             <span class="text-sm">Compatible</span>
           </div>
         </div>
@@ -214,53 +188,58 @@
           <div class="grid gap-md md:grid-cols-2 md:grid-rows-2">
             <div class="flex flex-row flex-nowrap justify-start gap-xs">
               <p class="text-2xl font-extrabold text-accent">1</p>
-              <p class="text-sm leading-relaxed">
+              <div class="text-sm leading-relaxed">
+                <p>
                 Pull or received events from sources and sends cdevents to
                 various destinations.
+                </p>
+                <p class="mt-2">
+                <span class="icon-[simple-icons--github] h-5 w-5"></span>
+                <span class="icon-[simple-icons--gitlab] h-5 w-5"></span>
+                <span class="icon-[simple-icons--kubernetes] h-5 w-5"></span>
+                <span class="icon-[simple-icons--amazons3] h-5 w-5"></span>
+                <span class="icon-[simple-icons--harbor] h-5 w-5"></span>
+                <span class="icon-[simple-icons--jenkins] h-5 w-5"></span>
+                <span class="icon-[simple-icons--tekton] h-5 w-5"></span>
+                <span class="icon-[simple-icons--natsdotio] h-5 w-5"></span>
+                <span class="icon-[simple-icons--apachekafka] h-5 w-5"></span>
+                ...
               </p>
-              <!-- <div
-                class="m-10 flex flex-row flex-wrap items-center justify-center gap-2 align-bottom"
-              > -->
-              <!-- add logo of sources & sinks (integration section) -->
-              <!--
-                <img
-                  src="./assets/logos/cdevents_horizontal-color.svg"
-                  alt="cdevents"
-                  class="h-lg w-lg rounded-sm bg-slate-300"
-                />
-                <img
-                  src="./assets/logos/aws-s3.svg"
-                  alt="AWS S3"
-                  class="h-lg w-lg"
-                />
-                <img
-                  src="./assets/logos/folder.svg"
-                  alt="folder"
-                  class="h-lg w-lg"
-                />
-                <img
-                  src="./assets/logos/postgresql.svg"
-                  alt="postgresql"
-                  class="h-lg w-lg"
-                />
-              </div> -->
+            </div>
             </div>
             <div class="flex flex-row flex-nowrap justify-start gap-xs">
               <p class="text-2xl font-extrabold text-accent">2</p>
-              <p class="text-sm leading-relaxed">Store cdevents.</p>
+              <div class="text-sm leading-relaxed">
+                <p>Store cdevents.</p>
+                <p class="mt-2">
+                <span class="icon-[simple-icons--postgresql] h-5 w-5"></span>
+                </p>
+              </div>
             </div>
             <div class="flex flex-row flex-nowrap justify-start gap-xs">
               <p class="text-2xl font-extrabold text-accent">3</p>
-              <p class="text-sm leading-relaxed">
+              <div class="text-sm leading-relaxed">
+                <p>
                 Observe the activity of your software factory with dashboard,
                 alerts,... And build your own analytics.
-              </p>
+                </p>
+                <p class="mt-2">
+                <span class="icon-[simple-icons--grafana] h-5 w-5"></span>
+                </p>
+              </div>
             </div>
             <div class="flex flex-row flex-nowrap justify-start gap-xs">
               <p class="text-2xl font-extrabold text-accent">4</p>
-              <p class="text-sm leading-relaxed">
+              <div class="text-sm leading-relaxed">
+                <p>
                 Trigger reaction on cdevents.
-              </p>
+                </p>
+                <p class="mt-2"></p>
+                <span class="icon-[simple-icons--n8n] h-5 w-5"></span>
+                <span class="icon-[simple-icons--make] h-5 w-5"></span>
+                <span class="icon-[simple-icons--argo] h-5 w-5"></span>
+                </p>
+              </div>
             </div>
           </div>
           <div class="my-md">

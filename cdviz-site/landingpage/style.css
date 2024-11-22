@@ -82,4 +82,28 @@
       "GRAD" 0,
       "opsz" 24;
   }
+
+  /* technics from https://iconify.design/docs/usage/css/ */
+  .svg-mask {
+    /* Add dimensions to span */
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    /* Add background color */
+    background-color: currentColor;
+    /* Add mask image, use variable to reduce duplication */
+    --svg: url("https://api.iconify.design/bi/bell-fill.svg");
+    -webkit-mask-image: var(--svg);
+    mask-image: var(--svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  .svg-cdevents {
+    width: 444px;
+    height: 184px;
+    --svg: url("./assets/logos/cdevents_monochrome.svg");
+  }
 }

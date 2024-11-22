@@ -10,5 +10,9 @@
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.15",
     "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@iconify-json/simple-icons": "^1.2.12",
+    "@iconify/tailwind": "^1.1.3"
   }
 }
