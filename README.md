@@ -10,7 +10,7 @@ A set of components to provide a view of which version of services are deployed 
 
 ## Architecture Overview
 
-![cdviz architecture](cdviz-site/assets/architectures/Drawing%202023-12-27%2016.04.47-cdviz-architecture.excalidraw.svg)
+![cdviz architecture](cdviz-site/assets/architectures/Drawing%202024-11-22-cdviz-architecture.excalidraw.svg)
 
 ### cdviz-collector
 
