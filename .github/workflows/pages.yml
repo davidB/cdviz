@@ -63,11 +63,13 @@ jobs:
       - name: print deployment-url
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
-        run: echo $DEPLOYMENT_URL
+        run: |
+          echo "url: $DEPLOYMENT_URL" >> $GITHUB_STEP_SUMMARY
       - name: print pages-deployment-alias-url
         env:
           DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
-        run: echo $DEPLOYMENT_ALIAS_URL
+        run: |
+          echo "alias-url: $DEPLOYMENT_ALIAS_URL" >> $GITHUB_STEP_SUMMARY
 
   # # Deployment job
   # deploy:
