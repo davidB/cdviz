@@ -14,45 +14,51 @@
   }
 
   :root {
-    --text: 208 32% 3%;
-    --background: 214 24% 93%;
-    --primary: 35 94% 49%;
-    --secondary: 258 27% 67%;
-    --accent: 270 28% 44%;
+    --text: 225 25% 10%;
+    --background: 210 20% 98%;
+    --primary: 35 95% 50%;
+    --secondary: 260 30% 65%;
+    --accent: 270 60% 50%;
   }
+  
   .dark {
-    --text: 208 32% 97%;
-    --background: 214 24% 17%;
-    --primary: 35 94% 51%;
-    --secondary: 258 27% 33%;
-    --accent: 270 28% 56%;
+    --text: 210 25% 98%;
+    --background: 225 25% 12%;
+    --primary: 35 95% 55%;
+    --secondary: 260 30% 40%;
+    --accent: 270 60% 60%;
   }
 
   h1 {
-    @apply text-4xl font-bold leading-[3.2rem];
-    @apply md:text-5xl md:leading-[4rem];
+    @apply text-4xl font-bold leading-[3.2rem] tracking-tight;
+    @apply md:text-6xl md:leading-[4.2rem];
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
+  
   h2 {
-    @apply mb-lg text-center text-2xl font-bold;
-    @apply md:text-4xl;
+    @apply mb-lg text-center text-3xl font-bold tracking-tight;
+    @apply md:text-5xl;
+    @apply relative;
   }
 
   h3 {
-    @apply mb-md text-lg font-bold;
+    @apply mb-md text-xl font-bold tracking-tight;
   }
 }
 
-/* TODO replace @apply by theme(...) maybe using AI */
 @layer components {
   .btn {
-    @apply rounded-lg bg-secondary px-4 py-2 text-text transition-colors duration-200;
-    @apply block transition-transform duration-200 hover:scale-110 hover:cursor-pointer;
+    @apply rounded-lg bg-secondary px-6 py-3 text-text transition-all duration-300;
+    @apply hover:scale-105 hover:cursor-pointer hover:shadow-lg;
     @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
     @apply active:bg-secondary/80;
+    @apply font-semibold;
   }
+  
   .btn-primary {
     @apply bg-primary text-background;
     @apply focus:ring-primary;
+    @apply shadow-md hover:shadow-primary/20;
   }
 
   .isDisabled {
@@ -73,6 +79,32 @@
     background-image: url("assets/icons/check-circle.svg");
     background-position: 0em 0.2em;
     background-repeat: no-repeat;
+  }
+
+  /* Glass effect for cards */
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    @apply dark:bg-black/10 dark:border-white/10;
+    @apply rounded-xl shadow-xl;
+  }
+
+  /* Modern section styling */
+  section {
+    @apply py-16 px-4;
+    @apply transition-all duration-300;
+  }
+
+  /* Enhanced hero section */
+  #hero {
+    @apply relative overflow-hidden;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:to-accent/10;
+  }
+
+  /* Modern feature cards */
+  .feature-card {
+    @apply glass-card p-6;
+    @apply transform transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-2xl;
   }
 
   /* technics from https://iconify.design/docs/usage/css/ */
@@ -98,4 +130,29 @@
     height: 184px;
     --svg: url("./assets/logos/cdevents_monochrome.svg");
   }
+}
+
+/* New animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Enhanced scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/50 rounded-full;
+  @apply hover:bg-primary;
 }
