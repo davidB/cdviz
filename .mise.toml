@@ -1,2 +1,3 @@
 [tools]
-task = '3' # to have a set of simple commands for repetive task (and CI)
+# task = '3' # to have a set of simple commands for repetive task (and CI)
+"ubi:go-task/task" = "3"

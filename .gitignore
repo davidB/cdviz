@@ -394,6 +394,10 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/git,vim,helm,rust,bazel,emacs,jetbrains+all,visualstudiocode,node,go
 
+
+# local/user specific files
+mise.local.toml
+.env.local
 .envrc
 
 tmp
@@ -401,10 +405,11 @@ tmp
 
 # ignore downloaded charts
 *.tgz
-
-# ignore report from MegaLinter
-report/
-megalinter-reports/
 Chart.lock
+
+# ignore report from MegaLinterreport/
+megalinter-reports/
+
+#misc
 .aider*
 proptest-regressions/
