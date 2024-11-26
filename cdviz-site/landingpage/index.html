@@ -67,7 +67,7 @@
   <body class="mx-auto max-w-6xl bg-background font-body text-text">
     <div
       id="rubberband"
-      class="fixed right-0 top-20 z-50 border-spacing-5 rotate-12 rounded-xl bg-red-700 px-10 text-center text-xl font-bold uppercase text-red-100 opacity-90 ring-4 ring-red-700 ring-offset-2 float-animation"
+      class="fixed right-1/2 translate-x-1/2 top-20 z-50 border-spacing-5 rounded-xl bg-red-700 px-10 text-center text-xl font-bold uppercase text-red-100 opacity-90 ring-4 ring-red-700 ring-offset-2"
     >
       work in progress
     </div>
@@ -133,7 +133,7 @@
           </div>
           <div id="hero-actions" class="my-lg flex flex-row gap-md">
             <!-- CTA: what should viewer do next : Get Started, Learn More, Book a call, Subscribe to Waitlist, ...-->
-            <a href="/docs" class="btn btn-primary isDisabled">Learn More</a>
+            <a href="/docs" class="clickable btn btn-primary isDisabled">Learn More</a>
           </div>
           <div id="hero-social-proof" class="mt-auto py-2 opacity-50">
             <!--
@@ -155,7 +155,7 @@
             affects your software factory, your customers, and your business.
           </p> -->
 
-          <p class="glass-card feature-card w-full rounded-xl p-sm leading-normal md:p-md">
+          <p class="bg-primary/5 w-full rounded-xl p-sm leading-normal md:p-md">
             You want to annotate your dashboards with events from your software
             pipeline (where and when a software version was deployed).
           </p>
@@ -259,7 +259,7 @@
         </p>
         <div class="grid gap-xl md:grid-cols-3">
           <div
-            class="glass-card feature-card flex flex-col justify-between rounded-xl p-8 pt-4 text-center"
+            class="bg-primary/20 flex flex-col justify-between rounded-xl p-8 pt-4 text-center"
           >
             <div>
               <h3 class="m-2">Community</h3>
@@ -280,7 +280,7 @@
               <a
                 href="https://github.com/sponsors/davidB"
                 aria-label="go to sponsor page"
-                class="btn btn-primary"
+                class="clickable btn btn-primary"
                 >Be a sponsor</a
               >
           </div>
@@ -309,7 +309,7 @@
             <a
               href="mailto:contact@cdviz.dev?subject=Consulting%20inquiry"
               aria-label="send us an email"
-              class="btn"
+              class="clickable btn"
               >Contact Us</a
             >
           </div>
@@ -339,7 +339,7 @@
             <a
               href="mailto:contact@cdviz.dev?subject=SaaS%20plan%20inquiry"
               aria-label="send us an email"
-              class="btn"
+              class="clickable btn"
               >Contact Us</a
             >
             <!--a href="" aria-label="subscribe to Waitlist">Subscribe to waitlist</a-->
@@ -355,7 +355,7 @@
         <!-- Handle Objections -->
         <a id="faq"></a>
         <h2>Frequently Asked Questions</h2>
-        <details  class="glass-card my-md rounded-xl p-md hover:shadow-lg transition-all duration-300">
+        <details  class="clickable bg-secondary/20 my-md rounded-xl p-md">
           <summary class="font-bold">Is it free to use?</summary>
           <p class="pt-md leading-snug">
             Yes, you can use the Open Source components for free.</br>
@@ -366,7 +366,7 @@
             No, some components could not be available for free.
           </p>
         </details>
-        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+        <details  class="clickable bg-secondary/20 my-md rounded-xl p-md">
           <summary class="font-bold">What is the plan for Saas?</summary>
             <p class="pt-md leading-snug">
               We are currently working on a SaaS plan. We don't know yet what
@@ -377,7 +377,7 @@
               <a href="mailto:contact@cdviz.io">contact us</a>.
             </p>
         </details>
-        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+        <details  class="clickable bg-secondary/20 my-md rounded-xl p-md">
           <summary class="font-bold">
             What is the relationship between CDviz and cdevents?
           </summary>
@@ -388,7 +388,7 @@
               of the cdevents community.
             </p>
         </details>
-        <details  class="bg-secondary/20 my-md rounded-xl p-md">
+        <details  class="clickable bg-secondary/20 my-md rounded-xl p-md">
           <summary class="font-bold">
             Why do dashboard tools, like Grafana, have access (read-only) to the
             DB (PostgreSQL), and NOT go through an API (micro)service?

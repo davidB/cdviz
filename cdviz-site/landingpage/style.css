@@ -20,7 +20,7 @@
     --secondary: 260 30% 65%;
     --accent: 270 60% 50%;
   }
-  
+
   .dark {
     --text: 210 25% 98%;
     --background: 225 25% 12%;
@@ -34,7 +34,7 @@
     @apply md:text-6xl md:leading-[4.2rem];
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
-  
+
   h2 {
     @apply mb-lg text-center text-3xl font-bold tracking-tight;
     @apply md:text-5xl;
@@ -47,14 +47,18 @@
 }
 
 @layer components {
-  .btn {
-    @apply rounded-lg bg-secondary px-6 py-3 text-text transition-all duration-300;
+  .clickable {
+    @apply cursor-pointer transition-all duration-300;
     @apply hover:scale-105 hover:cursor-pointer hover:shadow-lg;
+  }
+  
+  .btn {
+    @apply rounded-lg bg-secondary px-6 py-3 text-text;
     @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
     @apply active:bg-secondary/80;
     @apply font-semibold;
   }
-  
+
   .btn-primary {
     @apply bg-primary text-background;
     @apply focus:ring-primary;
@@ -83,21 +87,24 @@
 
   /* Glass effect for cards */
   .glass-card {
-    @apply backdrop-blur-md bg-white/10 border border-white/20;
-    @apply dark:bg-black/10 dark:border-white/10;
+    @apply border border-white/20 bg-white/10 backdrop-blur-md;
+    @apply dark:border-white/10 dark:bg-black/10;
     @apply rounded-xl shadow-xl;
   }
 
   /* Modern section styling */
   section {
-    @apply py-16 px-4;
+    @apply px-4 py-16;
     @apply transition-all duration-300;
   }
 
+  body {
+    @apply bg-gradient-to-r from-primary/10 to-accent/10;
+  }
   /* Enhanced hero section */
   #hero {
     @apply relative overflow-hidden;
-    @apply before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:to-accent/10;
+    /*@apply before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:to-accent/10;*/
   }
 
   /* Modern feature cards */
@@ -134,9 +141,15 @@
 
 /* New animations */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .float-animation {
@@ -153,6 +166,6 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary/50 rounded-full;
+  @apply rounded-full bg-primary/50;
   @apply hover:bg-primary;
 }
