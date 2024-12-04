@@ -7,7 +7,7 @@ OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
 task = '3'         # to have a set of simple commands for repetitive task (and CI)
-rust = '1.82.0'    # the rust tool stack (with cargo, fmt, clippy) to build source
+rust = '1.83.0'    # the rust tool stack (with cargo, fmt, clippy) to build source
 binstall = '1.7.4' # do not use cargo-binstall (it's a special name used by mise)
 
 [plugins]

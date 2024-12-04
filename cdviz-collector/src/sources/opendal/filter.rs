@@ -24,7 +24,7 @@ impl Filter {
                 last > self.ts_after
                     && last <= self.ts_before
                     && meta.content_length() > 0
-                    && is_match(&self.path_patterns, entry.path())
+                    && is_match(self.path_patterns.as_ref(), entry.path())
             } else {
                 tracing::warn!(path = entry.path(), "can not read last modified timestamp, skip");
                 false
@@ -41,11 +41,11 @@ impl Filter {
 }
 
 #[inline]
-fn is_match<P>(pattern: &Option<GlobSet>, path: P) -> bool
+fn is_match<P>(pattern: Option<&GlobSet>, path: P) -> bool
 where
     P: AsRef<std::path::Path>,
 {
-    pattern.as_ref().map_or(true, |globset| globset.is_match(path))
+    pattern.map_or(true, |globset| globset.is_match(path))
 }
 
 pub(crate) fn globset_from(patterns: &[String]) -> Result<Option<GlobSet>> {
@@ -78,7 +78,7 @@ mod tests {
     fn test_patterns_accept(#[case] patterns: Vec<&str>, #[case] path: &str) {
         let patterns = patterns.into_iter().map(String::from).collect::<Vec<String>>();
         let globset = globset_from(&patterns).unwrap();
-        assert!(is_match(&globset, path));
+        assert!(is_match(globset.as_ref(), path));
     }
 
     #[rstest]
@@ -89,6 +89,6 @@ mod tests {
     fn test_patterns_reject(#[case] patterns: Vec<&str>, #[case] path: &str) {
         let patterns = patterns.into_iter().map(String::from).collect::<Vec<String>>();
         let globset = globset_from(&patterns).unwrap();
-        assert!(!is_match(&globset, path));
+        assert!(!is_match(globset.as_ref(), path));
     }
 }
