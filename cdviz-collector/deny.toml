@@ -195,7 +195,7 @@ skip = [
     "syn",
     "regex-syntax",
     "regex-automata",
-    "redox_syscall",
+    # "redox_syscall",
 ]
 # Similarly to `skip` allows you to skip certain crates during duplicate
 # detection. Unlike skip, it also includes the entire tree of transitive

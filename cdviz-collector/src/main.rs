@@ -11,6 +11,7 @@ use clap::Parser;
 use clap_verbosity_flag::Verbosity;
 use errors::{Error, Result};
 use futures::future::TryJoinAll;
+use init_tracing_opentelemetry::tracing_subscriber_ext::TracingGuard;
 // use time::OffsetDateTime;
 use tokio::sync::broadcast;
 
@@ -53,7 +54,7 @@ impl From<CDEvent> for Message {
     }
 }
 
-fn init_log(verbose: &Verbosity) -> Result<()> {
+fn init_log(verbose: &Verbosity) -> Result<TracingGuard> {
     std::env::set_var(
         "RUST_LOG",
         std::env::var("RUST_LOG")
@@ -62,8 +63,7 @@ fn init_log(verbose: &Verbosity) -> Result<()> {
             .unwrap_or_else(|| "off".to_string()),
     );
     // very opinionated init of tracing, look as is source to make your own
-    init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers()?;
-    Ok(())
+    init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers().map_err(Error::from)
 }
 
 //TODO add garcefull shutdown
@@ -78,7 +78,7 @@ fn init_log(verbose: &Verbosity) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
-    init_log(&cli.verbose)?;
+    let _guard = init_log(&cli.verbose)?;
     let config = config::Config::from_file(cli.config)?;
 
     if let Some(dir) = cli.directory {
