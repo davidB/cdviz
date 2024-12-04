@@ -51,4 +51,4 @@ tasks:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://127.0.0.1:4317"
       CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED: "false"
     cmds:
-      - ../../cdviz-collector/target/debug/cdviz-collector -vv --config ./cdviz-collector.toml
+      - ../../cdviz-collector/target/debug/cdviz-collector connect -vv --config ./cdviz-collector.toml

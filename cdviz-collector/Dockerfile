@@ -53,4 +53,6 @@ ENV \
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:4317" \
   OTEL_TRACES_SAMPLER="always_off"
 HEALTHCHECK NONE
-CMD ["/cdviz-collector"]
+#see https://stackoverflow.com/questions/21553353/what-is-the-difference-between-cmd-and-entrypoint-in-a-dockerfile
+ENTRYPOINT ["/cdviz-collector"]
+CMD ["connect"]

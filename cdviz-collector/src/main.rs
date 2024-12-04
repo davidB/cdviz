@@ -7,7 +7,7 @@ mod sources;
 use std::path::PathBuf;
 
 use cdevents_sdk::CDEvent;
-use clap::Parser;
+use clap::{Args, Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
 use errors::{Error, Result};
 use futures::future::TryJoinAll;
@@ -22,17 +22,32 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 // TODO add options (or subcommand) to `check-configuration` (regardless of enabled), `configuration-dump` (after consolidation (with filter or not enabled) and exit or not),
 // TODO add options to overide config from cli arguments (like from env)
-#[derive(Debug, Clone, clap::Parser)]
+#[derive(Debug, Clone, Parser)]
 pub(crate) struct Cli {
+    #[command(flatten)]
+    verbose: clap_verbosity_flag::Verbosity,
+
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+enum Commands {
+    /// connect sources to sinks
+    #[command(arg_required_else_help = true)]
+    Connect(ConnectArgs),
+}
+
+#[derive(Debug, Clone, Args)]
+#[command(args_conflicts_with_subcommands = true)]
+#[command(flatten_help = true)]
+struct ConnectArgs {
     /// The configuration file to use.
     #[clap(long = "config", env("CDVIZ_COLLECTOR_CONFIG"))]
     config: Option<PathBuf>,
     /// The directory to use as the working directory.
     #[clap(short = 'C', long = "directory")]
     directory: Option<PathBuf>,
-
-    #[command(flatten)]
-    verbose: clap_verbosity_flag::Verbosity,
 }
 
 type Sender<T> = tokio::sync::broadcast::Sender<T>;
@@ -69,8 +84,6 @@ fn init_log(verbose: &Verbosity) -> Result<TracingGuard> {
 //TODO add garcefull shutdown
 //TODO use logfmt
 //TODO use verbosity to configure tracing & log, but allow override and finer control with RUST_LOG & CDVIZ_COLLECTOR_LOG (higher priority)
-//TODO add a `enabled: bool` field as part of the config of each sources & sinks
-//TODO provide default config, and default values for some config fields
 //TODO document the architecture and the configuration
 //TODO add transformers ( eg file/event info, into cdevents) for sources
 //TODO integrations with cloudevents (sources & sink)
@@ -79,9 +92,15 @@ fn init_log(verbose: &Verbosity) -> Result<TracingGuard> {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     let _guard = init_log(&cli.verbose)?;
-    let config = config::Config::from_file(cli.config)?;
+    match cli.command {
+        Commands::Connect(args) => connect(args).await,
+    }
+}
 
-    if let Some(dir) = cli.directory {
+async fn connect(args: ConnectArgs) -> Result<()> {
+    let config = config::Config::from_file(args.config)?;
+
+    if let Some(dir) = args.directory {
         std::env::set_current_dir(dir)?;
     }
 
