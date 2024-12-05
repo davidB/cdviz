@@ -1,5 +1,10 @@
+use std::collections::HashMap;
+
 use super::{hbs, EventSourcePipe};
-use crate::{errors::Result, pipes::discard_all, pipes::log, pipes::passthrough};
+use crate::{
+    errors::{Error, Result},
+    pipes::{discard_all, log, passthrough},
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
@@ -28,6 +33,22 @@ impl Config {
         };
         Ok(out)
     }
+}
+
+pub fn resolve_transformer_refs(
+    transformer_refs: &[String],
+    configs: &HashMap<String, Config>,
+) -> Result<Vec<Config>> {
+    let transformers = transformer_refs
+        .iter()
+        .map(|name| {
+            configs
+                .get(name)
+                .cloned()
+                .ok_or_else(|| Error::ConfigTransformerNotFound(name.to_string()))
+        })
+        .collect::<Result<Vec<_>>>()?;
+    Ok(transformers)
 }
 
 // pub struct Identity {
