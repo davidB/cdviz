@@ -3,7 +3,7 @@
 mod filter;
 mod parsers;
 
-use self::filter::{globset_from, Filter};
+use self::filter::{FilePatternMatcher, Filter};
 use self::parsers::{Parser, ParserEnum};
 use super::{EventSourcePipe, Extractor};
 use crate::errors::Result;
@@ -44,7 +44,7 @@ pub(crate) struct OpendalExtractor {
 impl OpendalExtractor {
     pub(crate) fn try_from(value: &Config, next: EventSourcePipe) -> Result<Self> {
         let op: Operator = Operator::via_iter(value.kind, value.parameters.clone())?;
-        let filter = Filter::from_patterns(globset_from(&value.path_patterns)?);
+        let filter = Filter::from_patterns(FilePatternMatcher::from(&value.path_patterns)?);
         let parser = value.parser.make_parser(next)?;
         Ok(Self {
             op,

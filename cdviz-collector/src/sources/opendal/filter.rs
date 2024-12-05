@@ -9,11 +9,11 @@ use opendal::EntryMode;
 pub(crate) struct Filter {
     ts_after: DateTime<Utc>,
     ts_before: DateTime<Utc>,
-    path_patterns: Option<GlobSet>,
+    path_patterns: FilePatternMatcher,
 }
 
 impl Filter {
-    pub(crate) fn from_patterns(path_patterns: Option<GlobSet>) -> Self {
+    pub(crate) fn from_patterns(path_patterns: FilePatternMatcher) -> Self {
         Filter { ts_after: DateTime::<Utc>::MIN_UTC, ts_before: Utc::now(), path_patterns }
     }
 
@@ -24,7 +24,7 @@ impl Filter {
                 last > self.ts_after
                     && last <= self.ts_before
                     && meta.content_length() > 0
-                    && is_match(self.path_patterns.as_ref(), entry.path())
+                    && self.path_patterns.accept(entry.path())
             } else {
                 tracing::warn!(path = entry.path(), "can not read last modified timestamp, skip");
                 false
@@ -40,25 +40,48 @@ impl Filter {
     }
 }
 
-#[inline]
-fn is_match<P>(pattern: Option<&GlobSet>, path: P) -> bool
-where
-    P: AsRef<std::path::Path>,
-{
-    pattern.map_or(true, |globset| globset.is_match(path))
+#[derive(Debug, Clone)]
+pub(crate) struct FilePatternMatcher {
+    include: Option<GlobSet>,
+    exclude: Option<GlobSet>,
 }
 
-pub(crate) fn globset_from(patterns: &[String]) -> Result<Option<GlobSet>> {
-    if patterns.is_empty() {
-        Ok(None)
-    } else {
-        let mut builder = globset::GlobSetBuilder::new();
+impl FilePatternMatcher {
+    pub(crate) fn from(patterns: &[String]) -> Result<Self> {
+        let mut builder_include = globset::GlobSetBuilder::new();
+        let mut count_include: usize = 0;
+        let mut builder_exclude = globset::GlobSetBuilder::new();
+        let mut count_exclude: usize = 0;
         for pattern in patterns {
-            let glob =
-                globset::GlobBuilder::new(pattern.as_str()).literal_separator(true).build()?;
-            builder.add(glob);
+            if pattern.starts_with('!') {
+                let glob = globset::GlobBuilder::new(&pattern.as_str()[1..])
+                    .literal_separator(true)
+                    .build()?;
+                builder_exclude.add(glob);
+                count_exclude += 1;
+            } else {
+                let glob =
+                    globset::GlobBuilder::new(pattern.as_str()).literal_separator(true).build()?;
+                builder_include.add(glob);
+                count_include += 1;
+            }
         }
-        Ok(Some(builder.build()?))
+        let include = if count_include == 0 { None } else { Some(builder_include.build()?) };
+        let exclude = if count_exclude == 0 { None } else { Some(builder_exclude.build()?) };
+        Ok(Self::new(include, exclude))
+    }
+
+    pub(crate) fn new(include: Option<GlobSet>, exclude: Option<GlobSet>) -> Self {
+        Self { include, exclude }
+    }
+
+    #[inline]
+    pub(crate) fn accept<P>(&self, path: P) -> bool
+    where
+        P: AsRef<std::path::Path>,
+    {
+        self.include.as_ref().map_or(true, |globset| globset.is_match(&path))
+            && self.exclude.as_ref().map_or(true, |globset| !globset.is_match(&path))
     }
 }
 
@@ -75,10 +98,11 @@ mod tests {
     #[case(vec!["*.csv", "*.json"], "foo.json")]
     #[case(vec!["**/*.json"], "foo.json")]
     #[case(vec!["**/*.json"], "bar/foo.json")]
+    #[case(vec!["!**/*.foo"], "bar/foo.json")]
     fn test_patterns_accept(#[case] patterns: Vec<&str>, #[case] path: &str) {
         let patterns = patterns.into_iter().map(String::from).collect::<Vec<String>>();
-        let globset = globset_from(&patterns).unwrap();
-        assert!(is_match(globset.as_ref(), path));
+        let file_pattern_matcher = FilePatternMatcher::from(&patterns).unwrap();
+        assert!(file_pattern_matcher.accept(path));
     }
 
     #[rstest]
@@ -86,9 +110,24 @@ mod tests {
     #[case(vec!["*.json"], "foo.jsonl")]
     #[case(vec!["*.json"], "bar/foo.json")]
     #[case(vec!["*.json"], "/foo.json")]
+    #[case(vec!["!*"], "foo.json")]
+    #[case(vec!["!**"], "foo.json")]
+    #[case(vec!["!*.json"], "foo.json")]
+    #[case(vec!["!*.csv", "!*.json"], "foo.json")]
+    #[case(vec!["!**/*.json"], "foo.json")]
+    #[case(vec!["!**/*.json"], "bar/foo.json")]
     fn test_patterns_reject(#[case] patterns: Vec<&str>, #[case] path: &str) {
         let patterns = patterns.into_iter().map(String::from).collect::<Vec<String>>();
-        let globset = globset_from(&patterns).unwrap();
-        assert!(!is_match(globset.as_ref(), path));
+        let file_pattern_matcher = FilePatternMatcher::from(&patterns).unwrap();
+        assert!(!file_pattern_matcher.accept(path));
+    }
+
+    #[rstest]
+    #[case(vec!["**/*.json", "!**/*.json"], "bar/foo.json")]
+    #[case(vec!["**/*.json", "!**/*.out.json"], "bar/foo.out.json")]
+    fn test_patterns_reject_with_exclude(#[case] patterns: Vec<&str>, #[case] path: &str) {
+        let patterns = patterns.into_iter().map(String::from).collect::<Vec<String>>();
+        let file_pattern_matcher = FilePatternMatcher::from(&patterns).unwrap();
+        assert!(!file_pattern_matcher.accept(path));
     }
 }
