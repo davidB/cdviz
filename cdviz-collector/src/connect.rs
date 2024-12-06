@@ -45,7 +45,8 @@ impl From<CDEvent> for Message {
 //TODO add transformers ( eg file/event info, into cdevents) for sources
 //TODO integrations with cloudevents (sources & sink)
 //TODO integrations with kafka / redpanda, nats,
-pub(crate) async fn connect(args: ConnectArgs) -> Result<()> {
+/// retuns true if the connection service ran successfully
+pub(crate) async fn connect(args: ConnectArgs) -> Result<bool> {
     let config = config::Config::from_file(args.config)?;
 
     if let Some(dir) = args.directory {
@@ -91,7 +92,7 @@ pub(crate) async fn connect(args: ConnectArgs) -> Result<()> {
     // handlers.append(&mut sources);
     //tokio::try_join!(handlers).await?;
     //futures::try_join!(handlers);
-    Ok(())
+    Ok(true)
 }
 
 #[cfg(test)]

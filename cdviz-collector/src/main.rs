@@ -4,14 +4,12 @@ mod errors;
 mod pipes;
 mod sinks;
 mod sources;
-mod transform;
+mod tools;
 
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
-use connect::{connect, ConnectArgs};
 use errors::{Error, Result};
 use init_tracing_opentelemetry::tracing_subscriber_ext::TracingGuard;
-use transform::{transform, TransformArgs};
 
 pub(crate) use connect::{Message, Receiver, Sender};
 
@@ -36,24 +34,26 @@ pub(crate) struct Cli {
 enum Command {
     /// Launch as a server and connect sources to sinks.
     #[command(arg_required_else_help = true)]
-    Connect(ConnectArgs),
+    Connect(connect::ConnectArgs),
 
     /// Transform local files and potentially check them.
     /// The input & output files are expected to be json files.
     /// The filename of output files will be the same as the input file but with a '.out.json'
     /// extension (input file with this extension will be ignored).
     /// The output files include body, metdata and header fields.
+    #[cfg(feature = "tool_transform")]
     #[command(arg_required_else_help = true)]
-    Transform(TransformArgs),
+    Transform(tools::transform::TransformArgs),
 }
 
 //TODO use logfmt
 fn init_log(verbose: &Verbosity) -> Result<TracingGuard> {
+    let level = verbose.log_level().map(|level| level.to_string());
     std::env::set_var(
         "RUST_LOG",
         std::env::var("RUST_LOG")
             .ok()
-            .or_else(|| verbose.log_level().map(|level| level.to_string()))
+            .or_else(|| level.map(|level| format!("{level},otel::setup={level}")))
             .unwrap_or_else(|| "off".to_string()),
     );
     // very opinionated init of tracing, look as is source to make your own
@@ -65,8 +65,13 @@ fn init_log(verbose: &Verbosity) -> Result<TracingGuard> {
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     let _guard = init_log(&cli.verbose)?;
-    match cli.command {
-        Command::Connect(args) => connect(args).await,
-        Command::Transform(args) => transform(args).await,
+    let ok = match cli.command {
+        Command::Connect(args) => connect::connect(args).await?,
+        #[cfg(feature = "tool_transform")]
+        Command::Transform(args) => tools::transform::transform(args).await?,
+    };
+    if !ok {
+        std::process::exit(1);
     }
+    Ok(())
 }

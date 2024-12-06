@@ -22,7 +22,9 @@ chrono = { version = "0.4", features = ["serde"] }
 cid = "0.11"
 clap = { version = "4", features = ["derive", "env"] }
 clap-verbosity-flag = "3.0"
+cliclack = { version = "0.3", optional = true }
 cloudevents-sdk = { version = "0.7", features = ["http-binding"] }
+console = { version = "0.15", optional = true }
 csv = { version = "1", optional = true }
 derive_more = { version = "1", features = ["display", "from", "error"] }
 enum_dispatch = "0.3"
@@ -54,6 +56,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.11"
 sha2 = "0.10"
+similar = { version = "2.2", optional = true, features = ["unicode", "inline"] }
 sqlx = { version = "0.8", features = [
   "postgres",
   "runtime-tokio",
@@ -72,6 +75,7 @@ assert2 = "0.3"
 # axum-test = "14"
 cdevents-sdk = { version = "0.1", features = ["testkit"] }
 figment = { version = "0.10", features = ["toml", "env", "test"] }
+pretty_assertions = "1"
 proptest = "1"
 rstest = "0.23"
 rustainers = "0.12"
@@ -88,6 +92,7 @@ default = [
   "sink_http",
   "source_http",
   "source_opendal",
+  "tool_transform",
 ]
 #! ### Sinks
 sink_db = ["dep:sqlx"]
@@ -112,6 +117,10 @@ source_opendal = [
   "dep:handlebars_misc_helpers",
   "dep:opendal",
 ]
+
+#! ### Tools
+tool_ui = ["dep:cliclack", "dep:console", "dep:similar"]
+tool_transform = ["source_opendal", "tool_ui"]
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.5"
