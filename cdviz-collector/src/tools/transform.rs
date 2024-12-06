@@ -7,7 +7,7 @@ use crate::{
 };
 use clap::{Args, ValueEnum};
 use opendal::Scheme;
-use std::{collections::HashMap, path::PathBuf};
+use std::{collections::HashMap, path::Path, path::PathBuf};
 
 #[derive(Debug, Clone, Args)]
 #[command(args_conflicts_with_subcommands = true,flatten_help = true, about, long_about = None)]
@@ -45,6 +45,7 @@ enum TransformMode {
 }
 
 pub(crate) async fn transform(args: TransformArgs) -> Result<bool> {
+    cliclack::intro("Transforming files...")?;
     let config = config::Config::from_file(args.config)?;
 
     if !args.output.exists() {
@@ -78,6 +79,7 @@ pub(crate) async fn transform(args: TransformArgs) -> Result<bool> {
         TransformMode::Overwrite => overwrite(&args.output),
     };
     remove_new_files(&args.output)?;
+    cliclack::outro("Transformation done.")?;
     res
 }
 
@@ -110,36 +112,36 @@ fn overwrite(output: &PathBuf) -> Result<bool> {
             count += 1;
         }
     }
-    println!("Overwritten {} files.", count);
+    cliclack::log::success(format!("Overwritten {count} files."))?;
     Ok(true)
 }
 
-fn check(output: &PathBuf) -> Result<bool> {
+fn check(output: &Path) -> Result<bool> {
     let differences = crate::tools::difference::search_new_vs_out(output)?;
-    if !differences.is_empty() {
-        println!("Differences found:");
+    if differences.is_empty() {
+        cliclack::log::success("0 differences found.")?;
+        Ok(true)
+    } else {
+        cliclack::log::warning(format!("{} differences found.", differences.len()))?;
         for (comparison, diff) in differences {
-            diff.show(&comparison);
+            diff.show(&comparison)?;
         }
         Ok(false)
-    } else {
-        println!("NO differences found.");
-        Ok(true)
     }
 }
 
-fn review(output: &PathBuf) -> Result<bool> {
+fn review(output: &Path) -> Result<bool> {
     let differences = crate::tools::difference::search_new_vs_out(output)?;
-    if !differences.is_empty() {
-        println!("Differences found:");
+    if differences.is_empty() {
+        cliclack::log::success("0 differences found.")?;
+        Ok(true)
+    } else {
+        cliclack::log::warning(format!("{} differences found.", differences.len()))?;
         let mut no_differences = true;
         for (comparison, diff) in differences {
             no_differences = diff.review(&comparison)? && no_differences;
         }
         Ok(no_differences)
-    } else {
-        println!("NO differences found.");
-        Ok(true)
     }
 }
 

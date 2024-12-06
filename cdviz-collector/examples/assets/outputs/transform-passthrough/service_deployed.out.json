@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "last_modified": "2024-05-26T17:49:35.507270376+00:00",
+    "last_modified": "2024-12-06T20:08:32.798342225+00:00",
     "name": "service_deployed.json",
     "path": "service_deployed.json",
     "root": "/mnt/nvme0n1p1/david/src/github.com/cdviz-dev/cdviz/cdviz-collector/examples/assets/inputs/cdevents_json"

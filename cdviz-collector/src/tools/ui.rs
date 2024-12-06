@@ -1,27 +1,28 @@
 use crate::errors::{Error, Result};
 
-pub fn show_difference_text(old: &str, new: &str, show_whitespace: bool) {
+pub fn show_difference_text(old: &str, new: &str, show_whitespace: bool) -> Result<()> {
     use console::{style, Style};
     use similar::{ChangeTag, TextDiff};
 
     let diff = TextDiff::from_lines(old, new);
+    let mut message = String::new();
     for (idx, group) in diff.grouped_ops(3).iter().enumerate() {
         if idx > 0 {
-            println!("...");
+            message.push_str("...\n");
         }
         for op in group {
             for change in diff.iter_inline_changes(op) {
-                let (sign, s) = match change.tag() {
+                let (sign, styl) = match change.tag() {
                     ChangeTag::Delete => ("-", Style::new().red()),
                     ChangeTag::Insert => ("+", Style::new().green()),
                     ChangeTag::Equal => (" ", Style::new().dim()),
                 };
-                print!(
+                message.push_str(&format!(
                     "{}{} |{}",
                     style(Line(change.old_index())).dim(),
                     style(Line(change.new_index())).dim(),
-                    s.apply_to(sign).bold(),
-                );
+                    styl.apply_to(sign).bold(),
+                ));
                 for (emphasized, value) in change.iter_strings_lossy() {
                     let value = if show_whitespace {
                         replace_blank_char(&value)
@@ -29,35 +30,38 @@ pub fn show_difference_text(old: &str, new: &str, show_whitespace: bool) {
                         value.to_string()
                     };
                     if emphasized {
-                        print!("{}", s.apply_to(value).underlined().on_black());
+                        message.push_str(
+                            styl.apply_to(value).underlined().on_black().to_string().as_str(),
+                        );
                     } else {
-                        print!("{}", s.apply_to(value));
+                        message.push_str(styl.apply_to(value).to_string().as_str());
                     }
                 }
                 if change.missing_newline() {
-                    println!();
+                    message.push('\n');
                 }
             }
         }
     }
+    cliclack::note("", message)?;
+    Ok(())
 }
 
 struct Line(Option<usize>);
 
 impl std::fmt::Display for Line {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self.0 {
-            Option::None => write!(f, "    "),
-            Some(idx) => write!(f, "{:<4}", idx + 1),
+            Option::None => write!(formatter, "    "),
+            Some(idx) => write!(formatter, "{:<4}", idx + 1),
         }
     }
 }
 
-fn replace_blank_char(s: &str) -> String {
-    s.replace(' ', "·").replace('\t', "⇒\t").replace("\r\n", "¶\n").replace('\n', "↩\n")
+fn replace_blank_char(txt: &str) -> String {
+    txt.replace(' ', "·").replace('\t', "⇒\t").replace("\r\n", "¶\n").replace('\n', "↩\n")
 }
 
 pub fn ask_to_update_sample(msg: &str) -> Result<bool> {
-    use cliclack::confirm;
-    confirm(msg).interact().map_err(Error::from)
+    cliclack::confirm(msg).interact().map_err(Error::from)
 }
