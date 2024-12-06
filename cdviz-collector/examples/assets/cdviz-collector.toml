@@ -13,7 +13,7 @@ parameters = { root = "./sinks.off" }
 enabled = true
 
 [sources.cdevents_local_json.extractor]
-parameters = { root = "./opendal_fs" }
+parameters = { root = "./inputs" }
 
 [sources.cdevents_local_csv]
 enabled = true
@@ -23,7 +23,7 @@ transformer_refs = ["service_deployed"]
 type = "opendal"
 kind = "fs"
 polling_interval = "10s"
-parameters = { root = "./opendal_fs" }
+parameters = { root = "./inputs" }
 recursive = false
 path_patterns = ["cdevents.csv"]
 parser = "csv_row"
