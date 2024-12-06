@@ -8,8 +8,9 @@ avoid-breaking-exported-api = false
 disallowed-names = []
 disallowed-macros = [
     { path = "std::dbg", reason = "it is okay to use during development, but please do not include it in main branch" },
-    { path = "std::println", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log" },
-    { path = "std::eprintln", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log" },
+    { path = "std::print", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log or cliclack for cli" },
+    { path = "std::println", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log or cliclack for cli" },
+    { path = "std::eprintln", reason = "it is okay to use during development, but please do not include it in main branch, use tracing & log or cliclack for cli" },
 ]
 disallowed-methods = []
 disallowed-types = []

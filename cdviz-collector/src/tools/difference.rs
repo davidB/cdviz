@@ -32,10 +32,7 @@ pub fn search_new_vs_out(directory: &Path) -> Result<HashMap<Comparison, Differe
         let filename = path.extract_filename()?;
         if filename.ends_with(".new.json") {
             let comparison = Comparison::from_xxx_json(&path)?;
-            if !comparison.expected.exists() {
-                differences
-                    .insert(comparison, Difference::Presence { expected: false, actual: true });
-            } else {
+            if comparison.expected.exists() {
                 let expected_content = std::fs::read_to_string(&comparison.expected)?;
                 let actual_content = std::fs::read_to_string(&comparison.actual)?;
                 if expected_content != actual_content {
@@ -47,6 +44,9 @@ pub fn search_new_vs_out(directory: &Path) -> Result<HashMap<Comparison, Differe
                         },
                     );
                 }
+            } else {
+                differences
+                    .insert(comparison, Difference::Presence { expected: false, actual: true });
             }
         } else if filename.ends_with(".out.json") {
             let comparison = Comparison::from_xxx_json(&path)?;
@@ -60,21 +60,22 @@ pub fn search_new_vs_out(directory: &Path) -> Result<HashMap<Comparison, Differe
 }
 
 impl Difference {
-    pub fn show(&self, comparison: &Comparison) {
+    pub fn show(&self, comparison: &Comparison) -> Result<()> {
         let label = &comparison.label;
         match self {
             Difference::Presence { expected, actual } => {
                 if *expected && !*actual {
-                    println!("missing: {label}");
+                    cliclack::log::warning(format!("missing: {label}"))?;
                 } else {
-                    println!("unexpected : {label}");
+                    cliclack::log::warning(format!("unexpected : {label}"))?;
                 }
             }
             Difference::StringContent { expected, actual } => {
-                println!("difference detected on: {label}\n");
-                ui::show_difference_text(expected, actual, true);
+                cliclack::log::warning(format!("difference detected on: {label}\n"))?;
+                ui::show_difference_text(expected, actual, true)?;
             }
         }
+        Ok(())
     }
 
     /// return true when the new/actual state is accepted (and replace the old one)
@@ -103,7 +104,7 @@ impl Difference {
                 }
             }
             Difference::StringContent { expected, actual } => {
-                crate::tools::ui::show_difference_text(&expected, &actual, true);
+                crate::tools::ui::show_difference_text(expected, actual, true)?;
                 if crate::tools::ui::ask_to_update_sample(&format!(
                     "Accept to update {}?",
                     comparison.label
