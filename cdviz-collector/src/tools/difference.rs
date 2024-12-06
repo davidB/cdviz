@@ -1,7 +1,4 @@
-use crate::{
-    errors::{Error, Result},
-    tools::ui,
-};
+use crate::{errors::Result, tools::ui, utils::PathExt};
 use std::{collections::HashMap, path::Path, path::PathBuf};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -19,12 +16,7 @@ pub struct Comparison {
 
 impl Comparison {
     pub fn from_xxx_json(path: &Path) -> Result<Self> {
-        let base_name = path
-            .file_name()
-            .ok_or(Error::from(format!("could not extract filename of {path:?}")))?
-            .to_string_lossy()
-            .replace(".new.json", "")
-            .replace(".out.json", "");
+        let base_name = path.extract_filename()?.replace(".new.json", "").replace(".out.json", "");
         Ok(Self {
             expected: path.with_file_name(format!("{base_name}.out.json")),
             actual: path.with_file_name(format!("{base_name}.new.json")),
@@ -37,7 +29,7 @@ pub fn search_new_vs_out(directory: &Path) -> Result<HashMap<Comparison, Differe
     let mut differences = HashMap::new();
     for entry in std::fs::read_dir(directory)? {
         let path = entry?.path();
-        let filename = path.file_name().unwrap().to_string_lossy();
+        let filename = path.extract_filename()?;
         if filename.ends_with(".new.json") {
             let comparison = Comparison::from_xxx_json(&path)?;
             if !comparison.expected.exists() {
