@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "last_modified": "2024-05-26T17:49:35.507270376+00:00",
+    "name": "artifact_published.json",
+    "path": "artifact_published.json",
+    "root": "/mnt/nvme0n1p1/david/src/github.com/cdviz-dev/cdviz/cdviz-collector/examples/assets/inputs/cdevents_json"
+  },
+  "header": {},
+  "body": {
+    "context": {
+      "id": "271069a8-fc18-44f1-b38f-9d70a1695819",
+      "source": "/event/source/123",
+      "timestamp": "2023-03-20T14:27:05.315384Z",
+      "type": "dev.cdevents.artifact.published.0.1.1",
+      "version": "0.4.0-draft"
+    },
+    "subject": {
+      "content": {},
+      "id": "pkg:golang/mygit.com/myorg/myapp@234fd47e07d1004f0aed9c",
+      "source": "/event/source/123",
+      "type": "artifact"
+    }
+  }
+}

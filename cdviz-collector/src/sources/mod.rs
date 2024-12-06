@@ -3,7 +3,7 @@ mod hbs;
 #[cfg(feature = "source_http")]
 pub(crate) mod http;
 #[cfg(feature = "source_opendal")]
-mod opendal;
+pub(crate) mod opendal;
 mod send_cdevents;
 pub(crate) mod transformers;
 
@@ -70,13 +70,13 @@ pub(crate) fn start(_name: &str, config: Config, tx: Sender<Message>) -> JoinHan
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct EventSource {
-    metadata: Value,
-    header: HashMap<String, String>,
-    body: Value,
+    pub metadata: Value,
+    pub header: HashMap<String, String>,
+    pub body: Value,
 }
 
 // TODO explore to use enum_dispatch instead of Box(dyn) on EventSourcePipe (a recursive structure)
-type EventSourcePipe = Box<dyn Pipe<Input = EventSource> + Send + Sync>;
+pub type EventSourcePipe = Box<dyn Pipe<Input = EventSource> + Send + Sync>;
 
 #[async_trait]
 pub trait Extractor: Send + Sync {

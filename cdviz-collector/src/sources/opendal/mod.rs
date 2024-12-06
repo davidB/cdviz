@@ -1,7 +1,7 @@
 //TODO add persistance for state (time window to not reprocess same file after restart)
 
 mod filter;
-mod parsers;
+pub(crate) mod parsers;
 
 use self::filter::{FilePatternMatcher, Filter};
 use self::parsers::{Parser, ParserEnum};
@@ -24,13 +24,13 @@ use tracing::instrument;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) struct Config {
     #[serde(with = "humantime_serde")]
-    polling_interval: Duration,
+    pub(crate) polling_interval: Duration,
     #[serde_as(as = "DisplayFromStr")]
-    kind: Scheme,
-    parameters: HashMap<String, String>,
-    recursive: bool,
-    path_patterns: Vec<String>,
-    parser: parsers::Config,
+    pub(crate) kind: Scheme,
+    pub(crate) parameters: HashMap<String, String>,
+    pub(crate) recursive: bool,
+    pub(crate) path_patterns: Vec<String>,
+    pub(crate) parser: parsers::Config,
 }
 
 pub(crate) struct OpendalExtractor {
@@ -54,44 +54,41 @@ impl OpendalExtractor {
             parser,
         })
     }
+
+    #[instrument(skip(self))]
+    pub(crate) async fn run_once(&mut self) -> Result<()> {
+        let op = &self.op;
+        let filter = &self.filter;
+        let recursive = self.recursive;
+        let parser = &mut self.parser;
+        // TODO convert into arg of instrument
+        tracing::debug!(filter=? filter, scheme =? op.info().scheme(), root =? op.info().root(), "scanning");
+        let mut lister = op
+        .lister_with("")
+        .recursive(recursive)
+        // Make sure content-length and last-modified been fetched.
+        .metakey(Metakey::ContentLength | Metakey::LastModified)
+        .await?;
+        while let Some(entry) = lister.try_next().await? {
+            if filter.accept(&entry) {
+                if let Err(err) = parser.parse(op, &entry).await {
+                    tracing::warn!(?err, path = entry.path(), "fail to process, skip");
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 #[async_trait]
 impl Extractor for OpendalExtractor {
     async fn run(&mut self) -> Result<()> {
         loop {
-            if let Err(err) =
-                run_once(&self.op, &self.filter, self.recursive, &mut self.parser).await
-            {
+            if let Err(err) = self.run_once().await {
                 tracing::warn!(?err, filter = ?self.filter, scheme =? self.op.info().scheme(), root =? self.op.info().root(), "fail during scanning");
             }
             sleep(self.polling_interval).await;
             self.filter.jump_to_next_ts_window();
         }
     }
-}
-
-#[instrument(skip(op, filter, recursive, parser))]
-pub(crate) async fn run_once(
-    op: &Operator,
-    filter: &Filter,
-    recursive: bool,
-    parser: &mut ParserEnum,
-) -> Result<()> {
-    // TODO convert into arg of instrument
-    tracing::debug!(filter=? filter, scheme =? op.info().scheme(), root =? op.info().root(), "scanning");
-    let mut lister = op
-        .lister_with("")
-        .recursive(recursive)
-        // Make sure content-length and last-modified been fetched.
-        .metakey(Metakey::ContentLength | Metakey::LastModified)
-        .await?;
-    while let Some(entry) = lister.try_next().await? {
-        if filter.accept(&entry) {
-            if let Err(err) = parser.parse(op, &entry).await {
-                tracing::warn!(?err, path = entry.path(), "fail to process, skip");
-            }
-        }
-    }
-    Ok(())
 }
