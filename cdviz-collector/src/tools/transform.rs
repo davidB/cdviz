@@ -1,8 +1,9 @@
 use crate::{
     config,
-    errors::Result,
+    errors::{Error, Result},
     pipes::Pipe,
     sources::{opendal as source_opendal, transformers, EventSource, EventSourcePipe},
+    utils::PathExt,
 };
 use clap::{Args, ValueEnum};
 use opendal::Scheme;
@@ -87,7 +88,9 @@ struct OutputToJsonFile {
 impl Pipe for OutputToJsonFile {
     type Input = EventSource;
     fn send(&mut self, input: Self::Input) -> Result<()> {
-        let filename = input.metadata["name"].as_str().unwrap();
+        let filename = input.metadata["name"]
+            .as_str()
+            .ok_or(Error::from("could not extract 'name' field from metadata"))?;
         let filename = filename.replace(".json", ".new.json");
         let path = self.directory.join(filename);
         std::fs::write(path, serde_json::to_string_pretty(&input)?)?;
@@ -99,7 +102,7 @@ fn overwrite(output: &PathBuf) -> Result<bool> {
     let mut count = 0;
     for entry in std::fs::read_dir(output)? {
         let path = entry?.path();
-        let filename = path.file_name().unwrap().to_string_lossy();
+        let filename = path.extract_filename()?;
         if filename.ends_with(".new.json") {
             let out_filename = filename.replace(".new.json", ".out.json");
             let out_path = path.with_file_name(out_filename);
@@ -143,7 +146,7 @@ fn review(output: &PathBuf) -> Result<bool> {
 fn remove_new_files(output: &PathBuf) -> Result<()> {
     for entry in std::fs::read_dir(output)? {
         let path = entry?.path();
-        let filename = path.file_name().unwrap().to_string_lossy();
+        let filename = path.extract_filename()?;
         if filename.ends_with(".new.json") {
             std::fs::remove_file(path)?;
         }

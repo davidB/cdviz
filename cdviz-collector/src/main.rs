@@ -5,6 +5,7 @@ mod pipes;
 mod sinks;
 mod sources;
 mod tools;
+mod utils;
 
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
