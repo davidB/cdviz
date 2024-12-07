@@ -116,11 +116,15 @@ source_opendal = [
   "dep:handlebars",
   "dep:handlebars_misc_helpers",
   "dep:opendal",
+  "transformer_hbs",
 ]
+
+#! ### Transformers
+transformer_hbs = ["dep:handlebars", "dep:handlebars_misc_helpers"]
 
 #! ### Tools
 tool_ui = ["dep:cliclack", "dep:console", "dep:similar"]
-tool_transform = ["source_opendal", "tool_ui"]
+tool_transform = ["source_opendal", "tool_ui", "transformer_hbs"]
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.5"
