@@ -31,11 +31,12 @@ pub(crate) enum Error {
     Opendal(opendal::Error),
     #[cfg(feature = "source_opendal")]
     GlobPattern(globset::Error),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_hbs")]
     HandlebarsRender(handlebars::RenderError),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_hbs")]
     HandlebarsTemplate(handlebars::TemplateError),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_vrl")]
+    VrlExpression(vrl::compiler::ExpressionError),
     Csv(csv::Error),
     BusSend(tokio::sync::broadcast::error::SendError<Message>),
     BusRecv(tokio::sync::broadcast::error::RecvError),
@@ -43,6 +44,8 @@ pub(crate) enum Error {
     ConfigReader(figment::Error),
     CloudEventBuilder(cloudevents::event::EventBuilderError),
     CloudEventMessage(cloudevents::message::Error),
+    // MutexPoisoned(std::sync::PoisonError<std::sync::MutexGuard<'static, Message>>),
+    // MutexPoisoned<T>(std::sync::PoisonError<T>),
     // ConfigTomlError(toml::de::Error),
     MultiHash(multihash::Error),
     #[display("{txt}")]

@@ -1,5 +1,4 @@
 pub(crate) mod extractors;
-mod hbs;
 #[cfg(feature = "source_http")]
 pub(crate) mod http;
 #[cfg(feature = "source_opendal")]
@@ -68,7 +67,7 @@ pub(crate) fn start(_name: &str, config: Config, tx: Sender<Message>) -> JoinHan
     })
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default, PartialEq, Eq)]
 pub struct EventSource {
     pub metadata: Value,
     pub header: HashMap<String, String>,
