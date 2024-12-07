@@ -69,6 +69,7 @@ time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.24" }
+vrl = { version = "0.20", optional = true }
 
 [dev-dependencies]
 assert2 = "0.3"
@@ -117,14 +118,21 @@ source_opendal = [
   "dep:handlebars_misc_helpers",
   "dep:opendal",
   "transformer_hbs",
+  "transformer_vrl",
 ]
 
 #! ### Transformers
 transformer_hbs = ["dep:handlebars", "dep:handlebars_misc_helpers"]
+transformer_vrl = ["dep:vrl"]
 
 #! ### Tools
 tool_ui = ["dep:cliclack", "dep:console", "dep:similar"]
-tool_transform = ["source_opendal", "tool_ui", "transformer_hbs"]
+tool_transform = [
+  "source_opendal",
+  "tool_ui",
+  "transformer_hbs",
+  "transformer_vrl",
+]
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.5"
