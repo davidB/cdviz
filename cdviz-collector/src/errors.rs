@@ -35,7 +35,8 @@ pub(crate) enum Error {
     HandlebarsRender(handlebars::RenderError),
     #[cfg(feature = "transformer_hbs")]
     HandlebarsTemplate(handlebars::TemplateError),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_vrl")]
+    VrlExpression(vrl::compiler::ExpressionError),
     Csv(csv::Error),
     BusSend(tokio::sync::broadcast::error::SendError<Message>),
     BusRecv(tokio::sync::broadcast::error::RecvError),
