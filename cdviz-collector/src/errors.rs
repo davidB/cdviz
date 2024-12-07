@@ -43,6 +43,8 @@ pub(crate) enum Error {
     ConfigReader(figment::Error),
     CloudEventBuilder(cloudevents::event::EventBuilderError),
     CloudEventMessage(cloudevents::message::Error),
+    // MutexPoisoned(std::sync::PoisonError<std::sync::MutexGuard<'static, Message>>),
+    // MutexPoisoned<T>(std::sync::PoisonError<T>),
     // ConfigTomlError(toml::de::Error),
     MultiHash(multihash::Error),
     #[display("{txt}")]
