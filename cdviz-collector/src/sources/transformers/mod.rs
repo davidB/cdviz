@@ -1,5 +1,7 @@
 #[cfg(feature = "transformer_hbs")]
 mod hbs;
+#[cfg(feature = "transformer_vrl")]
+mod vrl;
 
 use std::collections::HashMap;
 
@@ -23,8 +25,9 @@ pub(crate) enum Config {
     #[cfg(feature = "transformer_hbs")]
     #[serde(alias = "hbs")]
     Hbs { template: String },
-    // #[serde(alias = "vrl")]
-    // Vrl(String),
+    #[cfg(feature = "transformer_vrl")]
+    #[serde(alias = "vrl")]
+    Vrl { template: String },
 }
 
 impl Config {
@@ -35,6 +38,8 @@ impl Config {
             Config::DiscardAll => Box::new(discard_all::Processor::new()),
             #[cfg(feature = "transformer_hbs")]
             Config::Hbs { template } => Box::new(hbs::Processor::new(template, next)?),
+            #[cfg(feature = "transformer_vrl")]
+            Config::Vrl { template } => Box::new(vrl::Processor::new(template, next)?),
         };
         Ok(out)
     }
