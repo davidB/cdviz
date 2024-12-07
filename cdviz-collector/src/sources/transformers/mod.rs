@@ -1,6 +1,9 @@
+#[cfg(feature = "transformer_hbs")]
+mod hbs;
+
 use std::collections::HashMap;
 
-use super::{hbs, EventSourcePipe};
+use super::EventSourcePipe;
 use crate::{
     errors::{Error, Result},
     pipes::{discard_all, log, passthrough},
@@ -17,6 +20,7 @@ pub(crate) enum Config {
     Log(log::Config),
     #[serde(alias = "discard_all")]
     DiscardAll,
+    #[cfg(feature = "transformer_hbs")]
     #[serde(alias = "hbs")]
     Hbs { template: String },
     // #[serde(alias = "vrl")]
@@ -29,6 +33,7 @@ impl Config {
             Config::Passthrough => Box::new(passthrough::Processor::new(next)),
             Config::Log(config) => Box::new(log::Processor::try_from(config, next)?),
             Config::DiscardAll => Box::new(discard_all::Processor::new()),
+            #[cfg(feature = "transformer_hbs")]
             Config::Hbs { template } => Box::new(hbs::Processor::new(template, next)?),
         };
         Ok(out)

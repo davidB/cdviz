@@ -1,5 +1,4 @@
 pub(crate) mod extractors;
-mod hbs;
 #[cfg(feature = "source_http")]
 pub(crate) mod http;
 #[cfg(feature = "source_opendal")]

@@ -31,9 +31,9 @@ pub(crate) enum Error {
     Opendal(opendal::Error),
     #[cfg(feature = "source_opendal")]
     GlobPattern(globset::Error),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_hbs")]
     HandlebarsRender(handlebars::RenderError),
-    #[cfg(feature = "source_opendal")]
+    #[cfg(feature = "transformer_hbs")]
     HandlebarsTemplate(handlebars::TemplateError),
     #[cfg(feature = "source_opendal")]
     Csv(csv::Error),
