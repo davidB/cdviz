@@ -6,9 +6,6 @@ OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
-task = '3'         # to have a set of simple commands for repetitive task (and CI)
-rust = '1.83.0'    # the rust tool stack (with cargo, fmt, clippy) to build source
-binstall = '1.7.4' # do not use cargo-binstall (it's a special name used by mise)
-
-[plugins]
-binstall = "https://github.com/davidB/asdf-cargo-binstall"
+task = '3'                             # to have a set of simple commands for repetitive task (and CI)
+rust = '1.83.0'                        # the rust tool stack (with cargo, fmt, clippy) to build source
+"aqua:cargo-bins/cargo-binstall" = '1' # do not use cargo-binstall (it's a special name used by mise)
