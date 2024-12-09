@@ -28,7 +28,7 @@ deploy:
   helm:
     releases:
       - name: cdviz
-        namespace: cdviz
+        namespace: cdviz-dev
         createNamespace: true
         chartPath: ../charts/cdviz
         valuesFiles:
