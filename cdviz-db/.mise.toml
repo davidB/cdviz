@@ -4,6 +4,6 @@ PG_LOCAL_USER = "cdviz"
 PG_LOCAL_URL = "postgres://{{env.PG_LOCAL_USER}}:{{env.PG_LOCAL_PWD}}@127.0.0.1:5432/{{env.PG_LOCAL_USER}}?search_path=public&sslmode=disable"
 
 [tools]
-# docker = 'latest'
-atlas = '0.19'
-task = '3'
+# docker = "latest"
+atlas = "0.19"
+"ubi:go-task/task" = "3"
