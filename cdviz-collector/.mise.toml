@@ -6,6 +6,121 @@ OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
-"ubi:go-task/task" = "3"               # to have a set of simple commands for repetitive task (and CI)
 rust = "1.83.0"                        # the rust tool stack (with cargo, fmt, clippy) to build source
 "aqua:cargo-bins/cargo-binstall" = "1" # do not use cargo-binstall (it's a special name used by mise)
+"cargo:cargo-hack" = "latest"
+"cargo:cargo-sort" = "latest"
+"cargo:cargo-machete" = "latest"
+"cargo:cargo-deny" = "latest"
+"cargo:cargo-nextest" = "latest"
+
+[tasks."install:rustfmt"]
+hide = true
+run = ["rustup component add rustfmt"]
+
+[tasks."install:clippy"]
+hide = true
+run = ["rustup component add clippy"]
+
+[tasks."install:sqlx-cli"]
+hide = true
+run = [
+    "cargo install sqlx-cli --no-default-features --features rustls,postgres --locked",
+]
+
+[tasks."check"]
+run = "cargo hack check --each-feature --no-dev-deps"
+
+[tasks."build"]
+run = "cargo build"
+
+[tasks."format"]
+depends = ["install:rustfmt"]
+description = "Format the code and sort dependencies"
+run = ["cargo fmt", "cargo sort --grouped"]
+
+[tasks."deny"]
+run = ["cargo tree -i opentelemetry", "cargo deny --all-features check"]
+
+[tasks."lint"]
+depends = ["lint:rust"]
+description = "Lint all the code (megalinter + lint_rust)"
+# cargo install --locked cargo-binstall
+# use Rustls rather than OpenSSL (be sure to add the features for the databases you intend to use!)
+# no binstall available
+# - lint:megalinter
+
+[tasks."lint:rust"]
+depends = ["install:rustfmt", "install:clippy"]
+run = [
+    "cargo fmt --all -- --check",
+    "cargo sort --grouped --check",
+    "cargo clippy --workspace --all-features --all-targets",
+]
+
+
+[tasks."lint:dependencies"]
+run = ["cargo machete --with-metadata"]
+# check unused with cargo-machete or cargo-udeps
+# TODO check outdated
+
+[tasks."test"]
+run = [
+    "cargo nextest run",
+    # "cargo test --doc",
+    # "cargo hack nextest --each-feature -- --test-threads=1",
+]
+
+# # release *arguments: install:cargo-release install:git-cliff
+# #   cargo release --workspace --execute {{ arguments }}
+# #   # git-cliff could not be used as `pre-release-hook` of cargo-release because it uses tag
+# #   git-cliff -o "CHANGELOG.md"
+# #   git add CHANGELOG.md && git commit -m "📝 update CHANGELOG" && git push
+
+[vars]
+PG_OFFLINE_PWD = "mysecretpassword"
+PG_OFFLINE_USER = "me"
+PG_OFFLINE_URL = "postgres://{{vars.PG_OFFLINE_USER}}:{{vars.PG_OFFLINE_PWD}}@127.0.0.1:5432/{{vars.PG_OFFLINE_USER}}"
+
+[tasks."db:prepare-offline"]
+depends = ["install:sqlx-cli"]
+description = "update db definition to be able compile sqlx code"
+run = [
+    "docker rm -f postgres || true",
+    "sleep 3",
+    """
+    docker run --name postgres \
+        -e POSTGRES_PASSWORD={{vars.PG_OFFLINE_PWD}} \
+        -e POSTGRES_USER={{vars.PG_OFFLINE_USER}} \
+        -v "$MISE_CONFIG_ROOT"/../cdviz-db/src:/docker-entrypoint-initdb.d \
+        -p 5432:5432 -d postgres:16
+    """,
+    "sleep 5",
+    "sqlx database create --database-url {{vars.PG_OFFLINE_URL}}",
+    "cargo sqlx prepare --workspace --database-url {{vars.PG_OFFLINE_URL}}",
+    "sqlx database drop -y --database-url {{vars.PG_OFFLINE_URL}}",
+    "docker rm -f postgres",
+]
+
+[tasks."run"]
+run = [
+    "CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED=true cargo run -- connect -vv --config ./examples/assets/cdviz-collector.toml --directory ./examples/assets",
+]
+
+[tasks."ci"]
+depends = ["lint", "test", "deny"]
+description = "set of tasks run by CI"
+
+[tasks."container_build"]
+run = [
+    "docker buildx build --platform linux/amd64 -t cdviz-collector .",
+    "docker image list cdviz-collector",
+    # - task: check
+    # - docker tag cdviz-collector ghcr.io/cdviz-dev/cdviz-collector:wip
+    # - docker push ghcr.io/cdviz-dev/cdviz-collector:wip
+]
+
+[tasks."examples:transform:passthrough"]
+run = [
+    "cargo run -- transform --mode review --config ./examples/assets/cdviz-collector.toml --input ./examples/assets/inputs/cdevents_json --output ./examples/assets/outputs/transform-passthrough",
+]

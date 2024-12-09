@@ -1,5 +1,51 @@
 [env]
 
 [tools]
-"ubi:go-task/task" = "3" # to have a set of simple commands for repetive task (and CI)
 # docker = "latest"      # to build, to run containers, should be available for some of thoses tools
+
+[tasks."clean"]
+run = ["mise run stack:compose:clean"]
+
+[tasks."stack:compose:up"]
+dir = "stack-compose"
+run = [
+    "mkdir -p tmp/postgres/data || true",
+    "chown -R \"$UID:$GID\" tmp",
+    "docker compose -f docker-compose.yaml up",
+]
+
+[tasks."stack:compose:down"]
+dir = "stack-compose"
+run = ["docker compose -f docker-compose.yaml stop"]
+
+[tasks."stack:compose:clean"]
+dir = "stack-compose"
+run = [
+    "mise run stack:compose:down",
+    "docker compose -f docker-compose.yaml rm",
+    "sudo rm -rf tmp",
+]
+
+[tasks."stack:grafana:view"]
+run = ["open http://127.0.0.1:3000"]
+
+[tasks."stack:db-admin:view"]
+run = ["open http://127.0.0.1:5499"]
+
+[tasks."cdviz-collector:build"]
+hide = true
+dir = "../cdviz-collector"
+run = ["cargo build"]
+
+[tasks."example_01:run"]
+dir = "example_01"
+depends = ["cdviz-collector:build"]
+env = { OTEL_TRACES_SAMPLER = "always_off", OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317", CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED = "false" }
+run = [
+    "../../cdviz-collector/target/debug/cdviz-collector connect -vv --config ./cdviz-collector.toml",
+    # - export UID=$(id -u)
+    # - export GID=$(id -g)
+    # - echo ">> $UID -- $GID"
+    # - mkdir -p tmp/grafana/data || true
+    # RUST_LOG: "cdviz_collector::sinks=debug,info" # cdviz_collector::sources=debug
+]
