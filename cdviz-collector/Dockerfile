@@ -39,7 +39,7 @@ HEALTHCHECK NONE
 # checkov:skip=CKV_DOCKER_7:Ensure the base image uses a non latest version tag
 # trivy:ignore:AVD-DS-0001
 FROM scratch as cdviz-collector
-LABEL org.opencontainers.image.source="https://github.com/davidB/cdviz"
+LABEL org.opencontainers.image.source="https://github.com/cdviz-dev/cdviz"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 ARG PROFILE=release
 ARG TARGET=x86_64-unknown-linux-musl

@@ -1,6 +1,6 @@
 ttlSecondsAfterFinished: 7200
 image:
-  repository: ghcr.io/davidb/cdviz-db
+  repository: ghcr.io/cdviz-dev/cdviz-db
   pullPolicy: IfNotPresent
   tag: "latest" # TODO Change this to a version number on release
 annotations: {}

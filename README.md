@@ -93,6 +93,6 @@ Maybe with some overlap:
 ### Roadmap
 
 - See [ROADMAP.md](ROADMAP.md)
-- See [Issues · davidB/cdviz](https://github.com/davidB/cdviz/issues) and use it to discuss features, ideas, bugs,...
+- See [Issues · cdviz-dev/cdviz](https://github.com/cdviz-dev/cdviz/issues) and use it to discuss features, ideas, bugs,...
 
 [cdevents]: <https://cdevents.dev/>
