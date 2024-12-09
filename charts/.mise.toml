@@ -2,7 +2,6 @@
 CLUSTER_NAME = "kind-local"
 
 [tools]
-"ubi:go-task/task" = "3" # to have a set of simple commands for repetive task (and CI)
 # local kubernetes (k8s)
 # docker = "latest"     # to build, to run containers, should be available for some of thoses tools
 # dive = "latest"       # to explore content of image container
@@ -12,3 +11,44 @@ ctlptl = "0.8"   # to setup / manage local k8s (kind) cluster
 kind = "0.25.0"  # to have a local k8s cluster (on top of docker)
 java = "21"      # required by skaffold
 skaffold = "2"   # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
+
+[tasks.lint]
+run = [
+    "helm lint cdviz-collector",
+    "helm lint cdviz-db",
+    "helm lint cdviz-grafana",
+    "helm lint cdviz",
+]
+
+[tasks."k8s:create"]
+run = [
+    "ctlptl create registry ctlptl-registry --port=5005",
+    "ctlptl create cluster kind --name \"$CLUSTER_NAME\" --registry=ctlptl-registry",
+    "kubectl cluster-info --context \"$CLUSTER_NAME\"",
+]
+
+[tasks."k8s:dev"]
+run = ["skaffold dev --port-forward"]
+
+[tasks."k8s:delete-cdviz"]
+run = [
+    "helm delete cdviz -n cdviz --cascade foreground || true",
+    "kubectl delete namespace cdviz",
+]
+
+[tasks."k8s:delete"]
+run = [
+    "ctlptl delete cluster \"$CLUSTER_NAME\"",
+    "ctlptl delete registry ctlptl-registry",
+]
+
+[tasks.ci]
+description = "set of tasks run by CI"
+run = [
+    # sudo systemctl start docker
+    # k3d cluster create "$CLUSTER_NAME" --agents 2
+    # kind create cluster --name "$CLUSTER_NAME"
+    # k3d cluster delete "$CLUSTER_NAME"
+    # kind delete cluster --name "$CLUSTER_NAME"
+    # - task: lint
+]

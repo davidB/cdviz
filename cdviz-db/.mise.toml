@@ -5,5 +5,47 @@ PG_LOCAL_URL = "postgres://{{env.PG_LOCAL_USER}}:{{env.PG_LOCAL_PWD}}@127.0.0.1:
 
 [tools]
 # docker = "latest"
-atlas = "0.19"
-"ubi:go-task/task" = "3"
+atlas = "0.29"
+
+[tasks."plan"]
+description = "update the migrations to reflect target `src/schema.sql`"
+run = [
+    "atlas migrate diff --env local",
+    "atlas migrate lint --env local --latest 2",
+    "atlas migrate validate --env local",
+]
+
+[tasks."apply"]
+description = "apply the schema & data migrations"
+run = ["atlas migrate apply --env local"]
+
+# cmd: atlas schema apply --env local
+[tasks."db-local:start-empty"]
+description = "start a container for the local db (empty: no data, no schema)"
+run = [
+    "mise run db-local:stop",
+    "docker run --name cdviz-db -e \"POSTGRES_PASSWORD=$PG_LOCAL_PWD\" -e \"POSTGRES_USER=$PG_LOCAL_USER\" -p 5432:5432 -d postgres:16.1",
+]
+
+[tasks."db-local:start"]
+description = "start a container for the local db with the migrations applied"
+run = [
+    "docker run --name cdviz-db -e \"POSTGRES_PASSWORD=$PG_LOCAL_PWD\" -e \"POSTGRES_USER=$PG_LOCAL_USER\" -p 5432:5432 -d postgres:16.1",
+    "sleep 6",
+    "mise run apply",
+]
+
+[tasks."db-local:stop"]
+description = "stop the container of the local db"
+run = ["docker rm -f cdviz-db"]
+
+[tasks."test"]
+run = ["mise run db-local:start", "mise run db-local:stop"]
+
+[tasks."ci"]
+description = "set of tasks run by CI"
+run = [
+    "mise run test",
+    # "mise run check"
+    # "mise run lint"
+]
