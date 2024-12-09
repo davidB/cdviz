@@ -4,10 +4,10 @@ description = "The service to collect (pull/push) and to forward cdevents"
 keywords = ["cd"]
 categories = []
 edition = "2021"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["David Bernard"]
 license = "Apache-2.0"
-repository = "https://github.com/davidB/cdviz"
+repository = "https://github.com/cdviz-dev/cdviz"
 rust-version = "1.80.0"
 publish = false
 
@@ -65,7 +65,6 @@ sqlx = { version = "0.8", features = [
   "time",
   "json",
 ], default-features = false, optional = true }
-time = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-opentelemetry-instrumentation-sdk = { version = "0.24" }
@@ -145,8 +144,8 @@ tag-message = "🔖 {{version}}"
 
 [package.metadata.cargo-machete]
 ignored = [
-  "handlebars_misc_helpers",
-  "humantime_serde",
+  # "handlebars_misc_helpers",
+  "humantime-serde",
 ] # auto-registered and used at runtime
 
 [lints.rust]

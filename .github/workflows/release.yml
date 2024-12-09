@@ -39,6 +39,6 @@ jobs:
       - name: Run Skaffold pipeline as action
         uses: hiberbee/github-action-skaffold@1.27.0
         with:
-          skaffold-version: "2.9.0"
+          skaffold-version: "2.10.0"
           command: build
           # repository: ghcr.io/${{ github.repository }}
