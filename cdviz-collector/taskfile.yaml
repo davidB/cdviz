@@ -124,8 +124,8 @@ tasks:
     cmds:
       - docker buildx build --platform linux/amd64 -t cdviz-collector .
       - docker image list cdviz-collector
-      # - docker tag cdviz-collector ghcr.io/davidB/cdviz-collector:wip
-      # - docker push ghcr.io/davidB/cdviz-collector:wip
+      # - docker tag cdviz-collector ghcr.io/cdviz-dev/cdviz-collector:wip
+      # - docker push ghcr.io/cdviz-dev/cdviz-collector:wip
 
   examples:transform:passthrough:
     cmds:

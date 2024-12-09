@@ -4,10 +4,10 @@ description = "The service to collect (pull/push) and to forward cdevents"
 keywords = ["cd"]
 categories = []
 edition = "2021"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["David Bernard"]
 license = "Apache-2.0"
-repository = "https://github.com/davidB/cdviz"
+repository = "https://github.com/cdviz-dev/cdviz"
 rust-version = "1.80.0"
 publish = false
 
