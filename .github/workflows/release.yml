@@ -30,15 +30,12 @@ jobs:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
-
-      # - name: "Build Inventory Image"
-      #   run: |
-      #     docker build . --tag ghcr.io/<your-GitHub-username>/store:latest
-      #     docker push ghcr.io/${{ github.repository }}/store:latest
-
-      - name: Run Skaffold pipeline as action
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          skaffold-version: "2.10.0"
-          command: build
-          # repository: ghcr.io/${{ github.repository }}
+      - name: Set up Docker Buildx # to support buildx, multi-arch builds
+        uses: docker/setup-buildx-action@v3
+      - uses: jdx/mise-action@v2
+      - run: mise install
+        shell: bash
+        working-directory: charts
+      - run: mise run publish
+        shell: bash
+        working-directory: charts

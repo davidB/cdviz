@@ -5,20 +5,92 @@ CLUSTER_NAME = "kind-local"
 # local kubernetes (k8s)
 # docker = "latest"     # to build, to run containers, should be available for some of thoses tools
 # dive = "latest"       # to explore content of image container
-helm = "3"       # to deploy, check helm chart
-kubectl = "1.31" # to interact with k8s cluster
-ctlptl = "0.8"   # to setup / manage local k8s (kind) cluster
-kind = "0.25.0"  # to have a local k8s cluster (on top of docker)
-java = "21"      # required by skaffold
-skaffold = "2"   # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
+helm = "3"                # to deploy, check helm chart
+kubectl = "1.31"          # to interact with k8s cluster
+ctlptl = "0.8"            # to setup / manage local k8s (kind) cluster
+kind = "0.25.0"           # to have a local k8s cluster (on top of docker)
+java = "21"               # required by skaffold
+skaffold = "2"            # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
+"aqua:mikefarah/yq" = "4"
 
-[tasks.lint]
-run = [
-    "helm lint cdviz-collector",
-    "helm lint cdviz-db",
-    "helm lint cdviz-grafana",
-    "helm lint cdviz",
+# TODO upgrade version only if change in the context of the Dockerfile
+# TODO sign container (see <https://www.sigstore.dev/how-it-works>)
+# TODO sign chart (see <https://www.sigstore.dev/how-it-works>)
+
+[tasks."lint:cdviz-collector"]
+run = ["helm lint cdviz-collector"]
+
+[tasks."lint:cdviz-db"]
+run = ["helm lint cdviz-db"]
+
+[tasks."lint:cdviz-grafana"]
+run = ["helm lint cdviz-grafana"]
+
+[tasks."lint:cdviz"]
+run = ["helm lint cdviz"]
+
+[tasks."publish-module"]
+hide = true
+shell = 'bash -c'
+run = """
+set -euxo pipefail
+
+MODULE={{option(name="module")}}
+mkdir -p build || true
+
+# get version from git descibe
+git describe --always "$(git log -n 1 --pretty=format:%h -- ../${MODULE})" > build/version-${MODULE}.txt
+VERSION=$(cat build/version-${MODULE}.txt)
+
+# build container (for x86_64 and arm64) with version as tag & publish on ghcr.io
+if [[ -f "../${MODULE}/Dockerfile" ]]; then
+    docker buildx build \
+        --output type=image,compression=zstd,oci-mediatypes=true \
+        --platform linux/amd64,linux/arm64 \
+        -t "ghcr.io/cdviz-dev/${MODULE}:${VERSION}" \
+        --push \
+        -f "../${MODULE}/Dockerfile" \
+        "../${MODULE}"
+fi
+
+
+# build & publish chart as oci
+# set version in Chart.yaml & values.yaml (using go-yq) not needed because the version of the image is set to appVersion, and the version (& appVersion) are set via cli during the package
+helm package -d build "${MODULE}" --app-version "$VERSION" --version "$VERSION"
+helm push "build/${MODULE}-${VERSION}.tgz" oci://ghcr.io/cdviz-dev
+"""
+
+[tasks."publish:cdviz-collector"]
+run = ["mise run publish-module --module cdviz-collector"]
+
+[tasks."publish:cdviz-db"]
+run = ["mise run publish-module --module cdviz-db"]
+
+[tasks."publish:cdviz-grafana"]
+run = ["mise run publish-module --module cdviz-grafana"]
+
+[tasks."publish:cdviz"]
+shell = 'bash -c'
+depends = [
+    "publish:cdviz-collector",
+    "publish:cdviz-db",
+    "publish:cdviz-grafana",
 ]
+run = """
+set -euxo pipefail
+
+for MODULE in cdviz-collector cdviz-db cdviz-grafana; do
+    VERSION=$(cat build/version-${MODULE}.txt)
+    yq eval -i "with(.dependencies[] ; select(.name == \"${MODULE}\").version = \"${VERSION}\")" cdviz/Chart.yaml
+done
+
+VERSION=$(git describe --always)
+helm package -d build "${MODULE}" --app-version "$VERSION" --version "$VERSION"
+helm push "build/${MODULE}-${VERSION}.tgz" oci://ghcr.io/cdviz-dev
+"""
+
+[tasks."publish"]
+depends = ["publish:cdviz"]
 
 [tasks."k8s:create"]
 run = [
@@ -44,6 +116,7 @@ run = [
 
 [tasks.ci]
 description = "set of tasks run by CI"
+depends = ["lint:*"]
 run = [
     # sudo systemctl start docker
     # k3d cluster create "$CLUSTER_NAME" --agents 2
