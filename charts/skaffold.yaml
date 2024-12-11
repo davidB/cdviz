@@ -35,7 +35,7 @@ deploy:
         chartPath: ../charts/cdviz
         valuesFiles:
           - ../charts/cdviz/values.yaml
-        version: 0.2.0
+        version: 0.0.0
         setValueTemplates:
           cdviz-collector.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
           cdviz-collector.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
