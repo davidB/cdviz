@@ -5,6 +5,7 @@ metadata:
 build:
   artifacts:
     - image: ghcr.io/cdviz-dev/cdviz-collector
+      context: ../cdviz-collector
       docker:
         dockerfile: ../cdviz-collector/Dockerfile
         target: cdviz-collector
@@ -13,6 +14,7 @@ build:
           # the tagged image reference, useful for caching from the previous build.
           - ghcr.io/cdviz-dev/cdviz-collector
     - image: ghcr.io/cdviz-dev/cdviz-db
+      context: ../cdviz-db
       docker:
         dockerfile: ../cdviz-db/Dockerfile
         target: cdviz-db
