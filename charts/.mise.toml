@@ -32,8 +32,8 @@ run = ["skaffold dev --port-forward"]
 
 [tasks."k8s:delete-cdviz"]
 run = [
-    "helm delete cdviz -n cdviz --cascade foreground || true",
-    "kubectl delete namespace cdviz",
+    "helm delete cdviz -n cdviz-dev --cascade foreground || true",
+    "kubectl delete namespace cdviz-dev",
 ]
 
 [tasks."k8s:delete"]
