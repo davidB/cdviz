@@ -27,7 +27,10 @@ The repository is composed of multiple subfolders / modules.
 ### Prerequisites
 
 - [mise-en-place](https://mise.jdx.dev/) to download tools, setup local environment (tools, environment variables) and to run the tasks
-- [docker](https://docs.docker.com/get-started/) to run the containers and to execute some tests
+- [docker](https://docs.docker.com/get-started/) to run the containers and to execute some tests.
+  To build the container locally you have to configure the container image store
+  (see [Multi-platform | Docker Docs](https://docs.docker.com/build/building/multi-platform/#prerequisites)
+  & [containerd image store | Docker Docs](https://docs.docker.com/engine/storage/containerd/))
 
 ### Build
 

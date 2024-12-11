@@ -111,10 +111,10 @@ run = [
 depends = ["lint", "test", "deny"]
 description = "set of tasks run by CI"
 
-[tasks."container_build"]
+[tasks."build:container"]
 run = [
-    "docker buildx build --platform linux/amd64 -t cdviz-collector .",
-    "docker image list cdviz-collector",
+    "docker buildx build --output type=image,compression=zstd,oci-mediatypes=true --platform linux/amd64,linux/arm64 -t ghcr.io/cdviz-dev/cdviz-collector:wip .",
+    "docker image list --tree ghcr.io/cdviz-dev/cdviz-collector",
     # - task: check
     # - docker tag cdviz-collector ghcr.io/cdviz-dev/cdviz-collector:wip
     # - docker push ghcr.io/cdviz-dev/cdviz-collector:wip
