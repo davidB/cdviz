@@ -6,6 +6,7 @@ OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317"
 OTEL_TRACES_SAMPLER = "always_off"
 
 [tools]
+# "aqua:hadolint/hadolint" = "2"         # hadolint is a Dockerfile linter
 rust = "1.83.0"                        # the rust tool stack (with cargo, fmt, clippy) to build source
 "aqua:cargo-bins/cargo-binstall" = "1" # do not use cargo-binstall (it's a special name used by mise)
 "cargo:cargo-hack" = "latest"

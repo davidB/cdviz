@@ -44,6 +44,7 @@ WORKDIR /work
 COPY ./ .
 
 # TODO explore alternative approache: packaged binaries downloaded from github release instead of building from source
+# TODO `upx /work/target/*/${PROFILE}/cdviz-collector`
 RUN <<EOT
   set -eux
   cargo zigbuild --target x86_64-unknown-linux-musl --target aarch64-unknown-linux-musl "--$PROFILE"
@@ -52,7 +53,6 @@ RUN <<EOT
   cp "target/aarch64-unknown-linux-musl/${PROFILE}/cdviz-collector" /app/linux/arm64
   cp "target/x86_64-unknown-linux-musl/${PROFILE}/cdviz-collector" /app/linux/amd64
 EOT
-# TODO RUN upx /work/target/${TARGET}/${PROFILE}/cdviz-collector
 
 HEALTHCHECK NONE
 

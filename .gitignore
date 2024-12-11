@@ -413,3 +413,4 @@ megalinter-reports/
 #misc
 .aider*
 proptest-regressions/
+build/
