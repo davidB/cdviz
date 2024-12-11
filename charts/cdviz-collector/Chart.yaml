@@ -2,7 +2,7 @@ apiVersion: v2
 name: cdviz-collector
 description: A Helm chart for Kubernetes
 type: application
-version: 0.2.0 # TODO Change this to a version number on release
+version: 0.0.0 # version set during release
 icon: https://cdviz.dev/assets/favicon.svg
 keywords:
   - sdlc

@@ -57,7 +57,7 @@ fi
 # build & publish chart as oci
 # set version in Chart.yaml & values.yaml (using go-yq) not needed because the version of the image is set to appVersion, and the version (& appVersion) are set via cli during the package
 helm package -d build "${MODULE}" --app-version "$VERSION" --version "$VERSION"
-helm push "build/${MODULE}-${VERSION}.tgz" oci://ghcr.io/cdviz-dev
+helm push "build/${MODULE}-${VERSION}.tgz" oci://ghcr.io/cdviz-dev/charts
 """
 
 [tasks."publish:cdviz-collector"]
@@ -80,13 +80,13 @@ run = """
 set -euxo pipefail
 
 for MODULE in cdviz-collector cdviz-db cdviz-grafana; do
-    VERSION=$(cat build/version-${MODULE}.txt)
-    yq eval -i "with(.dependencies[] ; select(.name == \"${MODULE}\").version = \"${VERSION}\")" cdviz/Chart.yaml
+    VERSION=$(cat "build/version-${MODULE}.txt")
+    yq eval -i "with(.dependencies[] ; select(.name == \\\"${MODULE}\\\").version = \\\"${VERSION}\\\")" cdviz/Chart.yaml
 done
 
 VERSION=$(git describe --always)
-helm package -d build "${MODULE}" --app-version "$VERSION" --version "$VERSION"
-helm push "build/${MODULE}-${VERSION}.tgz" oci://ghcr.io/cdviz-dev
+helm package -d build "cdviz" --app-version "$VERSION" --version "$VERSION"
+helm push "build/cdviz-${VERSION}.tgz" oci://ghcr.io/cdviz-dev/charts
 """
 
 [tasks."publish"]
