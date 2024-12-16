@@ -2,6 +2,7 @@
 
 [tools]
 # docker = "latest"      # to build, to run containers, should be available for some of thoses tools
+"ubi:cdviz-dev/cdviz-collector" = "latest"
 
 [tasks."clean"]
 run = ["mise run stack:compose:clean"]
@@ -32,17 +33,11 @@ run = ["open http://127.0.0.1:3000"]
 [tasks."stack:db-admin:view"]
 run = ["open http://127.0.0.1:5499"]
 
-[tasks."cdviz-collector:build"]
-hide = true
-dir = "../cdviz-collector"
-run = ["cargo build"]
-
 [tasks."example_01:run"]
 dir = "example_01"
-depends = ["cdviz-collector:build"]
 env = { OTEL_TRACES_SAMPLER = "always_off", OTEL_EXPORTER_OTLP_TRACES_ENDPOINT = "http://127.0.0.1:4317", CDVIZ_COLLECTOR__SINKS__DEBUG__ENABLED = "false" }
 run = [
-    "../../cdviz-collector/target/debug/cdviz-collector connect -vv --config ./cdviz-collector.toml",
+    "cdviz-collector connect -vv --config ./cdviz-collector.toml",
     # - export UID=$(id -u)
     # - export GID=$(id -g)
     # - echo ">> $UID -- $GID"
