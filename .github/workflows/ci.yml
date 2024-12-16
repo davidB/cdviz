@@ -24,7 +24,6 @@ jobs:
       fail-fast: false
       matrix:
         folder:
-          - cdviz-collector
           # - cdviz-db
           - charts
     env:
@@ -43,8 +42,6 @@ jobs:
       - name: log
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "::notice ::no changed files on ${{ matrix.folder }} - skipping"
-      - uses: mozilla-actions/sccache-action@v0.0.6
-        if: steps.changed-files.outputs.any_changed == 'true'
       - uses: jdx/mise-action@v2
         if: steps.changed-files.outputs.any_changed == 'true'
       - run: mise install
@@ -55,6 +52,3 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         shell: bash
         working-directory: ${{ matrix.folder }}
-      - run: ${SCCACHE_PATH} --show-stats
-        if: steps.changed-files.outputs.any_changed == 'true'
-        shell: bash

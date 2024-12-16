@@ -4,15 +4,6 @@ metadata:
   name: cdviz
 build:
   artifacts:
-    - image: ghcr.io/cdviz-dev/cdviz-collector
-      context: ../cdviz-collector
-      docker:
-        dockerfile: ../cdviz-collector/Dockerfile
-        target: cdviz-collector
-        cacheFrom:
-          # Local Docker builder replaces cache references to the artifact image with
-          # the tagged image reference, useful for caching from the previous build.
-          - ghcr.io/cdviz-dev/cdviz-collector
     - image: ghcr.io/cdviz-dev/cdviz-db
       context: ../cdviz-db
       docker:
@@ -37,8 +28,6 @@ deploy:
           - ../charts/cdviz/values.yaml
         version: 0.0.0
         setValueTemplates:
-          cdviz-collector.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_collector}}"
-          cdviz-collector.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_collector}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_collector}}"
           cdviz-db.image.repository: "{{.IMAGE_REPO_ghcr_io_davidb_cdviz_db}}"
           cdviz-db.image.tag: "{{.IMAGE_TAG_ghcr_io_davidb_cdviz_db}}@{{.IMAGE_DIGEST_ghcr_io_davidb_cdviz_db}}"
         setValues:
