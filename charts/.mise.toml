@@ -18,16 +18,28 @@ skaffold = "2"            # to have simple watch flow to build container, to pub
 # TODO sign chart (see <https://www.sigstore.dev/how-it-works>)
 
 [tasks."lint:cdviz-collector"]
-run = ["helm lint cdviz-collector"]
+run = [
+    "helm lint cdviz-collector",
+    "helm template ./cdviz-collector | kubectl apply --dry-run=client -f -",
+]
 
 [tasks."lint:cdviz-db"]
-run = ["helm lint cdviz-db"]
+run = [
+    "helm lint cdviz-db",
+    "helm template ./cdviz-db | kubectl apply --dry-run=client -f -",
+]
 
 [tasks."lint:cdviz-grafana"]
-run = ["helm lint cdviz-grafana"]
+run = [
+    "helm lint cdviz-grafana",
+    "helm template ./cdviz-grafana | kubectl apply --dry-run=client -f -",
+]
 
 [tasks."lint:cdviz"]
-run = ["helm lint cdviz"]
+run = [
+    "helm lint cdviz",
+    # "helm template ./cdviz | kubectl apply --dry-run=client -f -", # require to fetch/dependencies dependencies
+]
 
 [tasks."publish-module"]
 hide = true
@@ -39,6 +51,8 @@ MODULE={{option(name="module")}}
 mkdir -p build || true
 
 # get version from git descibe
+# TODO? use a static version (like 0.0.0-dev) when not on exact tag to simplify the local build/test
+# of the cdviz chart OR find a way to use "file://..." instead of "oci://..." on dev/test only
 if [[ -d ../${MODULE} ]] ; then
     git describe --always "$(git log -n 1 --pretty=format:%h -- ../${MODULE})" > build/version-${MODULE}.txt
 else
@@ -107,7 +121,7 @@ run = [
 ]
 
 [tasks."k8s:dev"]
-run = ["skaffold dev --port-forward"]
+run = ["helm dependencies update cdviz", "skaffold dev --port-forward"]
 
 [tasks."k8s:delete-cdviz"]
 run = [

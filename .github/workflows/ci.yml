@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   ci:
+    #TODO? replace by a charts only ci like https://github.com/helm/chart-testing-action
     runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
@@ -26,11 +27,6 @@ jobs:
         folder:
           # - cdviz-db
           - charts
-    env:
-      CARGO_TERM_COLOR: always
-      RUST_BACKTRACE: full
-      SCCACHE_GHA_ENABLED: "true"
-      RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
       - name: check changed files
