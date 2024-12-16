@@ -1,9 +1,0 @@
-# use an other linker for compile time speed
-# see [How-to compile rust faster - Rust.Careers Rust Blog](https://blog.rust.careers/post/compile_rust_faster/)
-
-#[target.x86_64-unknown-linux-gnu]
-#linker = "clang"
-#rustflags = ["-C", "link-arg=-fuse-ld=mold"]
-
-# [target.x86_64-unknown-linux-gnu]
-# rustflags = ["-C", "linker=clang", "-C", "link-arg=-fuse-ld=lld"]

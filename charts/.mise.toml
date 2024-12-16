@@ -39,7 +39,11 @@ MODULE={{option(name="module")}}
 mkdir -p build || true
 
 # get version from git descibe
-git describe --always "$(git log -n 1 --pretty=format:%h -- ../${MODULE})" > build/version-${MODULE}.txt
+if [[ -d ../${MODULE} ]] ; then
+    git describe --always "$(git log -n 1 --pretty=format:%h -- ../${MODULE})" > build/version-${MODULE}.txt
+else
+    git describe --always "$(git log -n 1 --pretty=format:%h -- ${MODULE})" > build/version-${MODULE}.txt
+fi
 VERSION=$(cat build/version-${MODULE}.txt)
 
 # build container (for x86_64 and arm64) with version as tag & publish on ghcr.io
