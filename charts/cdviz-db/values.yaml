@@ -2,7 +2,8 @@ ttlSecondsAfterFinished: 7200
 image:
   repository: ghcr.io/cdviz-dev/cdviz-db
   pullPolicy: IfNotPresent
-  tag: "latest" # TODO Change this to a version number on release
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
 annotations: {}
   # "helm.sh/hook": post-install,post-upgrade
   # "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
@@ -13,11 +14,11 @@ env:
   DATABASE_URL:
     valueFrom:
       secretKeyRef:
-        name: "{{ .Values.secrets.name }}"
+        name: ""
         key: DATABASE_URL
 
-# Secrets is also used to store configuration
-# For production, you should create a secrets (encrypted or from an external source)
-# see Chart of cdviz for more details (list of keys,...)
-secrets:
-  name: cdviz-su
+# Additional kubernetes resources to create. Helm template could be used.
+# you could use it to create secrets, or custom resources like external secrets,
+# database definitions for an operator,...
+# apiVersion: postgresql.cnpg.io/v1
+extraResources: []
