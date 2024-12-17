@@ -24,3 +24,8 @@ dashboards:
   enabled: true
   annotations:
     grafana_dashboard: "1"
+
+# Additional kubernetes resources to create. Helm template could be used.
+# you could use it to create secrets, or custom resources like external secrets,
+# configmaps, gateways,...
+extraResources: []
