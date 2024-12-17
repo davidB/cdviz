@@ -1,0 +1,16 @@
+env:
+  CDVIZ_COLLECTOR__SINKS__CDVIZ_DB__URL:
+    valueFrom:
+      secretKeyRef:
+        name: "cdviz-db-collector" # secret defined below
+        key: DATABASE_URL
+
+extraResources:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cdviz-db-collector
+    type: Opaque
+    data:
+      DATABASE_URL: |-
+        {{ .Values.secrets.values.DATABASE_URL | default (printf "postgres://%s:%s@%s:%s/%s" .Values.secrets.values.CDVIZ_COLLECTOR_POSTGRES_USER .Values.secrets.values.CDVIZ_COLLECTOR_POSTGRES_PASSWORD .Values.secrets.values.CDVIZ_COLLECTOR_POSTGRES_HOST .Values.secrets.values.POSTGRES_PORT_NUMBER .Values.secrets.values.POSTGRES_DB) | b64enc }}

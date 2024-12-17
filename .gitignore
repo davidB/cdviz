@@ -414,3 +414,4 @@ megalinter-reports/
 .aider*
 proptest-regressions/
 build/
+.helmwave/

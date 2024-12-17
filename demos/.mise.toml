@@ -1,8 +1,13 @@
 [env]
+CLUSTER_NAME = "kind-local"
 
 [tools]
 # docker = "latest"      # to build, to run containers, should be available for some of thoses tools
 "ubi:cdviz-dev/cdviz-collector" = "latest"
+kubectl = "1.31"                                                      # to interact with k8s cluster
+ctlptl = "0.8"                                                        # to setup / manage local k8s (kind) cluster
+kind = "0.25.0"                                                       # to have a local k8s cluster (on top of docker)
+"ubi:helmwave/helmwave" = { version = "0.41", matching = "helmwave" }
 
 [tasks."clean"]
 run = ["mise run stack:compose:clean"]
@@ -44,3 +49,63 @@ run = [
     # - mkdir -p tmp/grafana/data || true
     # RUST_LOG: "cdviz_collector::sinks=debug,info" # cdviz_collector::sources=debug
 ]
+
+[tasks."stack:k8s:create"]
+dir = "stack-k8s"
+run = [
+    "ctlptl create registry ctlptl-registry --port=5005",
+    "ctlptl create cluster kind --name \"$CLUSTER_NAME\" --registry=ctlptl-registry",
+    "kubectl cluster-info --context \"$CLUSTER_NAME\"",
+]
+
+[tasks."stack:k8s:deploy-pre-req"]
+description = "Deploy the pre-requirement for cdviz (postgresql, grafana, ...) on a k8s cluster"
+dir = "stack-k8s"
+run = [
+    "helmwave up --build --progress --skip-unchanged -t pre-req",
+    # to avoid a certificate x509 error, we need to restart the deployment (or kill the pod)
+    # cause by wrong order of creation webhooks,..
+    # see https://github.com/cloudnative-pg/cloudnative-pg/issues/3088
+    "kubectl rollout restart deployments/cnpg-cloudnative-pg -n cnpg",
+    "# look at the logs to have some instructions to connect to the services, retrieve the passwords,...",
+]
+
+[tasks."stack:k8s:delete-pre-req"]
+dir = "stack-k8s"
+run = ["helmwave down --build  -t pre-req"]
+
+[tasks."stack:k8s:deploy-cdviz"]
+description = "Deploy cdviz stack (cdviz-collector, cdviz-db) on a k8s cluster"
+dir = "stack-k8s"
+run = [
+    "kubectl create namespace cdviz-dev || true",
+    "helmwave up --build --progress --skip-unchanged -t cdviz",
+]
+
+[tasks."stack:k8s:delete-cdviz"]
+dir = "stack-k8s"
+run = ["helmwave down --build  -t cdviz", "kubectl delete namespace cdviz-dev"]
+
+[tasks."stack:k8s:port-forward:grafana"]
+run = ["kubectl port-forward svc/grafana -n grafana 3000:80"]
+
+[tasks."stack:k8s:port-forward:cdviz-db"]
+run = ["kubectl port-forward svc/cdviz-db-rw -n cdviz-dev 5432:5432"]
+
+[tasks."stack:k8s:port-forward:cdviz-collector"]
+run = ["kubectl port-forward svc/cdviz-collector -n cdviz-dev 8080:8080"]
+
+[tasks."stack:k8s:delete"]
+dir = "stack-k8s"
+run = [
+    "ctlptl delete cluster \"$CLUSTER_NAME\"",
+    "ctlptl delete registry ctlptl-registry",
+]
+
+[tasks."stack:k8s:check"]
+dir = "stack-k8s"
+run = ["helmwave build"]
+
+
+[tasks."ci"]
+depends = ["stack:k8s:check"]
