@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: '{{ include "my.fullname" . }}-{{ now | date "20060102150405" }}'
+  name: '{{ include "my.fullname" . }}-dbmigration-{{ now | date "20060102150405" }}'
   labels:
     {{- include "my.labels" . | nindent 4 }}
   {{- with .Values.annotations }}
@@ -12,13 +12,13 @@ spec:
   ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
   template:
     metadata:
-      name: '{{ include "my.fullname" . }}-{{ now | date "20060102150405" }}'
+      name: '{{ include "my.fullname" . }}-dbmigration-{{ now | date "20060102150405" }}'
       labels:
         {{- include "my.labels" . | nindent 8 }}
     spec:
       containers:
       - name: dbmigration
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         # args for https://atlasgo.io/declarative/apply
         args:
           - migrate # or schema
