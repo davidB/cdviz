@@ -29,7 +29,9 @@ deploymentAnnotations: {}
 podAnnotations: {}
 
 podSecurityContext:
-  {}
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
   # fsGroup: 2000
 
 securityContext:
@@ -38,8 +40,8 @@ securityContext:
     drop:
       - ALL
   readOnlyRootFilesystem: true
-  runAsNonRoot: true
   runAsUser: 10001
+  runAsGroup: 10001
 
 service:
   type: ClusterIP
@@ -96,11 +98,20 @@ env:
   CDVIZ_COLLECTOR__SINKS__CDVIZ_DB__URL:
     valueFrom:
       secretKeyRef:
-        name: "{{ .Values.secrets.name }}"
+        name: ""
         key: DATABASE_URL
 
-# Secrets is also used to store configuration
-# For production, you should create a secrets (encrypted or from an external source)
-# see Chart of cdviz for more details (list of keys,...) or templates/deployment.yaml
-secrets:
-  name: cdviz # name of the secret (also used by cdviz-collector, dbMigration, postgresql, grafana,...)
+config: |
+  [sources.cdevents_webhook]
+  enabled = true
+
+  [sinks.debug]
+  enabled = true
+
+  [sinks.cdviz_db]
+  enabled = true
+
+# Additional kubernetes resources to create. Helm template could be used.
+# you could use it to create secrets, or custom resources like external secrets,
+# configmaps, gateways,...
+extraResources: []
