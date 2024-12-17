@@ -1,17 +1,9 @@
-[env]
-CLUSTER_NAME = "kind-local"
-
 [tools]
 # local kubernetes (k8s)
 # docker = "latest"     # to build, to run containers, should be available for some of thoses tools
 # dive = "latest"       # to explore content of image container
-helm = "3"                # to deploy, check helm chart
-kubectl = "1.31"          # to interact with k8s cluster
-ctlptl = "0.8"            # to setup / manage local k8s (kind) cluster
-kind = "0.25.0"           # to have a local k8s cluster (on top of docker)
-java = "21"               # required by skaffold
-skaffold = "2"            # to have simple watch flow to build container, to publish container on local k8s registry, to deploy helm chart with new container
-"aqua:mikefarah/yq" = "4"
+helm = "3"       # to check helm chart
+kubectl = "1.31" # to interact with k8s cluster
 
 # TODO upgrade version only if change in the context of the Dockerfile
 # TODO sign container (see <https://www.sigstore.dev/how-it-works>)
@@ -33,12 +25,6 @@ run = [
 run = [
     "helm lint cdviz-grafana",
     "helm template ./cdviz-grafana | kubectl apply --dry-run=client -f -",
-]
-
-[tasks."lint:cdviz"]
-run = [
-    "helm lint cdviz",
-    # "helm template ./cdviz | kubectl apply --dry-run=client -f -", # require to fetch/dependencies dependencies
 ]
 
 [tasks."publish-module"]
@@ -87,62 +73,10 @@ run = ["mise run publish-module --module cdviz-db"]
 [tasks."publish:cdviz-grafana"]
 run = ["mise run publish-module --module cdviz-grafana"]
 
-[tasks."publish:cdviz"]
-shell = 'bash -c'
-depends = [
-    "publish:cdviz-collector",
-    "publish:cdviz-db",
-    "publish:cdviz-grafana",
-]
-run = """
-set -euxo pipefail
-
-for MODULE in cdviz-collector cdviz-db cdviz-grafana; do
-    VERSION=$(cat "build/version-${MODULE}.txt")
-    yq eval -i "with(.dependencies[] ; select(.name == \\\"${MODULE}\\\").version = \\\"${VERSION}\\\")" cdviz/Chart.yaml
-done
-
-VERSION=$(git describe --always)
-helm repo add grafana https://grafana.github.io/helm-charts
-helm dependency update cdviz
-helm dependency build cdviz
-helm package -d build "cdviz" --app-version "$VERSION" --version "$VERSION"
-helm push "build/cdviz-${VERSION}.tgz" oci://ghcr.io/cdviz-dev/charts
-"""
-
 [tasks."publish"]
-depends = ["publish:cdviz"]
-
-[tasks."k8s:create"]
-run = [
-    "ctlptl create registry ctlptl-registry --port=5005",
-    "ctlptl create cluster kind --name \"$CLUSTER_NAME\" --registry=ctlptl-registry",
-    "kubectl cluster-info --context \"$CLUSTER_NAME\"",
-]
-
-[tasks."k8s:dev"]
-run = ["helm dependencies update cdviz", "skaffold dev --port-forward"]
-
-[tasks."k8s:delete-cdviz"]
-run = [
-    "helm delete cdviz -n cdviz-dev --cascade foreground || true",
-    "kubectl delete namespace cdviz-dev",
-]
-
-[tasks."k8s:delete"]
-run = [
-    "ctlptl delete cluster \"$CLUSTER_NAME\"",
-    "ctlptl delete registry ctlptl-registry",
-]
+description = "publish all charts & containers"
+depends = ["publish:*"]
 
 [tasks.ci]
 description = "set of tasks run by CI"
 depends = ["lint:*"]
-run = [
-    # sudo systemctl start docker
-    # k3d cluster create "$CLUSTER_NAME" --agents 2
-    # kind create cluster --name "$CLUSTER_NAME"
-    # k3d cluster delete "$CLUSTER_NAME"
-    # kind delete cluster --name "$CLUSTER_NAME"
-    # - task: lint
-]
