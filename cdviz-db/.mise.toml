@@ -13,6 +13,7 @@ run = [
     "atlas migrate diff --env local",
     "atlas migrate lint --env local --latest 2",
     "atlas migrate validate --env local",
+    "atlas migrate hash",
 ]
 
 [tasks."apply"]
