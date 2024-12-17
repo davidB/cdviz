@@ -41,6 +41,8 @@ jobs:
         run: echo "::notice ::no changed files on ${{ matrix.folder }} - skipping"
       - uses: jdx/mise-action@v2
         if: steps.changed-files.outputs.any_changed == 'true'
+      - uses: helm/kind-action@v1.10.0
+        if: steps.changed-files.outputs.any_changed == 'true'
       - run: mise install
         if: steps.changed-files.outputs.any_changed == 'true'
         shell: bash
