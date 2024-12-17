@@ -1,0 +1,17 @@
+# The following sections is used to configure a grafana instance as part of the chart,
+# it's mainly to be used in the development, or demo environment (purpose).
+# For production, you should use your own grafana instance and configure it to use sidecars
+# to load the dashboards and datasources, from the cdviz namespace.
+# you can login with default credentials: admin/admin, but you can enable
+# anonymous as admin with the following env configuration
+sidecar:
+  dashboards:
+    enabled: true
+  datasources:
+    enabled: true
+# envFromSecret: "cdviz-ro"
+# [Override configuration with environment variables](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)
+env:
+  # work as anonymous admin to speed up the dev/demo/local purpose
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_AUTH_ANONYMOUS_ORG_ROLE: Admin

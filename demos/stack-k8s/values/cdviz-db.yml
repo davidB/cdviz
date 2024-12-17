@@ -1,0 +1,45 @@
+image:
+  tag: 0.0.0-277-g42a7cc1
+
+env:
+  # DATABASE_URL children node could be any env's value definition supported by kubernetes's pod manifest
+  # helm template could be used
+  DATABASE_URL:
+    valueFrom:
+      secretKeyRef:
+        name: "cdviz-db-su" # secret defined below
+        key: DATABASE_URL
+
+extraResources:
+  - apiVersion: postgresql.cnpg.io/v1
+    kind: Cluster
+    metadata:
+      name: cdviz-db
+    spec:
+      instances: 1
+      storage:
+        size: 100Mi
+      monitoring:
+        enablePodMonitor: true
+      bootstrap:
+        initdb:
+          database: cdviz
+          owner: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_USER }}"
+          secret:
+            name: cdviz-db-owner-secret
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cdviz-db-owner-secret
+    type: kubernetes.io/basic-auth
+    data:
+      username: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_USER | b64enc }}"
+      password: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_PASSWORD | b64enc }}"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cdviz-db-su
+    type: Opaque
+    data:
+      DATABASE_URL: |-
+        {{ .Values.secrets.values.DATABASE_URL | default (printf "postgres://%s:%s@%s:%s/%s" .Values.secrets.values.CDVIZ_SU_POSTGRES_USER .Values.secrets.values.CDVIZ_SU_POSTGRES_PASSWORD .Values.secrets.values.POSTGRES_HOST .Values.secrets.values.POSTGRES_PORT_NUMBER .Values.secrets.values.POSTGRES_DB) | b64enc }}

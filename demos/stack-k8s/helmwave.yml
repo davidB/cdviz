@@ -1,0 +1,98 @@
+project: cdviz-dev
+version: "0.41.1"
+
+registries:
+  - host: ghcr.io
+  - host: registry-1.docker.io
+
+repositories:
+  - url: https://cloudnative-pg.github.io/charts
+    name: cnpg
+  - url: https://grafana.github.io/helm-charts
+    name: grafana
+
+.options: &options
+  create_namespace: true
+  atomic: true
+  force: true
+  # resetValues: true
+  timeout: 1m
+  wait: true
+  max_history: 3
+
+releases:
+  - name: grafana
+    namespace: grafana
+    chart:
+      name: grafana/grafana
+      version: 8.8.1
+    values:
+      - ./values/grafana.yml
+    <<: *options
+    tags:
+      - dashboard
+      - pre-req
+  - name: cnpg
+    namespace: cnpg
+    chart:
+      name: cnpg/cloudnative-pg
+      version: 0.22.1
+    <<: *options
+    tags:
+      - db
+      - pre-req
+  - name: cdviz-db
+    namespace: cdviz-dev
+    # depends_on:
+    #   - cnpg@cnpg
+    chart: ../../charts/cdviz-db
+    # chart:
+    #   name: oci://ghcr.io/cdviz-dev/charts/cdviz-db
+    #   version: 0.0.0
+    <<: *options
+    create_namespace: false
+    values:
+      - src: values/secret.yml
+        renderer: copy
+        strict: true
+      - src: values/cdviz-db.yml
+        renderer: copy
+        strict: true
+    tags:
+      - db
+      - cdviz
+  - name: cdviz-grafana
+    namespace: cdviz-dev
+    depends_on:
+      # - grafana@grafana
+      - cdviz-db@cdviz-dev
+    chart: ../../charts/cdviz-grafana
+    # chart:
+    #   name: oci://ghcr.io/cdviz-dev/charts/cdviz-grafana
+    #   version: 0.0.0
+    <<: *options
+    create_namespace: false
+    values:
+      - src: values/secret.yml
+        renderer: copy
+        strict: true
+    tags:
+      - dashboard
+      - cdviz
+  - name: cdviz-collector
+    namespace: cdviz-dev
+    chart: ../../charts/cdviz-collector
+    # chart:
+    #   name: oci://ghcr.io/cdviz-dev/charts/cdviz-collector
+    #   version: 0.0.0
+    <<: *options
+    create_namespace: false
+    values:
+      - src: values/secret.yml
+        renderer: copy
+        strict: true
+      - src: values/cdviz-collector.yml
+        renderer: copy
+        strict: true
+    tags:
+      - cdviz

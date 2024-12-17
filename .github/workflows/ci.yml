@@ -27,6 +27,7 @@ jobs:
         folder:
           # - cdviz-db
           - charts
+          - demos
     steps:
       - uses: actions/checkout@v4
       - name: check changed files
