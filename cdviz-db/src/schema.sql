@@ -19,8 +19,10 @@ COMMENT ON COLUMN "cdevents_lake"."predicate" IS 'predicate of the subject, extr
 COMMENT ON COLUMN "cdevents_lake"."version" IS 'the version of the suject s type, extracted from context.type. The version number are split in 0 for major, 1 for minor, 2 for patch';
 COMMENT ON COLUMN "cdevents_lake"."context_id" IS 'the id of the event, extracted from context.id';
 
-CREATE INDEX IF NOT EXISTS "idx_timestamp" ON "cdevents_lake" using BRIN("timestamp");
+CREATE INDEX IF NOT EXISTS "idx_cdevents" ON "cdevents_lake" USING GIN("payload");
+CREATE INDEX IF NOT EXISTS "idx_timestamp" ON "cdevents_lake" USING BRIN("timestamp");
 CREATE INDEX IF NOT EXISTS "idx_subject" ON "cdevents_lake"("subject");
+
 
 -- store_cdevent
 create or replace procedure store_cdevent(
