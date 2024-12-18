@@ -1,0 +1,54 @@
+# https://medium.com/@superseb/maintenance-free-renovate-using-github-actions-workflows-d91d32ad854a
+# https://github.com/renovatebot/github-action
+name: renovate
+on:
+  # Allows manual/automated ad-hoc trigger
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Override default log level"
+        required: false
+        default: "info"
+        type: string
+      overrideSchedule:
+        description: "Override all schedules"
+        required: false
+        default: "false"
+        type: string
+  # Run twice in the early morning for initial and follow up steps (create pull request and merge)
+  schedule:
+    - cron: "30 4,6 * * *"
+concurrency: renovate
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: get_token
+        with:
+          private-key: ${{ secrets.INTBOT_PRIVATE_KEY }}
+          app-id: ${{ secrets.INTBOT_APP_ID }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.repository }}
+      - uses: actions/checkout@v4
+      # Don't waste time starting Renovate if JSON is invalid
+      - name: Validate Renovate JSON
+        run: jq type .github/renovate.json
+      - uses: renovatebot/github-action@v41.0.6
+        env:
+          # Repository taken from variable to keep configuration file generic
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          # Onboarding not needed for self hosted
+          RENOVATE_ONBOARDING: "false"
+          # Username for GitHub authentication (should match GitHub App name + [bot])
+          RENOVATE_USERNAME: "superseb-demo-renovate[bot]"
+          # Git commit author used, must match GitHub App
+          RENOVATE_GIT_AUTHOR: "superseb-demo-renovate <121964725+superseb-demo-renovate[bot]@users.noreply.github.com>"
+          # Use GitHub API to create commits (this allows for signed commits from GitHub App)
+          RENOVATE_PLATFORM_COMMIT: "true"
+          # Override schedule if set
+          RENOVATE_FORCE: ${{ github.event.inputs.overrideSchedule == 'true' && '{''schedule'':null}' || '' }}
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+        with:
+          configurationFile: .github/renovate.json5
+          token: "${{ steps.get_token.outputs.token }}"
