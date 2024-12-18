@@ -4,7 +4,7 @@ CLUSTER_NAME = "kind-local"
 [tools]
 # docker = "latest"      # to build, to run containers, should be available for some of thoses tools
 "ubi:cdviz-dev/cdviz-collector" = "latest"
-kubectl = "1.32.0"                                                      # to interact with k8s cluster
+kubectl = "1.32.0"                                                    # to interact with k8s cluster
 ctlptl = "0.8"                                                        # to setup / manage local k8s (kind) cluster
 kind = "0.26.0"                                                       # to have a local k8s cluster (on top of docker)
 "ubi:helmwave/helmwave" = { version = "0.41", matching = "helmwave" }
@@ -58,7 +58,7 @@ run = [
     "kubectl cluster-info --context \"$CLUSTER_NAME\"",
 ]
 
-[tasks."stack:k8s:deploy-pre-req"]
+[tasks."stack:k8s:deploy:pre-req"]
 description = "Deploy the pre-requirement for cdviz (postgresql, grafana, ...) on a k8s cluster"
 dir = "stack-k8s"
 run = [
@@ -70,11 +70,12 @@ run = [
     "# look at the logs to have some instructions to connect to the services, retrieve the passwords,...",
 ]
 
-[tasks."stack:k8s:delete-pre-req"]
+[tasks."stack:k8s:delete:pre-req"]
+depends = ["stack:k8s:delete:cdviz"]
 dir = "stack-k8s"
 run = ["helmwave down --build  -t pre-req"]
 
-[tasks."stack:k8s:deploy-cdviz"]
+[tasks."stack:k8s:deploy:cdviz"]
 description = "Deploy cdviz stack (cdviz-collector, cdviz-db) on a k8s cluster"
 dir = "stack-k8s"
 run = [
@@ -82,7 +83,7 @@ run = [
     "helmwave up --build --progress --skip-unchanged -t cdviz",
 ]
 
-[tasks."stack:k8s:delete-cdviz"]
+[tasks."stack:k8s:delete:cdviz"]
 dir = "stack-k8s"
 run = ["helmwave down --build  -t cdviz", "kubectl delete namespace cdviz-dev"]
 
@@ -97,6 +98,7 @@ run = ["kubectl port-forward svc/cdviz-collector -n cdviz-dev 8080:8080"]
 
 [tasks."stack:k8s:delete"]
 dir = "stack-k8s"
+depends = ["stack:k8s:delete:*"]
 run = [
     "ctlptl delete cluster \"$CLUSTER_NAME\"",
     "ctlptl delete registry ctlptl-registry",
