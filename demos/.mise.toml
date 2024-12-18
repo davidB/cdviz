@@ -87,6 +87,15 @@ run = [
 dir = "stack-k8s"
 run = ["helmwave down --build  -t cdviz", "kubectl delete namespace cdviz-dev"]
 
+[tasks."stack:k8s:deploy:integration"]
+description = "Deploy the integrations app (kubewatch,...) on a k8s cluster"
+dir = "stack-k8s"
+run = ["helmwave up --build --progress --skip-unchanged -t integration"]
+
+[tasks."stack:k8s:delete:integration"]
+dir = "stack-k8s"
+run = ["helmwave down --build  -t integration"]
+
 [tasks."stack:k8s:port-forward:grafana"]
 run = ["kubectl port-forward svc/grafana -n grafana 3000:80"]
 
