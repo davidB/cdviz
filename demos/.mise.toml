@@ -6,7 +6,7 @@ CLUSTER_NAME = "kind-local"
 "ubi:cdviz-dev/cdviz-collector" = "latest"
 kubectl = "1.32.0"                                                      # to interact with k8s cluster
 ctlptl = "0.8"                                                        # to setup / manage local k8s (kind) cluster
-kind = "0.25.0"                                                       # to have a local k8s cluster (on top of docker)
+kind = "0.26.0"                                                       # to have a local k8s cluster (on top of docker)
 "ubi:helmwave/helmwave" = { version = "0.41", matching = "helmwave" }
 
 [tasks."clean"]
