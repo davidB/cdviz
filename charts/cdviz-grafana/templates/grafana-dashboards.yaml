@@ -1,16 +1,18 @@
 {{- if .Values.dashboards.enabled -}}
 {{- $files := .Files.Glob "grafana-dashboards/*.{yaml,json}" }}
 {{- if $files }}
+# from https://artifacthub.io/packages/helm/grafana/grafana
+# A recommendation is to use one configmap per dashboard, as a reduction of multiple dashboards inside one configmap is currently not properly mirrored in grafana.
+{{- range $path, $fileContents := $files }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ include "my.fullname" $ }}-dashboards"
+  name: "{{ include "my.fullname" $ }}-dashboards-{{ base $path | trimSuffix ".yaml" | trimSuffix ".json" }}"
   labels:
-    {{- toYaml .Values.dashboards.annotations | nindent 4}}
+    {{- toYaml $.Values.dashboards.annotations | nindent 4}}
     {{- include "my.labels" $ | nindent 4 }}
 data:
-{{- range $path, $fileContents := $files }}
   {{ include "my.fullname" $ }}-{{ base $path }}: |-
     {{ tpl ($.Files.Get $path) $ | nindent 4 }}
 {{- end }}

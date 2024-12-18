@@ -1,12 +1,12 @@
 {{- if (and .Values.datasources.enabled .Values.datasources.definitions) -}}
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: "{{ include "my.fullname" $ }}-datasources"
   labels:
     {{- toYaml .Values.datasources.annotations | nindent 4}}
     {{- include "my.labels" . | nindent 4 }}
-data:
+stringData:
   {{ include "my.fullname" $ }}-datasources.yaml: |-
     apiVersion: 1
     datasources:
