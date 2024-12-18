@@ -1,6 +1,7 @@
 // https://docs.renovatebot.com/configuration-options/
 // https://www.augmentedmind.de/2023/07/30/renovate-bot-cheat-sheet/
 // https://medium.com/@superseb/maintenance-free-renovate-using-github-actions-workflows-d91d32ad854a
+// sample: https://github.com/renovatebot/helm-charts/blob/main/renovate.json
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   //TODO create a centralized & shared config for renovate to avoid duplication and reduce maintenance effort on updates

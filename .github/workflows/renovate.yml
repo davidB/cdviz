@@ -28,12 +28,14 @@ jobs:
         with:
           private-key: ${{ secrets.INTBOT_PRIVATE_KEY }}
           app-id: ${{ secrets.INTBOT_APP_ID }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.repository }}
+        #   owner: ${{ github.repository_owner }}
+        #   repositories: ${{ github.repository }}
       - uses: actions/checkout@v4
-      # Don't waste time starting Renovate if JSON is invalid
-      - name: Validate Renovate JSON
-        run: jq type .github/renovate.json
+        with:
+          token: ${{ steps.get_token.outputs.token }}
+          ref: ${{ github.head_ref }}
+          # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+          persist-credentials: false
       - uses: renovatebot/github-action@v41.0.6
         env:
           # Repository taken from variable to keep configuration file generic
