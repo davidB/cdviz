@@ -1,13 +1,26 @@
 // https://docs.renovatebot.com/configuration-options/
 // https://www.augmentedmind.de/2023/07/30/renovate-bot-cheat-sheet/
+// https://medium.com/@superseb/maintenance-free-renovate-using-github-actions-workflows-d91d32ad854a
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  //TODO create a centralized & shared config for renovate to avoid duplication and reduce maintenance effort on updates
   extends: ["config:recommended"],
   additionalReviewers: ["davidB"],
+  baseBranches: ["main"],
+  rebaseWhen: "conflicted",
+  labels: ["dependencies"],
+  prHourlyLimit: 2,
   packageRules: [
     {
       matchUpdateTypes: ["patch", "pin", "digest"],
       enabled: false,
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      // "pinDigests": true,
+      "schedule": ["every weekend after 4am"]
     },
     {
       matchPackageNames: ["helm"],
@@ -21,7 +34,7 @@
     },
     {
       matchPackageNames: ["kube", "k8s-openapi"],
-      groupName: "kubers",
+      groupName: "kube-rs",
     },
   ],
 }
