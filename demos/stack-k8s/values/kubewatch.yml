@@ -1,0 +1,50 @@
+rbac:
+  create: true
+  customRoles:
+    - apiGroups: ["monitoring.coreos.com"]
+      resources: ["prometheusrules"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["events.k8s.io"]
+      resources: ["events"]
+      verbs: ["get", "list", "watch"]
+resourcesToWatch:
+  deployment: true
+  replicationcontroller: false
+  replicaset: false
+  daemonset: true
+  services: true
+  pod: true
+  job: false
+  node: false
+  clusterrole: false
+  clusterrolebinding: false
+  serviceaccount: false
+  persistentvolume: false
+  namespace: false
+  secret: false
+  configmap: false
+  ingress: false
+  coreevent: false
+  event: true
+# customresources:
+#   - group: monitoring.coreos.com
+#     version: v1
+#     resource: prometheusrules
+
+## Seems like only one handler could be enabled at a time
+
+slack:
+  enabled: false # true by default
+
+webhook:
+  enabled: false
+  # # view at https://webhook.site/#!/view/2819e2bc-a4f1-4a3b-99aa-34a1f4ffce73
+  # # webhook.site is a free service that could be used for human testing
+  url: "https://webhook.site/2819e2bc-a4f1-4a3b-99aa-34a1f4ffce73/webhook"
+
+# # cloudevent are more verbose than webhook
+# # cloudevent include the webhook's data + manifest of the resource + ...
+cloudevent:
+  enabled: false
+  # view at https://webhook.site/#!/view/2819e2bc-a4f1-4a3b-99aa-34a1f4ffce73
+  # url: "https://webhook.site/2819e2bc-a4f1-4a3b-99aa-34a1f4ffce73/cloudevent"

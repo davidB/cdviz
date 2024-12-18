@@ -10,6 +10,8 @@ repositories:
     name: cnpg
   - url: https://grafana.github.io/helm-charts
     name: grafana
+  - name: robusta
+    url: https://robusta-charts.storage.googleapis.com
 
 .options: &options
   create_namespace: true
@@ -99,3 +101,13 @@ releases:
         strict: true
     tags:
       - cdviz
+  - name: kubewatch
+    namespace: kubewatch
+    chart: robusta/kubewatch
+    <<: *options
+    values:
+      - src: values/kubewatch.yml
+        renderer: copy
+        strict: true
+    tags:
+      - integration
