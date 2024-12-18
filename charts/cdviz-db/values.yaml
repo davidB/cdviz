@@ -19,6 +19,36 @@ env:
 
 # Additional kubernetes resources to create. Helm template could be used.
 # you could use it to create secrets, or custom resources like external secrets,
-# database definitions for an operator,...
-# apiVersion: postgresql.cnpg.io/v1
-extraResources: []
+# configmaps, gateways, volumes, keda, ...
+# - the name/key of the resource is used just to access the definition more easily than an arrays's index
+# - the 'enabled' field is used to enable/disable the resource (removed when the resource is templated)
+# - user can add any other resource definition as child node of extraResources
+extraResources:
+  cloudnative-pg-basic:
+    enabled: false
+    apiVersion: postgresql.cnpg.io/v1
+    kind: Cluster
+    metadata:
+      name: cdviz-db
+    spec:
+      instances: 1
+      storage:
+        size: 100Mi
+      monitoring:
+        enablePodMonitor: true
+      bootstrap:
+        initdb:
+          database: cdviz
+          owner: cdviz
+          secret:
+            name: cdviz-db-owner-secret
+  cdviz-db-owner-secret:
+    enabled: false
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cdviz-db-owner-secret
+    type: kubernetes.io/basic-auth
+    data:
+      username: '{{ "cdviz-su" b64enc }}'
+      password: '{{ "mysecretpassword" | b64enc }}'
