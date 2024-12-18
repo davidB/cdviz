@@ -76,6 +76,9 @@ releases:
       - src: values/secret.yml
         renderer: copy
         strict: true
+      - src: values/cdviz-grafana.yml
+        renderer: copy
+        strict: true
     tags:
       - dashboard
       - cdviz

@@ -1,0 +1,10 @@
+datasources:
+  definitions:
+    cdviz:
+      # Use the syntax "$..." to inject the values from the grafana environment
+      url: "{{ .Values.secrets.values.CDVIZ_DASHBOARDS_POSTGRES_HOST }}"
+      user: "{{ .Values.secrets.values.CDVIZ_DASHBOARDS_POSTGRES_USER }}"
+      secureJsonData:
+        password: "{{ .Values.secrets.values.CDVIZ_DASHBOARDS_POSTGRES_PASSWORD }}"
+      jsonData:
+        database: "{{ .Values.secrets.values.POSTGRES_DB }}"
