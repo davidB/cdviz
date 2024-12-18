@@ -3,7 +3,7 @@
 # docker = "latest"     # to build, to run containers, should be available for some of thoses tools
 # dive = "latest"       # to explore content of image container
 helm = "3"       # to check helm chart
-kubectl = "1.31" # to interact with k8s cluster
+kubectl = "1.32.0" # to interact with k8s cluster
 
 # TODO upgrade version only if change in the context of the Dockerfile
 # TODO sign container (see <https://www.sigstore.dev/how-it-works>)
