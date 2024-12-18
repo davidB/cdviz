@@ -113,5 +113,8 @@ config: |
 
 # Additional kubernetes resources to create. Helm template could be used.
 # you could use it to create secrets, or custom resources like external secrets,
-# configmaps, gateways,...
-extraResources: []
+# configmaps, gateways, volumes, keda, ...
+# - the name/key of the resource is used just to access the definition more easily than an arrays's index
+# - the 'enabled' field is used to enable/disable the resource (removed when the resource is templated)
+# - user can add any other resource definition as child node of extraResources
+extraResources: {}

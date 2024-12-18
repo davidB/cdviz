@@ -11,7 +11,9 @@ env:
         key: DATABASE_URL
 
 extraResources:
-  - apiVersion: postgresql.cnpg.io/v1
+  postgresql:
+    enabled: true
+    apiVersion: postgresql.cnpg.io/v1
     kind: Cluster
     metadata:
       name: cdviz-db
@@ -27,7 +29,9 @@ extraResources:
           owner: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_USER }}"
           secret:
             name: cdviz-db-owner-secret
-  - apiVersion: v1
+  cdviz-db-owner-secret:
+    enabled: true
+    apiVersion: v1
     kind: Secret
     metadata:
       name: cdviz-db-owner-secret
@@ -35,7 +39,9 @@ extraResources:
     data:
       username: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_USER | b64enc }}"
       password: "{{ .Values.secrets.values.CDVIZ_SU_POSTGRES_PASSWORD | b64enc }}"
-  - apiVersion: v1
+  migration-secret:
+    enabled: true
+    apiVersion: v1
     kind: Secret
     metadata:
       name: cdviz-db-su

@@ -6,7 +6,9 @@ env:
         key: DATABASE_URL
 
 extraResources:
-  - apiVersion: v1
+  secrets:
+    enabled: true
+    apiVersion: v1
     kind: Secret
     metadata:
       name: cdviz-db-collector
